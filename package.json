@@ -20,11 +20,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Khoa1468/Learn_Typescript.git"
+    "url": "git+https://github.com/Khoa1468/Logger.git"
   },
   "bugs": {
-    "url": "https://github.com/Khoa1468/Learn_Typescript/issues"
+    "url": "https://github.com/Khoa1468/Logger/issues"
   },
-  "homepage": "https://github.com/Khoa1468/Learn_Typescript#readme",
+  "homepage": "https://github.com/Khoa1468/Logger#readme",
   "description": ""
 }
