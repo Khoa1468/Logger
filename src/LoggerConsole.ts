@@ -1,5 +1,5 @@
 import { LoggerMethod } from "./LoggerMethod.js";
-import { ReturnType, IOError } from "./LoggerInterfaces.js";
+import { ReturnType, IOError, IOErrorParam } from "./LoggerInterfaces.js";
 
 export class LoggerConsole extends LoggerMethod {
   public log(...message: unknown[]): ReturnType {
@@ -42,7 +42,7 @@ export class LoggerConsole extends LoggerMethod {
       isType: this.isType,
     });
   }
-  public fatal(...error: IOError[]): ReturnType {
+  public fatal<T extends object>(error: IOErrorParam<T>): ReturnType {
     const timeAndType = this.getTimeAndType("Fatal");
     console.error(
       `${
@@ -51,7 +51,7 @@ export class LoggerConsole extends LoggerMethod {
           : ""
       }`
     );
-    error.forEach((err: any) => {
+    error.errors.forEach((err: any) => {
       console.error("", "Type Of Error:", err.name, "\n");
       console.error("", "STACK: \n", "");
       console.error("", err.stack, "\n");
@@ -61,10 +61,10 @@ export class LoggerConsole extends LoggerMethod {
       `--------------------------------------------------------------------------`
     );
 
-    return this.returnTypeFunction(
-      "fatal",
+    return this.returnFatalTypeFunction(
       timeAndType,
-      [...error],
+      error.errors,
+      error.detail,
       this.listSetting()
     );
   }

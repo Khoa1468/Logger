@@ -4,6 +4,7 @@ import {
   ReturnGetTimeAndType,
   levelLogId,
   ReturnType,
+  IOError,
 } from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
 
@@ -75,6 +76,35 @@ export class LoggerMethod extends LoggerProperty {
     return {
       levelLog: type,
       data: message,
+      loggedAt: `${this.loggedAt}`,
+      filePath: objToReturn.filePath,
+      fullFilePath: objToReturn.fullFilePath,
+      lineNumber: objToReturn.lineNumber,
+      lineColumm: objToReturn.lineColumm,
+      user: this.loggerName,
+      setting,
+    };
+  }
+
+  protected returnFatalTypeFunction(
+    objToReturn: ReturnGetTimeAndType,
+    errors: IOError[],
+    detailError: object = {},
+    setting?: LoggerInterface
+  ): ReturnType {
+    return {
+      levelLog: "fatal",
+      data: {
+        nativeError: errors,
+        detail: detailError,
+        user: this.loggerName,
+        isError: true,
+        filePath: objToReturn.filePath,
+        fullFilePath: objToReturn.fullFilePath,
+        lineNumber: objToReturn.lineNumber,
+        lineColumm: objToReturn.lineColumm,
+      },
+
       loggedAt: `${this.loggedAt}`,
       filePath: objToReturn.filePath,
       fullFilePath: objToReturn.fullFilePath,

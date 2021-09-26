@@ -15,17 +15,21 @@ interface ReturnGetTimeAndType {
 }
 
 interface IOReturnError {
-  nativeError: Error;
+  nativeError: IOError[];
   detail: object;
-  name: string;
+  user: string;
   isError: true;
+  filePath: string;
+  fullFilePath: string;
+  lineNumber: number;
+  lineColumm: number;
 }
 
 type levelLogId = "log" | "warn" | "info" | "error" | "fatal";
 
 interface ReturnType {
   levelLog: levelLogId;
-  data: (IOReturnError | unknown)[];
+  data: IOReturnError | unknown[];
   loggedAt: string;
   filePath: string;
   fullFilePath: string;
@@ -33,6 +37,11 @@ interface ReturnType {
   lineColumm: number;
   user: string;
   setting?: LoggerInterface;
+}
+
+interface IOErrorParam<T> {
+  errors: IOError[];
+  detail?: T;
 }
 
 interface ErrorReturnType {
@@ -58,4 +67,5 @@ export {
   ErrorReturnType,
   IOError,
   IOReturnError,
+  IOErrorParam,
 };
