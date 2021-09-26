@@ -87,6 +87,7 @@ export class LoggerMethod extends LoggerProperty {
       lineNumber: objToReturn.lineNumber,
       lineColumm: objToReturn.lineColumm,
       user: this.loggerName,
+      cagetory: this.cagetoryName,
       setting,
     };
   }
@@ -115,6 +116,7 @@ export class LoggerMethod extends LoggerProperty {
       lineNumber: objToReturn.lineNumber,
       lineColumm: objToReturn.lineColumm,
       user: this.loggerName,
+      cagetory: this.cagetoryName,
       setting,
     };
   }

@@ -5,42 +5,42 @@ export class LoggerConsole extends LoggerMethod {
   public log(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Log");
     console.log(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
-    return this.returnTypeFunction("log", timeAndType, message, {
-      name: this.name,
-      isDisplayRootFile: this.isDisplayRootFile,
-      isLoggedAt: this.isLoggedAt,
-      isType: this.isType,
-    });
+    return this.returnTypeFunction(
+      "log",
+      timeAndType,
+      message,
+      this.listSetting()
+    );
   }
   public warn(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Warn");
     console.warn(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
-    return this.returnTypeFunction("warn", timeAndType, message, {
-      name: this.name,
-      isDisplayRootFile: this.isDisplayRootFile,
-      isLoggedAt: this.isLoggedAt,
-      isType: this.isType,
-    });
+    return this.returnTypeFunction(
+      "warn",
+      timeAndType,
+      message,
+      this.listSetting()
+    );
   }
   public error(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Error");
     console.error(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
-    return this.returnTypeFunction("error", timeAndType, message, {
-      name: this.name,
-      isDisplayRootFile: this.isDisplayRootFile,
-      isLoggedAt: this.isLoggedAt,
-      isType: this.isType,
-    });
+    return this.returnTypeFunction(
+      "error",
+      timeAndType,
+      message,
+      this.listSetting()
+    );
   }
   public info(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Info");
     console.info(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
-    return this.returnTypeFunction("info", timeAndType, message, {
-      name: this.name,
-      isDisplayRootFile: this.isDisplayRootFile,
-      isLoggedAt: this.isLoggedAt,
-      isType: this.isType,
-    });
+    return this.returnTypeFunction(
+      "info",
+      timeAndType,
+      message,
+      this.listSetting()
+    );
   }
   public fatal<T extends object>(error: IOErrorParam<T>): IOReturnType {
     const timeAndType = this.getTimeAndType("Fatal");

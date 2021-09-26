@@ -36,6 +36,7 @@ interface IOReturnType {
   lineNumber: number;
   lineColumm: number;
   user: string;
+  cagetory: string;
   setting?: IOLoggerInterface;
 }
 
