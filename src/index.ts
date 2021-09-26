@@ -4,7 +4,13 @@ import { LoggerConsole } from "./LoggerConsole.js";
 import { LoggerMethod } from "./LoggerMethod.js";
 import { LoggerProperty } from "./LoggerProperty.js";
 import { LoggerStatic } from "./LoggerStatic.js";
-import { ReturnType } from "./LoggerTypes.js";
+import {
+  ReturnType,
+  IOError,
+  IOReturnError,
+  levelLogId,
+  ErrorReturnType,
+} from "./LoggerTypes.js";
 
 export default Logger;
 export {
@@ -15,4 +21,8 @@ export {
   LoggerProperty,
   LoggerStatic,
   ReturnType,
+  IOError,
+  IOReturnError,
+  levelLogId,
+  ErrorReturnType,
 };

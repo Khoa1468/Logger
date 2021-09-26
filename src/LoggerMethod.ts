@@ -1,4 +1,4 @@
-import { ReturnType } from "./LoggerTypes.js";
+import { levelLogId, ReturnType } from "./LoggerTypes.js";
 import callsites from "callsites";
 import { LoggerInterface, ReturnGetTimeAndType } from "./LoggerInterface.js";
 import { LoggerProperty } from "./LoggerProperty.js";
@@ -63,13 +63,13 @@ export class LoggerMethod extends LoggerProperty {
   }
 
   protected returnTypeFunction(
-    type: "log" | "warn" | "error" | "info" | "fatal",
+    type: levelLogId,
     objToReturn: ReturnGetTimeAndType,
     message: unknown[],
     setting?: LoggerInterface
   ): ReturnType {
     return {
-      type: type,
+      levelLog: type,
       data: message,
       loggedAt: `${this.loggedAt}`,
       filePath: objToReturn.filePath,

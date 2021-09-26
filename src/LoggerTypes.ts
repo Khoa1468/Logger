@@ -8,9 +8,9 @@ export interface IOReturnError {
   name: string;
   isError: true;
 }
-
+export type levelLogId = "log" | "warn" | "info" | "error" | "fatal";
 export interface ReturnType {
-  type: "log" | "warn" | "info" | "error" | "fatal";
+  levelLog: levelLogId;
   data: (IOReturnError | unknown)[];
   loggedAt: string;
   filePath: string;
