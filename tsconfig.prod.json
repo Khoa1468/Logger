@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ES6",
+    "outDir": "./dist",
+    "rootDir": "./src/",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "watch": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declarationMap": true,
+    "declaration": true,
+    "declarationDir": "dist/types"
+  }
+}
