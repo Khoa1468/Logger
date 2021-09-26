@@ -31,13 +31,15 @@ export class LoggerMethod extends LoggerProperty {
                   }`
                 : ""
             }${this.isLoggedAt && this.isDisplayRootFile ? " " : ""}${
-              this.isType && this.isDisplayRootFile ? ", " : ""
+              this.isDisplayRootFile && this.isType && !this.isLoggedAt
+                ? ", "
+                : ""
             }${
               this.isDisplayRootFile
                 ? `File: "${filePath}:${lineNumber}:${lineColumm}"`
                 : ""
-            }]`
-          : ""
+            }] [${this.cagetoryName}]`
+          : `[${this.cagetoryName}]`
       }`,
       filePath,
       lineNumber,
@@ -51,11 +53,13 @@ export class LoggerMethod extends LoggerProperty {
     isLoggedAt = this.isLoggedAt,
     isType = this.isType,
     isDisplayRootFile = this.isDisplayRootFile,
+    cagetoryName = this.cagetoryName,
   }: IOLoggerInterface) {
     this.name = name;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
+    this.cagetoryName = cagetoryName;
   }
 
   public listSetting(): IOLoggerInterface {
@@ -64,6 +68,7 @@ export class LoggerMethod extends LoggerProperty {
       isLoggedAt: this.isLoggedAt,
       isType: this.isType,
       isDisplayRootFile: this.isDisplayRootFile,
+      cagetoryName: this.cagetoryName,
     };
   }
 

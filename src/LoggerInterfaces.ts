@@ -3,6 +3,7 @@ interface IOLoggerInterface {
   isLoggedAt?: boolean;
   isType?: boolean;
   isDisplayRootFile?: boolean;
+  cagetoryName?: string;
 }
 
 interface IOReturnGetTimeAndType {
