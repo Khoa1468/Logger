@@ -104,7 +104,6 @@ export class LoggerMethod extends LoggerProperty {
         lineNumber: objToReturn.lineNumber,
         lineColumm: objToReturn.lineColumm,
       },
-
       loggedAt: `${this.loggedAt}`,
       filePath: objToReturn.filePath,
       fullFilePath: objToReturn.fullFilePath,
