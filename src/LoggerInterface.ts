@@ -10,6 +10,7 @@ interface ReturnGetTimeAndType {
   ToString: string;
   filePath: string;
   lineNumber: number;
+  lineColumm;
   fullFilePath: string;
 }
 

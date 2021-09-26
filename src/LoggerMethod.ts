@@ -1,4 +1,4 @@
-import { ReturnType } from "./LoggerReturnType.js";
+import { ReturnType } from "./LoggerTypes.js";
 import callsites from "callsites";
 import { LoggerInterface, ReturnGetTimeAndType } from "./LoggerInterface.js";
 import { LoggerProperty } from "./LoggerProperty.js";
@@ -10,11 +10,12 @@ export class LoggerMethod extends LoggerProperty {
     return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
   }
   public getTimeAndType(
-    type: "Log" | "Error" | "Info" | "Warn"
+    type: "Log" | "Error" | "Info" | "Warn" | "Fatal"
   ): ReturnGetTimeAndType {
     const filePath = this.cleanPath(callsites()[2].getFileName());
     const fullFilePath = callsites()[2].getFileName();
     const lineNumber = callsites()[2].getLineNumber();
+    const lineColumm = callsites()[2].getColumnNumber();
     return {
       ToString: `${
         this.isType || this.isLoggedAt || this.isDisplayRootFile
@@ -25,12 +26,17 @@ export class LoggerMethod extends LoggerProperty {
                   }`
                 : ""
             }${this.isLoggedAt && this.isDisplayRootFile ? " " : ""}${
-              this.isDisplayRootFile ? `File: "${filePath}:${lineNumber}"` : ""
+              this.isType ? ", " : ""
+            }${
+              this.isDisplayRootFile
+                ? `File: "${filePath}:${lineNumber}:${lineColumm}"`
+                : ""
             }]`
           : ""
       }`,
       filePath,
       lineNumber,
+      lineColumm,
       fullFilePath,
     };
   }
@@ -57,19 +63,19 @@ export class LoggerMethod extends LoggerProperty {
   }
 
   protected returnTypeFunction(
-    type: "log" | "warn" | "error" | "info",
+    type: "log" | "warn" | "error" | "info" | "fatal",
     objToReturn: ReturnGetTimeAndType,
     message: unknown[],
     setting?: LoggerInterface
   ): ReturnType {
     return {
       type: type,
-      message: message[0],
       data: message,
       loggedAt: `${this.loggedAt}`,
       filePath: objToReturn.filePath,
       fullFilePath: objToReturn.fullFilePath,
       lineNumber: objToReturn.lineNumber,
+      lineColumm: objToReturn.lineColumm,
       user: this.loggerName,
       setting,
     };
