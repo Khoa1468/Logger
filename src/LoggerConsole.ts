@@ -1,5 +1,5 @@
 import { LoggerMethod } from "./LoggerMethod.js";
-import { ReturnType, IOError } from "./LoggerTypes.js";
+import { ReturnType, IOError } from "./LoggerInterfaces.js";
 
 export class LoggerConsole extends LoggerMethod {
   public log(...message: unknown[]): ReturnType {

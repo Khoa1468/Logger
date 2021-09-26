@@ -1,6 +1,10 @@
-import { levelLogId, ReturnType } from "./LoggerTypes.js";
 import callsites from "callsites";
-import { LoggerInterface, ReturnGetTimeAndType } from "./LoggerInterface.js";
+import {
+  LoggerInterface,
+  ReturnGetTimeAndType,
+  levelLogId,
+  ReturnType,
+} from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
 
 const date = new Date();

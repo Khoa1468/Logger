@@ -1,5 +1,5 @@
 import { hostname } from "os";
-import { LoggerInterface } from "./LoggerInterface.js";
+import { LoggerInterface } from "./LoggerInterfaces.js";
 
 const date = new Date();
 
