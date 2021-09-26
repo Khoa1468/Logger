@@ -1,9 +1,9 @@
 import callsites from "callsites";
 import {
-  LoggerInterface,
-  ReturnGetTimeAndType,
-  levelLogId,
-  ReturnType,
+  IOLoggerInterface,
+  IOReturnGetTimeAndType,
+  IOLevelLogId,
+  IOReturnType,
   IOError,
 } from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
@@ -16,7 +16,7 @@ export class LoggerMethod extends LoggerProperty {
   }
   public getTimeAndType(
     type: "Log" | "Error" | "Info" | "Warn" | "Fatal"
-  ): ReturnGetTimeAndType {
+  ): IOReturnGetTimeAndType {
     const filePath = this.cleanPath(callsites()[2].getFileName());
     const fullFilePath = callsites()[2].getFileName();
     const lineNumber = callsites()[2].getLineNumber();
@@ -31,7 +31,7 @@ export class LoggerMethod extends LoggerProperty {
                   }`
                 : ""
             }${this.isLoggedAt && this.isDisplayRootFile ? " " : ""}${
-              this.isType ? ", " : ""
+              this.isType && this.isDisplayRootFile ? ", " : ""
             }${
               this.isDisplayRootFile
                 ? `File: "${filePath}:${lineNumber}:${lineColumm}"`
@@ -51,14 +51,14 @@ export class LoggerMethod extends LoggerProperty {
     isLoggedAt = this.isLoggedAt,
     isType = this.isType,
     isDisplayRootFile = this.isDisplayRootFile,
-  }: LoggerInterface) {
+  }: IOLoggerInterface) {
     this.name = name;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
   }
 
-  public listSetting(): LoggerInterface {
+  public listSetting(): IOLoggerInterface {
     return {
       name: this.name,
       isLoggedAt: this.isLoggedAt,
@@ -68,11 +68,11 @@ export class LoggerMethod extends LoggerProperty {
   }
 
   protected returnTypeFunction(
-    type: levelLogId,
-    objToReturn: ReturnGetTimeAndType,
+    type: IOLevelLogId,
+    objToReturn: IOReturnGetTimeAndType,
     message: unknown[],
-    setting?: LoggerInterface
-  ): ReturnType {
+    setting?: IOLoggerInterface
+  ): IOReturnType {
     return {
       levelLog: type,
       data: message,
@@ -87,11 +87,11 @@ export class LoggerMethod extends LoggerProperty {
   }
 
   protected returnFatalTypeFunction(
-    objToReturn: ReturnGetTimeAndType,
+    objToReturn: IOReturnGetTimeAndType,
     errors: IOError[],
     detailError: object = {},
-    setting?: LoggerInterface
-  ): ReturnType {
+    setting?: IOLoggerInterface
+  ): IOReturnType {
     return {
       levelLog: "fatal",
       data: {

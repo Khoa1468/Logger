@@ -1,12 +1,11 @@
-interface LoggerInterface {
+interface IOLoggerInterface {
   name?: string;
   isLoggedAt?: boolean;
   isType?: boolean;
-  // isDisplayObjectAsJson?: boolean;
   isDisplayRootFile?: boolean;
 }
 
-interface ReturnGetTimeAndType {
+interface IOReturnGetTimeAndType {
   ToString: string;
   filePath: string;
   lineNumber: number;
@@ -25,10 +24,10 @@ interface IOReturnError {
   lineColumm: number;
 }
 
-type levelLogId = "log" | "warn" | "info" | "error" | "fatal";
+type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal";
 
-interface ReturnType {
-  levelLog: levelLogId;
+interface IOReturnType {
+  levelLog: IOLevelLogId;
   data: IOReturnError | unknown[];
   loggedAt: string;
   filePath: string;
@@ -36,7 +35,7 @@ interface ReturnType {
   lineNumber: number;
   lineColumm: number;
   user: string;
-  setting?: LoggerInterface;
+  setting?: IOLoggerInterface;
 }
 
 interface IOErrorParam<T> {
@@ -44,7 +43,7 @@ interface IOErrorParam<T> {
   detail?: T;
 }
 
-interface ErrorReturnType {
+interface IOErrorReturnType {
   type: "error";
   typeError: string;
   message: string;
@@ -53,18 +52,18 @@ interface ErrorReturnType {
   fullFilePath: string;
   lineNumber: number;
   user: string;
-  setting?: LoggerInterface;
+  setting?: IOLoggerInterface;
   fullError: Error[];
 }
 
 type IOError = Error | undefined | unknown;
 
 export {
-  LoggerInterface,
-  ReturnGetTimeAndType,
-  levelLogId,
-  ReturnType,
-  ErrorReturnType,
+  IOLoggerInterface,
+  IOReturnGetTimeAndType,
+  IOLevelLogId,
+  IOReturnType,
+  IOErrorReturnType,
   IOError,
   IOReturnError,
   IOErrorParam,

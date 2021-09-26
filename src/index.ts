@@ -1,12 +1,12 @@
 import Logger from "./Logger.js";
 import {
-  LoggerInterface,
-  ReturnGetTimeAndType,
-  ReturnType,
+  IOLoggerInterface,
+  IOReturnGetTimeAndType,
+  IOReturnType,
   IOError,
   IOReturnError,
-  levelLogId,
-  ErrorReturnType,
+  IOLevelLogId,
+  IOErrorReturnType,
 } from "./LoggerInterfaces.js";
 import { LoggerConsole } from "./LoggerConsole.js";
 import { LoggerMethod } from "./LoggerMethod.js";
@@ -19,11 +19,11 @@ export {
   LoggerStatic,
   LoggerMethod,
   LoggerProperty,
-  LoggerInterface,
-  ReturnGetTimeAndType,
-  ReturnType,
+  IOLoggerInterface,
+  IOReturnGetTimeAndType,
+  IOReturnType,
   IOError,
   IOReturnError,
-  levelLogId,
-  ErrorReturnType,
+  IOLevelLogId,
+  IOErrorReturnType,
 };

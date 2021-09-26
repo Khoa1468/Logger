@@ -1,8 +1,8 @@
 import { LoggerMethod } from "./LoggerMethod.js";
-import { ReturnType, IOError, IOErrorParam } from "./LoggerInterfaces.js";
+import { IOReturnType, IOError, IOErrorParam } from "./LoggerInterfaces.js";
 
 export class LoggerConsole extends LoggerMethod {
-  public log(...message: unknown[]): ReturnType {
+  public log(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Log");
     console.log(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
     return this.returnTypeFunction("log", timeAndType, message, {
@@ -12,7 +12,7 @@ export class LoggerConsole extends LoggerMethod {
       isType: this.isType,
     });
   }
-  public warn(...message: unknown[]): ReturnType {
+  public warn(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Warn");
     console.warn(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
     return this.returnTypeFunction("warn", timeAndType, message, {
@@ -22,7 +22,7 @@ export class LoggerConsole extends LoggerMethod {
       isType: this.isType,
     });
   }
-  public error(...message: unknown[]): ReturnType {
+  public error(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Error");
     console.error(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
     return this.returnTypeFunction("error", timeAndType, message, {
@@ -32,7 +32,7 @@ export class LoggerConsole extends LoggerMethod {
       isType: this.isType,
     });
   }
-  public info(...message: unknown[]): ReturnType {
+  public info(...message: unknown[]): IOReturnType {
     const timeAndType = this.getTimeAndType("Info");
     console.info(`${message ? `${timeAndType.ToString}` : ""}`, ...message);
     return this.returnTypeFunction("info", timeAndType, message, {
@@ -42,7 +42,7 @@ export class LoggerConsole extends LoggerMethod {
       isType: this.isType,
     });
   }
-  public fatal<T extends object>(error: IOErrorParam<T>): ReturnType {
+  public fatal<T extends object>(error: IOErrorParam<T>): IOReturnType {
     const timeAndType = this.getTimeAndType("Fatal");
     console.error(
       `${
