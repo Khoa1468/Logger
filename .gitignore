@@ -6,3 +6,5 @@ coverage/
 tsconfig.json
 public/
 public/*
+dist/
+dist/*
