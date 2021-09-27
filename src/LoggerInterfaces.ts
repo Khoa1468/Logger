@@ -20,9 +20,9 @@ interface IOReturnError {
   user: string;
   isError: true;
   filePath: string;
-  fullFilePath: string;
-  lineNumber: number;
-  lineColumm: number;
+  fullFilePath: string | null;
+  lineNumber: number | null;
+  lineColumm: number | null;
 }
 
 type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal";
@@ -32,9 +32,9 @@ interface IOReturnType {
   data: IOReturnError | unknown[];
   loggedAt: string;
   filePath: string;
-  fullFilePath: string;
-  lineNumber: number;
-  lineColumm: number;
+  fullFilePath: string | null;
+  lineNumber: number | null;
+  lineColumm: number | null;
   user: string;
   cagetory: string;
   setting?: IOLoggerInterface;
