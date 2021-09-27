@@ -9,9 +9,9 @@ interface IOLoggerInterface {
 interface IOReturnGetTimeAndType {
   ToString: string;
   filePath: string;
-  lineNumber: number;
-  lineColumm: number;
-  fullFilePath: string;
+  lineNumber: number | null;
+  lineColumm: number | null;
+  fullFilePath: string | null;
 }
 
 interface IOReturnError {
@@ -45,19 +45,6 @@ interface IOErrorParam<T> {
   detail?: T;
 }
 
-interface IOErrorReturnType {
-  type: "error";
-  typeError: string;
-  message: string;
-  loggedAt: string;
-  filePath: string;
-  fullFilePath: string;
-  lineNumber: number;
-  user: string;
-  setting?: IOLoggerInterface;
-  fullError: Error[];
-}
-
 type IOError = Error | undefined | unknown;
 
 export {
@@ -65,7 +52,6 @@ export {
   IOReturnGetTimeAndType,
   IOLevelLogId,
   IOReturnType,
-  IOErrorReturnType,
   IOError,
   IOReturnError,
   IOErrorParam,

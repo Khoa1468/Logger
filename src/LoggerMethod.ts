@@ -5,22 +5,24 @@ import {
   IOLevelLogId,
   IOReturnType,
   IOError,
+  IOErrorParam,
 } from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
 
 const date = new Date();
 
 export class LoggerMethod extends LoggerProperty {
-  private cleanPath(path: string): string {
+  protected cleanPath(path: string | null): string {
+    if (path === null) return "";
     return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
   }
   public getTimeAndType(
     type: "Log" | "Error" | "Info" | "Warn" | "Fatal"
   ): IOReturnGetTimeAndType {
-    const filePath = this.cleanPath(callsites()[2].getFileName());
-    const fullFilePath = callsites()[2].getFileName();
-    const lineNumber = callsites()[2].getLineNumber();
-    const lineColumm = callsites()[2].getColumnNumber();
+    const filePath = this.cleanPath(callsites()[3].getFileName());
+    const fullFilePath = callsites()[3].getFileName();
+    const lineNumber = callsites()[3].getLineNumber();
+    const lineColumm = callsites()[3].getColumnNumber();
     return {
       ToString: `${
         this.isType || this.isLoggedAt || this.isDisplayRootFile
@@ -46,6 +48,56 @@ export class LoggerMethod extends LoggerProperty {
       lineColumm,
       fullFilePath,
     };
+  }
+
+  protected handleLog<T>(
+    type: IOLevelLogId,
+    messageOrError: unknown[],
+    typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal"
+  ): IOReturnType {
+    const timeAndType = this.getTimeAndType(typeTime);
+    let returnObj: IOReturnType;
+    if (type !== "fatal") {
+      console[type](
+        `${messageOrError ? `${timeAndType.ToString}` : ""}`,
+        ...messageOrError
+      );
+    }
+
+    return this.returnTypeFunction(
+      type,
+      timeAndType,
+      messageOrError,
+      this.listSetting()
+    );
+  }
+
+  protected handleLogFatal<T extends object>(
+    errorList: IOErrorParam<T>
+  ): IOReturnType {
+    const timeAndType = this.getTimeAndType("Fatal");
+    console.error(
+      `${
+        errorList
+          ? `${timeAndType.ToString}\n--------------------------------------------------------------------------`
+          : ""
+      }`
+    );
+    errorList.errors.forEach((err: any) => {
+      console.error("", "Type Of Error:", err.name, "\n");
+      console.error("", "STACK: \n", "");
+      console.error("", err.stack, "\n");
+      return err;
+    });
+    console.error(
+      `--------------------------------------------------------------------------`
+    );
+    return this.returnFatalTypeFunction(
+      timeAndType,
+      errorList.errors,
+      errorList.detail,
+      this.listSetting()
+    );
   }
 
   public setSettings({
