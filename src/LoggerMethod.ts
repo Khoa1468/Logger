@@ -1,7 +1,6 @@
 import callsites from "callsites";
 import chalk from "chalk";
 import {
-  IOLoggerInterface,
   IOReturnGetTimeAndType,
   IOLevelLogId,
   IOReturnType,
