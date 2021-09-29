@@ -1,4 +1,4 @@
-import callsites from "callsites";
+import callsites from "my-callsites";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
@@ -7,6 +7,7 @@ import {
   IOError,
   IOErrorParam,
   IOSetting,
+  IOLoggerInterface,
 } from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
 
@@ -42,8 +43,8 @@ export class LoggerMethod extends LoggerProperty {
               this.isDisplayRootFile
                 ? `File: "${filePath}:${lineNumber}:${lineColumm}"`
                 : ""
-            }] [${this.cagetoryName}]`
-          : `[${this.cagetoryName}]`
+            }] [${chalk.cyanBright(this.cagetoryName)}]`
+          : `[${chalk.cyanBright(this.cagetoryName)}]`
       }`,
       filePath,
       lineNumber,
@@ -114,14 +115,12 @@ export class LoggerMethod extends LoggerProperty {
     isType = this.isType,
     isDisplayRootFile = this.isDisplayRootFile,
     cagetoryName = this.cagetoryName,
-    hostName = this.hostname,
-  }: IOSetting) {
+  }: IOLoggerInterface) {
     this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
-    this.hostname = hostName;
   }
 
   public listSetting(): IOSetting {
