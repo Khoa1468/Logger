@@ -1,4 +1,5 @@
 import callsites from "callsites";
+import chalk from "chalk";
 import {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -6,6 +7,7 @@ import {
   IOReturnType,
   IOError,
   IOErrorParam,
+  IOSetting,
 } from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
 
@@ -17,7 +19,8 @@ export class LoggerMethod extends LoggerProperty {
     return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
   }
   public getTimeAndType(
-    type: "Log" | "Error" | "Info" | "Warn" | "Fatal"
+    type: "Log" | "Error" | "Info" | "Warn" | "Fatal",
+    color: string = (chalk.Color = "white")
   ): IOReturnGetTimeAndType {
     const filePath = this.cleanPath(callsites()[3].getFileName());
     const fullFilePath = callsites()[3].getFileName();
@@ -26,7 +29,7 @@ export class LoggerMethod extends LoggerProperty {
     return {
       ToString: `${
         this.isType || this.isLoggedAt || this.isDisplayRootFile
-          ? `[${this.isType ? `Type: ${type}` : ""}${
+          ? `[${this.isType ? `Type: ${chalk.keyword(color)(type)}` : ""}${
               this.isLoggedAt
                 ? `${this.isType ? `, ` : ""}Time: ${this.loggedAt}${
                     this.isDisplayRootFile ? "," : ""
@@ -53,9 +56,10 @@ export class LoggerMethod extends LoggerProperty {
   protected handleLog<T>(
     type: IOLevelLogId,
     messageOrError: unknown[],
-    typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal"
+    typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal",
+    color: string = (chalk.Color = "white")
   ): IOReturnType {
-    const timeAndType = this.getTimeAndType(typeTime);
+    const timeAndType = this.getTimeAndType(typeTime, color);
     let returnObj: IOReturnType;
     if (type !== "fatal") {
       console[type](
@@ -75,7 +79,7 @@ export class LoggerMethod extends LoggerProperty {
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
   ): IOReturnType {
-    const timeAndType = this.getTimeAndType("Fatal");
+    const timeAndType = this.getTimeAndType("Fatal", (chalk.Color = "magenta"));
     console.error(
       `${
         errorList
@@ -84,8 +88,13 @@ export class LoggerMethod extends LoggerProperty {
       }`
     );
     errorList.errors.forEach((err: any) => {
-      console.error("", "Type Of Error:", err.name, "\n");
-      console.error("", "STACK: \n", "");
+      console.error("", "Message:", chalk.redBright(err.message), "\n");
+      console.error(
+        "",
+        `============================================== \n`,
+        ""
+      );
+      console.error("", `${chalk.bgRed("STACK:")} \n`, "");
       console.error("", err.stack, "\n");
       return err;
     });
@@ -101,26 +110,29 @@ export class LoggerMethod extends LoggerProperty {
   }
 
   public setSettings({
-    name = this.name,
+    instanceName = this.name,
     isLoggedAt = this.isLoggedAt,
     isType = this.isType,
     isDisplayRootFile = this.isDisplayRootFile,
     cagetoryName = this.cagetoryName,
-  }: IOLoggerInterface) {
-    this.name = name;
+    hostName = this.hostname,
+  }: IOSetting) {
+    this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
+    this.hostname = hostName;
   }
 
-  public listSetting(): IOLoggerInterface {
+  public listSetting(): IOSetting {
     return {
-      name: this.name,
+      instanceName: this.name,
       isLoggedAt: this.isLoggedAt,
       isType: this.isType,
       isDisplayRootFile: this.isDisplayRootFile,
       cagetoryName: this.cagetoryName,
+      hostName: this.hostname,
     };
   }
 
@@ -128,7 +140,7 @@ export class LoggerMethod extends LoggerProperty {
     type: IOLevelLogId,
     objToReturn: IOReturnGetTimeAndType,
     message: unknown[],
-    setting?: IOLoggerInterface
+    setting?: IOSetting
   ): IOReturnType {
     return {
       levelLog: type,
@@ -137,8 +149,9 @@ export class LoggerMethod extends LoggerProperty {
       filePath: objToReturn.filePath,
       fullFilePath: objToReturn.fullFilePath,
       lineNumber: objToReturn.lineNumber,
+      hostName: this.hostname,
       lineColumm: objToReturn.lineColumm,
-      user: this.loggerName,
+      instanceName: this.loggerName,
       cagetory: this.cagetoryName,
       setting,
     };
@@ -148,7 +161,7 @@ export class LoggerMethod extends LoggerProperty {
     objToReturn: IOReturnGetTimeAndType,
     errors: IOError[],
     detailError: object = {},
-    setting?: IOLoggerInterface
+    setting?: IOSetting
   ): IOReturnType {
     return {
       levelLog: "fatal",
@@ -163,11 +176,12 @@ export class LoggerMethod extends LoggerProperty {
         lineColumm: objToReturn.lineColumm,
       },
       loggedAt: `${this.loggedAt}`,
+      hostName: this.hostname,
       filePath: objToReturn.filePath,
       fullFilePath: objToReturn.fullFilePath,
       lineNumber: objToReturn.lineNumber,
       lineColumm: objToReturn.lineColumm,
-      user: this.loggerName,
+      instanceName: this.loggerName,
       cagetory: this.cagetoryName,
       setting,
     };

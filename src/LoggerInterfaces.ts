@@ -1,9 +1,13 @@
 interface IOLoggerInterface {
-  name?: string;
+  instanceName?: string;
   isLoggedAt?: boolean;
   isType?: boolean;
   isDisplayRootFile?: boolean;
   cagetoryName?: string;
+}
+
+interface IOSetting extends IOLoggerInterface {
+  hostName: string;
 }
 
 interface IOReturnGetTimeAndType {
@@ -32,12 +36,13 @@ interface IOReturnType {
   data: IOReturnError | unknown[];
   loggedAt: string;
   filePath: string;
+  hostName: string;
   fullFilePath: string | null;
   lineNumber: number | null;
   lineColumm: number | null;
-  user: string;
+  instanceName: string;
   cagetory: string;
-  setting?: IOLoggerInterface;
+  setting?: IOSetting;
 }
 
 interface IOErrorParam<T> {
@@ -55,4 +60,5 @@ export {
   IOError,
   IOReturnError,
   IOErrorParam,
+  IOSetting,
 };

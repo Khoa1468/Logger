@@ -12,17 +12,18 @@ export class LoggerProperty {
   protected isType: boolean = true;
   protected isDisplayRootFile: boolean = true;
   protected cagetoryName: string = "";
+  protected hostname = hostname();
   /**
    * This Is My Logger
    */
   constructor({
-    name = hostname(),
+    instanceName = hostname(),
     isLoggedAt = true,
     isType = true,
     isDisplayRootFile = true,
-    cagetoryName = name,
+    cagetoryName = instanceName,
   }: IOLoggerInterface) {
-    this.name = name;
+    this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
