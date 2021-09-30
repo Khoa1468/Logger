@@ -1,4 +1,4 @@
-import callsites from "my-callsites";
+import callsites from "callsites";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
@@ -80,14 +80,42 @@ export class LoggerMethod extends LoggerProperty {
     errorList: IOErrorParam<T>
   ): IOReturnType {
     const timeAndType = this.getTimeAndType("Fatal", (chalk.Color = "magenta"));
-    console.error(
-      `${
-        errorList
-          ? `${timeAndType.ToString}\n--------------------------------------------------------------------------`
-          : ""
-      }`
-    );
-    errorList.errors.forEach((err: any) => {
+    try {
+      console.error(
+        `${
+          errorList
+            ? `${timeAndType.ToString}\n--------------------------------------------------------------------------`
+            : ""
+        }`
+      );
+      errorList.errors.forEach((err: any) => {
+        console.error("", "Message:", chalk.redBright(err.message), "\n");
+        console.error(
+          "",
+          `============================================== \n`,
+          ""
+        );
+        console.error("", `${chalk.bgRed("STACK:")} \n`, "");
+        console.error("", err.stack, "\n");
+        return err;
+      });
+      console.error(
+        `--------------------------------------------------------------------------`
+      );
+      return this.returnFatalTypeFunction(
+        timeAndType,
+        errorList.errors,
+        errorList.detail,
+        this.listSetting()
+      );
+    } catch (err) {
+      console.error(
+        `${
+          errorList
+            ? `${timeAndType.ToString}\n--------------------------------------------------------------------------`
+            : ""
+        }`
+      );
       console.error("", "Message:", chalk.redBright(err.message), "\n");
       console.error(
         "",
@@ -96,17 +124,11 @@ export class LoggerMethod extends LoggerProperty {
       );
       console.error("", `${chalk.bgRed("STACK:")} \n`, "");
       console.error("", err.stack, "\n");
+      console.error(
+        `--------------------------------------------------------------------------`
+      );
       return err;
-    });
-    console.error(
-      `--------------------------------------------------------------------------`
-    );
-    return this.returnFatalTypeFunction(
-      timeAndType,
-      errorList.errors,
-      errorList.detail,
-      this.listSetting()
-    );
+    }
   }
 
   public setSettings({
