@@ -43,8 +43,8 @@ export class LoggerMethod extends LoggerProperty {
               this.isDisplayRootFile
                 ? `File: "${filePath}:${lineNumber}:${lineColumm}"`
                 : ""
-            }] [${chalk.cyanBright(this.cagetoryName)}]`
-          : `[${chalk.cyanBright(this.cagetoryName)}]`
+            }] ${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
+          : `${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
       }`,
       filePath,
       lineNumber,
@@ -63,7 +63,9 @@ export class LoggerMethod extends LoggerProperty {
     let returnObj: IOReturnType;
     if (type !== "fatal") {
       console[type](
-        `${messageOrError ? `${timeAndType.ToString}` : ""}`,
+        `${
+          messageOrError ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
+        }`,
         ...messageOrError
       );
     }
@@ -84,7 +86,9 @@ export class LoggerMethod extends LoggerProperty {
       console.error(
         `${
           errorList
-            ? `${timeAndType.ToString}\n--------------------------------------------------------------------------`
+            ? `${chalk.keyword("magenta")(
+                timeAndType.ToString
+              )}\n--------------------------------------------------------------------------`
             : ""
         }`
       );
@@ -108,7 +112,7 @@ export class LoggerMethod extends LoggerProperty {
         errorList.detail,
         this.listSetting()
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(
         `${
           errorList
