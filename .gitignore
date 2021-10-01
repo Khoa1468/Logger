@@ -3,8 +3,9 @@ public/main
 src/main
 .vscode
 coverage/
-tsconfig.json
 public/
 public/*
 dist/
 dist/*
+.npmrc
+storage

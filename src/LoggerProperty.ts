@@ -1,5 +1,5 @@
 import { hostname } from "os";
-import { LoggerInterface } from "./LoggerInterface.js";
+import { IOLoggerInterface } from "./LoggerInterfaces.js";
 
 const date = new Date();
 
@@ -11,18 +11,22 @@ export class LoggerProperty {
   protected isLoggedAt: boolean = true;
   protected isType: boolean = true;
   protected isDisplayRootFile: boolean = true;
+  protected cagetoryName: string = "";
+  protected hostname = hostname();
   /**
    * This Is My Logger
    */
   constructor({
-    name = hostname(),
+    instanceName = hostname(),
     isLoggedAt = true,
     isType = true,
     isDisplayRootFile = true,
-  }: LoggerInterface) {
-    this.name = name;
+    cagetoryName = instanceName,
+  }: IOLoggerInterface) {
+    this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
+    this.cagetoryName = cagetoryName;
   }
 }
