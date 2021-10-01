@@ -43,3 +43,5 @@ const logger = new Logger({});
 
 logger.log("Hello, I Am A Normal Log!");
 ```
+
+# I Published Package On My Private NPM Registry
