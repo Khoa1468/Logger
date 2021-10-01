@@ -1,8 +1,17 @@
 {
-  "name": "my-logger",
-  "version": "1.0.0",
+  "name": "logger",
+  "version": "1.0.9",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "workspaces": [
+    "dist/*"
+  ],
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "start": "nodemon",
     "build": "tsc"
@@ -15,15 +24,18 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "@types/node": "^15.14.0"
+    "@types/node": "^16.10.2"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Khoa1468/Logger.git"
+    "url": "git+https://github.com/Khoa1468/Logger/tree/test-branch-2"
   },
   "bugs": {
     "url": "https://github.com/Khoa1468/Logger/issues"
   },
-  "homepage": "https://github.com/Khoa1468/Logger#readme",
-  "description": ""
+  "homepage": "https://github.com/Khoa1468/Logger/tree/test-branch-2#readme",
+  "description": "My First Logger Package"
 }
