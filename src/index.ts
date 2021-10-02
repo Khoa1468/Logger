@@ -29,17 +29,3 @@ export {
   IOErrorParam,
   IOSetting,
 };
-
-const logger: Logger = new Logger({});
-
-logger.log("This is a Logger Example");
-
-logger.setSettings({
-  isDisplayRootFile: false,
-  isLoggedAt: false,
-  isType: false,
-});
-
-logger.log(
-  "Source Code: https://github.com/Khoa1468/Logger\nGithub: https://github.com/Khoa1468/"
-);
