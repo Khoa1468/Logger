@@ -240,7 +240,7 @@ export class LoggerMethod extends LoggerProperty {
   toJson(data: IOReturnType): string {
     return JSON.stringify(data);
   }
-  toPretty(data: string): any {
+  toPretty(data: string): IOReturnType {
     return JSON.parse(data);
   }
 }
