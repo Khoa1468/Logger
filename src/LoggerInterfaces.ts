@@ -27,9 +27,12 @@ interface IOReturnError {
   fullFilePath: string | null;
   lineNumber: number | null;
   lineColumm: number | null;
+  functionName: string;
+  methodName: string;
+  isClass: boolean;
 }
 
-type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal";
+type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
 
 interface IOReturnType {
   levelLog: IOLevelLogId;
@@ -50,7 +53,7 @@ interface IOErrorParam<T> {
   detail?: T;
 }
 
-type IOError = Error | undefined | unknown;
+type IOError = Error | any;
 
 export {
   IOLoggerInterface,

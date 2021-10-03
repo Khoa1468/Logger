@@ -18,4 +18,7 @@ export class LoggerConsole extends LoggerMethod {
   public fatal<T extends object>(error: IOErrorParam<T>): IOReturnType {
     return this.handleLogFatal<T>(error);
   }
+  public debug(...message: unknown[]): IOReturnType {
+    return this.handleLog("debug", message, "Debug", (chalk.Color = "green"));
+  }
 }

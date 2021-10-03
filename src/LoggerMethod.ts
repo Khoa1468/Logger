@@ -1,4 +1,4 @@
-import callsites from "callsites";
+import { get as callsites, parse } from "stack-trace";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
@@ -19,7 +19,7 @@ export class LoggerMethod extends LoggerProperty {
     return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
   }
   public getTimeAndType(
-    type: "Log" | "Error" | "Info" | "Warn" | "Fatal",
+    type: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
   ): IOReturnGetTimeAndType {
     const filePath = this.cleanPath(callsites()[3].getFileName());
@@ -56,7 +56,7 @@ export class LoggerMethod extends LoggerProperty {
   protected handleLog<T>(
     type: IOLevelLogId,
     messageOrError: unknown[],
-    typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal",
+    typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
   ): IOReturnType {
     const timeAndType = this.getTimeAndType(typeTime, color);
@@ -106,9 +106,16 @@ export class LoggerMethod extends LoggerProperty {
       console.error(
         `--------------------------------------------------------------------------`
       );
+      const stack = parse(errorList.errors[0]);
       return this.returnFatalTypeFunction(
         timeAndType,
         errorList.errors,
+        stack[0].getFileName(),
+        stack[0].getFunctionName(),
+        stack[0].getLineNumber(),
+        stack[0].getColumnNumber(),
+        stack[0].getMethodName(),
+        stack[0].getMethodName() !== null ? true : false,
         errorList.detail,
         this.listSetting()
       );
@@ -184,6 +191,12 @@ export class LoggerMethod extends LoggerProperty {
   protected returnFatalTypeFunction(
     objToReturn: IOReturnGetTimeAndType,
     errors: IOError[],
+    filePath: string,
+    functionName: string,
+    lineNumber: number,
+    lineColumm: number,
+    methodName: string,
+    isClass: boolean,
     detailError: object = {},
     setting?: IOSetting
   ): IOReturnType {
@@ -194,10 +207,13 @@ export class LoggerMethod extends LoggerProperty {
         detail: detailError,
         user: this.loggerName,
         isError: true,
-        filePath: objToReturn.filePath,
-        fullFilePath: objToReturn.fullFilePath,
-        lineNumber: objToReturn.lineNumber,
-        lineColumm: objToReturn.lineColumm,
+        filePath: this.cleanPath(filePath),
+        fullFilePath: filePath,
+        lineNumber,
+        lineColumm,
+        functionName,
+        methodName,
+        isClass,
       },
       loggedAt: `${this.loggedAt}`,
       hostName: this.hostname,
