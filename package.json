@@ -25,7 +25,6 @@
   "license": "MIT",
   "dependencies": {
     "@types/stack-trace": "0.0.29",
-    "callsites": "^4.0.0",
     "chalk": "^4.1.2",
     "stack-trace": "^1.0.0-pre1"
   },

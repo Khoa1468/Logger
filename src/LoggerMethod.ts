@@ -237,4 +237,10 @@ export class LoggerMethod extends LoggerProperty {
       throw Error("newName error");
     }
   }
+  toJson(data: IOReturnType): string {
+    return JSON.stringify(data);
+  }
+  toPretty(data: string): any {
+    return JSON.parse(data);
+  }
 }
