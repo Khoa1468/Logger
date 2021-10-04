@@ -111,6 +111,14 @@ export class LoggerMethod extends LoggerProperty {
       if (stack[0].getFunctionName().includes("new ")) {
         isConstructor = true;
       }
+      const isClass =
+        (stack[0].getMethodName() !== null &&
+          stack[0].getTypeName() !== "Object" &&
+          stack[0].getTypeName() !== "Array" &&
+          stack[0].getTypeName() !== "String" &&
+          stack[0].getTypeName() !== "Number" &&
+          stack[0].getTypeName() !== "Boolean") ||
+        isConstructor;
       return this.returnFatalTypeFunction(
         timeAndType,
         errorList.errors,
@@ -119,7 +127,7 @@ export class LoggerMethod extends LoggerProperty {
         stack[0].getLineNumber(),
         stack[0].getColumnNumber(),
         stack[0].getMethodName(),
-        stack[0].getMethodName() !== null || isConstructor ? true : false,
+        isClass ? true : false,
         isConstructor,
         stack[0].getTypeName(),
         errorList.detail,
