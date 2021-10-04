@@ -107,6 +107,10 @@ export class LoggerMethod extends LoggerProperty {
         `--------------------------------------------------------------------------`
       );
       const stack = parse(errorList.errors[0]);
+      let isConstructor = false;
+      if (stack[0].getFunctionName().includes("new ")) {
+        isConstructor = true;
+      }
       return this.returnFatalTypeFunction(
         timeAndType,
         errorList.errors,
@@ -115,7 +119,9 @@ export class LoggerMethod extends LoggerProperty {
         stack[0].getLineNumber(),
         stack[0].getColumnNumber(),
         stack[0].getMethodName(),
-        stack[0].getMethodName() !== null ? true : false,
+        stack[0].getMethodName() !== null || isConstructor ? true : false,
+        isConstructor,
+        stack[0].getTypeName(),
         errorList.detail,
         this.listSetting()
       );
@@ -197,6 +203,8 @@ export class LoggerMethod extends LoggerProperty {
     lineColumm: number,
     methodName: string,
     isClass: boolean,
+    isConstructor: boolean,
+    typeName: string,
     detailError: object = {},
     setting?: IOSetting
   ): IOReturnType {
@@ -214,6 +222,8 @@ export class LoggerMethod extends LoggerProperty {
         functionName,
         methodName,
         isClass,
+        isConstructor,
+        typeName,
       },
       loggedAt: `${this.loggedAt}`,
       hostName: this.hostname,

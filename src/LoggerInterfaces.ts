@@ -30,6 +30,8 @@ interface IOReturnError {
   functionName: string;
   methodName: string;
   isClass: boolean;
+  isConstructor: boolean;
+  typeName: string;
 }
 
 type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";

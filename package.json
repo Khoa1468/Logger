@@ -1,6 +1,6 @@
 {
   "name": "logger",
-  "version": "1.2.1",
+  "version": "1.2.6",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "engines": {
@@ -14,7 +14,7 @@
   ],
   "dist": {
     "fileCount": 24,
-    "unpackedSize": 22885
+    "unpackedSize": 23570
   },
   "scripts": {
     "start": "nodemon",
@@ -24,12 +24,12 @@
   "author": "Khoa1468 <khoalam1468@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/stack-trace": "0.0.29",
     "chalk": "^4.1.2",
     "stack-trace": "^1.0.0-pre1"
   },
   "devDependencies": {
-    "@types/node": "^16.10.2"
+    "@types/node": "^16.10.2",
+    "@types/stack-trace": "0.0.29"
   },
   "publishConfig": {
     "access": "public"
