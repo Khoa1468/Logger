@@ -18,11 +18,9 @@ interface IOReturnGetTimeAndType {
   fullFilePath: string | null;
 }
 
-interface IOReturnError {
-  nativeError: IOError[];
-  detail: object;
-  user: string;
-  isError: true;
+type IOStd = unknown;
+
+interface IOErrorStack {
   filePath: string;
   fullFilePath: string | null;
   lineNumber: number | null;
@@ -32,6 +30,13 @@ interface IOReturnError {
   isClass: boolean;
   isConstructor: boolean;
   typeName: string;
+}
+
+interface IOReturnError extends IOErrorStack {
+  nativeError: IOError[];
+  detail: object;
+  user: string;
+  isError: true;
 }
 
 type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
@@ -66,4 +71,6 @@ export {
   IOReturnError,
   IOErrorParam,
   IOSetting,
+  IOErrorStack,
+  IOStd,
 };
