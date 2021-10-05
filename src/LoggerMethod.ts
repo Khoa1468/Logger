@@ -1,4 +1,4 @@
-import { get as callsites, parse } from "stack-trace";
+import { parse } from "stack-trace";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
@@ -7,73 +7,30 @@ import {
   IOError,
   IOErrorParam,
   IOSetting,
-  IOLoggerInterface,
+  IOErrorStack,
+  IOStd,
 } from "./LoggerInterfaces.js";
-import { LoggerProperty } from "./LoggerProperty.js";
+import { LoggerUtils } from "./LoggerUtils.js";
 
-const date = new Date();
-
-export class LoggerMethod extends LoggerProperty {
-  protected cleanPath(path: string | null): string {
-    if (path === null) return "";
-    return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
-  }
-  public getTimeAndType(
-    type: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
-    color: string = (chalk.Color = "white")
-  ): IOReturnGetTimeAndType {
-    const filePath = this.cleanPath(callsites()[3].getFileName());
-    const fullFilePath = callsites()[3].getFileName();
-    const lineNumber = callsites()[3].getLineNumber();
-    const lineColumm = callsites()[3].getColumnNumber();
-    return {
-      ToString: `${
-        this.isType || this.isLoggedAt || this.isDisplayRootFile
-          ? `[${this.isType ? `Type: ${chalk.keyword(color)(type)}` : ""}${
-              this.isLoggedAt
-                ? `${this.isType ? `, ` : ""}Time: ${this.loggedAt}${
-                    this.isDisplayRootFile ? "," : ""
-                  }`
-                : ""
-            }${this.isLoggedAt && this.isDisplayRootFile ? " " : ""}${
-              this.isDisplayRootFile && this.isType && !this.isLoggedAt
-                ? ", "
-                : ""
-            }${
-              this.isDisplayRootFile
-                ? `File: "${filePath}:${lineNumber}:${lineColumm}"`
-                : ""
-            }] ${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
-          : `${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
-      }`,
-      filePath,
-      lineNumber,
-      lineColumm,
-      fullFilePath,
-    };
-  }
-
-  protected handleLog<T>(
+export class LoggerMethod extends LoggerUtils {
+  protected handleLog(
     type: IOLevelLogId,
-    messageOrError: unknown[],
+    message: IOStd[],
     typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
   ): IOReturnType {
     const timeAndType = this.getTimeAndType(typeTime, color);
-    let returnObj: IOReturnType;
     if (type !== "fatal") {
       console[type](
-        `${
-          messageOrError ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
-        }`,
-        ...messageOrError
+        `${message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""}`,
+        ...message
       );
     }
 
     return this.returnTypeFunction(
       type,
       timeAndType,
-      messageOrError,
+      message,
       this.listSetting()
     );
   }
@@ -92,7 +49,7 @@ export class LoggerMethod extends LoggerProperty {
             : ""
         }`
       );
-      errorList.errors.forEach((err: any) => {
+      errorList.errors.forEach((err: Error) => {
         console.error("", "Message:", chalk.redBright(err.message), "\n");
         console.error(
           "",
@@ -100,85 +57,28 @@ export class LoggerMethod extends LoggerProperty {
           ""
         );
         console.error("", `${chalk.bgRed("STACK:")} \n`, "");
-        console.error("", err.stack, "\n");
+        console.error(
+          "",
+          chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
+          "\n"
+        );
         return err;
       });
       console.error(
         `--------------------------------------------------------------------------`
       );
       const stack = parse(errorList.errors[0]);
-      let isConstructor = false;
-      if (stack[0].getFunctionName().includes("new ")) {
-        isConstructor = true;
-      }
-      const isClass =
-        (stack[0].getMethodName() !== null &&
-          stack[0].getTypeName() !== "Object" &&
-          stack[0].getTypeName() !== "Array" &&
-          stack[0].getTypeName() !== "String" &&
-          stack[0].getTypeName() !== "Number" &&
-          stack[0].getTypeName() !== "Boolean") ||
-        isConstructor;
       return this.returnFatalTypeFunction(
         timeAndType,
         errorList.errors,
-        stack[0].getFileName(),
-        stack[0].getFunctionName(),
-        stack[0].getLineNumber(),
-        stack[0].getColumnNumber(),
-        stack[0].getMethodName(),
-        isClass ? true : false,
-        isConstructor,
-        stack[0].getTypeName(),
         errorList.detail,
+        this.getErrorStack(stack),
         this.listSetting()
       );
     } catch (err: any) {
-      console.error(
-        `${
-          errorList
-            ? `${timeAndType.ToString}\n--------------------------------------------------------------------------`
-            : ""
-        }`
-      );
-      console.error("", "Message:", chalk.redBright(err.message), "\n");
-      console.error(
-        "",
-        `============================================== \n`,
-        ""
-      );
-      console.error("", `${chalk.bgRed("STACK:")} \n`, "");
-      console.error("", err.stack, "\n");
-      console.error(
-        `--------------------------------------------------------------------------`
-      );
+      this.handleLogFatal({ errors: [err] });
       return err;
     }
-  }
-
-  public setSettings({
-    instanceName = this.name,
-    isLoggedAt = this.isLoggedAt,
-    isType = this.isType,
-    isDisplayRootFile = this.isDisplayRootFile,
-    cagetoryName = this.cagetoryName,
-  }: IOLoggerInterface) {
-    this.name = instanceName;
-    this.isLoggedAt = isLoggedAt;
-    this.isType = isType;
-    this.isDisplayRootFile = isDisplayRootFile;
-    this.cagetoryName = cagetoryName;
-  }
-
-  public listSetting(): IOSetting {
-    return {
-      instanceName: this.name,
-      isLoggedAt: this.isLoggedAt,
-      isType: this.isType,
-      isDisplayRootFile: this.isDisplayRootFile,
-      cagetoryName: this.cagetoryName,
-      hostName: this.hostname,
-    };
   }
 
   protected returnTypeFunction(
@@ -205,15 +105,8 @@ export class LoggerMethod extends LoggerProperty {
   protected returnFatalTypeFunction(
     objToReturn: IOReturnGetTimeAndType,
     errors: IOError[],
-    filePath: string,
-    functionName: string,
-    lineNumber: number,
-    lineColumm: number,
-    methodName: string,
-    isClass: boolean,
-    isConstructor: boolean,
-    typeName: string,
     detailError: object = {},
+    errorStack: IOErrorStack,
     setting?: IOSetting
   ): IOReturnType {
     return {
@@ -223,15 +116,7 @@ export class LoggerMethod extends LoggerProperty {
         detail: detailError,
         user: this.loggerName,
         isError: true,
-        filePath: this.cleanPath(filePath),
-        fullFilePath: filePath,
-        lineNumber,
-        lineColumm,
-        functionName,
-        methodName,
-        isClass,
-        isConstructor,
-        typeName,
+        ...errorStack,
       },
       loggedAt: `${this.loggedAt}`,
       hostName: this.hostname,
@@ -243,22 +128,5 @@ export class LoggerMethod extends LoggerProperty {
       cagetory: this.cagetoryName,
       setting,
     };
-  }
-
-  get loggerName(): string {
-    return this.name;
-  }
-  set loggerName(newName: string) {
-    if (newName.length > 1) {
-      this.loggerName = newName;
-    } else {
-      throw Error("newName error");
-    }
-  }
-  toJson(data: IOReturnType): string {
-    return JSON.stringify(data);
-  }
-  toPretty(data: string): IOReturnType {
-    return JSON.parse(data);
   }
 }
