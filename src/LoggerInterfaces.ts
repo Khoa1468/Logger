@@ -4,6 +4,7 @@ interface IOLoggerInterface {
   isType?: boolean;
   isDisplayRootFile?: boolean;
   cagetoryName?: string;
+  format?: "json" | "pretty" | "hidden";
 }
 
 interface IOSetting extends IOLoggerInterface {
@@ -33,8 +34,8 @@ interface IOErrorStack {
 }
 
 interface IOReturnError extends IOErrorStack {
-  nativeError: IOError[];
-  detail: object;
+  nativeError: IOError;
+  detail: object | undefined;
   user: string;
   isError: true;
 }
@@ -43,7 +44,7 @@ type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
 
 interface IOReturnType {
   levelLog: IOLevelLogId;
-  data: IOReturnError | unknown[];
+  data: (IOReturnError | unknown)[];
   loggedAt: string;
   filePath: string;
   hostName: string;

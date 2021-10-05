@@ -87,12 +87,14 @@ export class LoggerUtils extends LoggerProperty {
     isType = this.isType,
     isDisplayRootFile = this.isDisplayRootFile,
     cagetoryName = this.cagetoryName,
+    format = this.format,
   }: IOLoggerInterface): void {
     this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
+    this.format = format;
   }
 
   public listSetting(): IOSetting {
@@ -103,6 +105,7 @@ export class LoggerUtils extends LoggerProperty {
       isDisplayRootFile: this.isDisplayRootFile,
       cagetoryName: this.cagetoryName,
       hostName: this.hostname,
+      format: this.format,
     };
   }
 
