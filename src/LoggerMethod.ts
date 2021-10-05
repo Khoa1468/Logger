@@ -1,4 +1,4 @@
-import { parse } from "stack-trace";
+import { parse, StackFrame } from "stack-trace";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
@@ -9,6 +9,7 @@ import {
   IOSetting,
   IOErrorStack,
   IOStd,
+  IOReturnError,
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
@@ -18,63 +19,102 @@ export class LoggerMethod extends LoggerUtils {
     message: IOStd[],
     typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
-  ): IOReturnType {
+  ): IOReturnType | undefined {
     const timeAndType = this.getTimeAndType(typeTime, color);
-    if (type !== "fatal") {
-      console[type](
-        `${message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""}`,
-        ...message
-      );
-    }
-
-    return this.returnTypeFunction(
+    const ioLogObject = this.returnTypeFunction(
       type,
       timeAndType,
       message,
       this.listSetting()
     );
+    if (type !== "fatal") {
+      if (this.format === "pretty") {
+        console[type](
+          `${message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""}`,
+          ...message
+        );
+      } else if (this.format === "json") {
+        console[type](
+          `${message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""}`,
+          this.toJson(ioLogObject)
+        );
+      } else if (this.format === "hidden") {
+        return;
+      }
+    }
+
+    return ioLogObject;
+  }
+
+  protected getDataError<T extends object>(
+    errorList: IOErrorParam<T>,
+    detail: object = {}
+  ): IOReturnError[] {
+    const returnLogObject: IOReturnError[] = [];
+    errorList.errors.map((err: Error) => {
+      const stack = parse(err);
+      returnLogObject.push({
+        nativeError: err,
+        detail,
+        user: this.hostname,
+        isError: true,
+        ...this.getErrorStack(stack),
+      });
+    });
+    return returnLogObject;
   }
 
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
-  ): IOReturnType {
+  ): IOReturnType | undefined {
     const timeAndType = this.getTimeAndType("Fatal", (chalk.Color = "magenta"));
     try {
-      console.error(
-        `${
-          errorList
-            ? `${chalk.keyword("magenta")(
-                timeAndType.ToString
-              )}\n--------------------------------------------------------------------------`
-            : ""
-        }`
-      );
-      errorList.errors.forEach((err: Error) => {
-        console.error("", "Message:", chalk.redBright(err.message), "\n");
-        console.error(
-          "",
-          `============================================== \n`,
-          ""
-        );
-        console.error("", `${chalk.bgRed("STACK:")} \n`, "");
-        console.error(
-          "",
-          chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
-          "\n"
-        );
-        return err;
-      });
-      console.error(
-        `--------------------------------------------------------------------------`
-      );
-      const stack = parse(errorList.errors[0]);
-      return this.returnFatalTypeFunction(
+      const ioLogDataError = this.getDataError(errorList, errorList.detail);
+      const ioLogObject = this.returnFatalTypeFunction(
         timeAndType,
-        errorList.errors,
-        errorList.detail,
-        this.getErrorStack(stack),
+        ioLogDataError,
         this.listSetting()
       );
+      if (this.format === "pretty") {
+        console.error(
+          `${
+            errorList
+              ? `${chalk.keyword("magenta")(
+                  timeAndType.ToString
+                )}\n--------------------------------------------------------------------------`
+              : ""
+          }`
+        );
+        errorList.errors.forEach((err: Error) => {
+          console.error("", "Message:", chalk.redBright(err.message), "\n");
+          console.error(
+            "",
+            `============================================== \n`,
+            ""
+          );
+          console.error("", `${chalk.bgRed("STACK:")} \n`, "");
+          console.error(
+            "",
+            chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
+            "\n"
+          );
+          return err;
+        });
+        console.error(
+          `--------------------------------------------------------------------------`
+        );
+      } else if (this.format === "json") {
+        console.error(
+          `${
+            errorList ? `${chalk.keyword("magenta")(timeAndType.ToString)}` : ""
+          }`,
+          this.toJson(ioLogObject)
+        );
+      } else if (this.format === "hidden") {
+        // console.error();
+        return;
+      }
+      return ioLogObject;
     } catch (err: any) {
       this.handleLogFatal({ errors: [err] });
       return err;
@@ -104,20 +144,12 @@ export class LoggerMethod extends LoggerUtils {
 
   protected returnFatalTypeFunction(
     objToReturn: IOReturnGetTimeAndType,
-    errors: IOError[],
-    detailError: object = {},
-    errorStack: IOErrorStack,
+    dataError: IOReturnError[],
     setting?: IOSetting
   ): IOReturnType {
     return {
       levelLog: "fatal",
-      data: {
-        nativeError: errors,
-        detail: detailError,
-        user: this.loggerName,
-        isError: true,
-        ...errorStack,
-      },
+      data: dataError,
       loggedAt: `${this.loggedAt}`,
       hostName: this.hostname,
       filePath: objToReturn.filePath,

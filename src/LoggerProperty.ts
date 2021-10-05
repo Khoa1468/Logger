@@ -13,6 +13,7 @@ export class LoggerProperty {
   protected isDisplayRootFile: boolean = true;
   protected cagetoryName: string = "";
   protected hostname = hostname();
+  protected format: "hidden" | "json" | "pretty" = "hidden";
   /**
    * This Is My Logger
    */
@@ -22,11 +23,13 @@ export class LoggerProperty {
     isType = true,
     isDisplayRootFile = true,
     cagetoryName = instanceName,
+    format = "hidden",
   }: IOLoggerInterface) {
     this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
     this.isType = isType;
     this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
+    this.format = format;
   }
 }
