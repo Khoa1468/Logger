@@ -98,11 +98,22 @@ export class LoggerMethod extends LoggerUtils {
             chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
             "\n"
           );
+          if (errorList.errors.length >= 2) {
+            console.error(
+              `--------------------------------------------------------------------------`
+            );
+          } else {
+            false;
+          }
           return err;
         });
-        console.error(
-          `--------------------------------------------------------------------------`
-        );
+        if (errorList.errors.length < 2) {
+          console.error(
+            `--------------------------------------------------------------------------`
+          );
+        } else {
+          false;
+        }
       } else if (this.format === "json") {
         console.error(
           `${
