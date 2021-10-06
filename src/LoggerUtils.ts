@@ -125,7 +125,10 @@ export class LoggerUtils extends LoggerProperty {
   toPretty(data: string): IOReturnType {
     return JSON.parse(data);
   }
-  public getAllLogObj(): IOReturnType[] {
-    return this.allLoggerObj;
+  public getAllLogObj() {
+    return {
+      total: this.allLoggerObj.length,
+      allLogObj: { data: this.allLoggerObj },
+    };
   }
 }

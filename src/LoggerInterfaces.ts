@@ -11,6 +11,13 @@ interface IOSetting extends IOLoggerInterface {
   hostName: string;
 }
 
+interface IOAllLogObj {
+  total: number;
+  allLogObj: {
+    data: IOReturnType[];
+  };
+}
+
 interface IOReturnGetTimeAndType {
   ToString: string;
   filePath: string;
@@ -19,7 +26,7 @@ interface IOReturnGetTimeAndType {
   fullFilePath: string | null;
 }
 
-type IOStd = unknown;
+type IOStd = unknown | any;
 
 interface IOErrorStack {
   filePath: string;
@@ -74,4 +81,5 @@ export {
   IOSetting,
   IOErrorStack,
   IOStd,
+  IOAllLogObj,
 };
