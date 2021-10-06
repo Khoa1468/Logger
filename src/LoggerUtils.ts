@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import {
+  IOAllLogObj,
   IOErrorStack,
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -125,7 +126,7 @@ export class LoggerUtils extends LoggerProperty {
   toPretty(data: string): IOReturnType {
     return JSON.parse(data);
   }
-  public getAllLogObj() {
+  public getAllLogObj(): IOAllLogObj {
     return {
       total: this.allLoggerObj.length,
       allLogObj: { data: this.allLoggerObj },

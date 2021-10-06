@@ -26,7 +26,7 @@ interface IOReturnGetTimeAndType {
   fullFilePath: string | null;
 }
 
-type IOStd = unknown | any;
+type IOStd = unknown;
 
 interface IOErrorStack {
   filePath: string;

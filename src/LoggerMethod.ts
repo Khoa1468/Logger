@@ -1,13 +1,11 @@
-import { parse, StackFrame } from "stack-trace";
+import { parse } from "stack-trace";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
   IOLevelLogId,
   IOReturnType,
-  IOError,
   IOErrorParam,
   IOSetting,
-  IOErrorStack,
   IOStd,
   IOReturnError,
 } from "./LoggerInterfaces.js";
