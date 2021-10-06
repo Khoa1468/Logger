@@ -1,5 +1,5 @@
 import { hostname } from "os";
-import { IOLoggerInterface } from "./LoggerInterfaces.js";
+import { IOLoggerInterface, IOReturnType } from "./LoggerInterfaces.js";
 
 const date = new Date();
 
@@ -14,6 +14,7 @@ export class LoggerProperty {
   protected cagetoryName: string = "";
   protected hostname = hostname();
   protected format: "hidden" | "json" | "pretty" = "hidden";
+  protected allLoggerObj: IOReturnType[] = [];
   /**
    * This Is My Logger
    */
