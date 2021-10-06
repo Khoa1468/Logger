@@ -51,7 +51,7 @@ type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
 
 interface IOReturnType {
   levelLog: IOLevelLogId;
-  data: (IOReturnError | unknown)[];
+  data: (IOReturnError | unknown | IOReturnType)[];
   loggedAt: string;
   filePath: string;
   hostName: string;
