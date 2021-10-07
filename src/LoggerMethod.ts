@@ -17,7 +17,7 @@ export class LoggerMethod extends LoggerUtils {
     message: IOStd[],
     typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
-  ): IOReturnType | undefined {
+  ): IOReturnType {
     const timeAndType = this.getTimeAndType(typeTime, color);
     const ioLogObject = this.returnTypeFunction(
       type,
