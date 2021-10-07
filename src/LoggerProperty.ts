@@ -15,6 +15,7 @@ export class LoggerProperty {
   protected hostname = hostname();
   protected format: "hidden" | "json" | "pretty" = "hidden";
   protected allLoggerObj: IOReturnType[] = [];
+  protected short: boolean = false;
   /**
    * This Is My Logger
    */
@@ -25,6 +26,7 @@ export class LoggerProperty {
     isDisplayRootFile = true,
     cagetoryName = instanceName,
     format = "hidden",
+    short = false,
   }: IOLoggerInterface) {
     this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
@@ -32,5 +34,6 @@ export class LoggerProperty {
     this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
     this.format = format;
+    this.short = short;
   }
 }

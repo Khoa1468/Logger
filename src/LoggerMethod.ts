@@ -29,16 +29,29 @@ export class LoggerMethod extends LoggerUtils {
     if (type !== "fatal") {
       if (this.format === "pretty") {
         console[type](
-          `${message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""}`,
+          `${
+            this.short
+              ? ""
+              : `${
+                  message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
+                }`
+          }`,
           ...message
         );
       } else if (this.format === "json") {
         console[type](
-          `${message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""}`,
+          `${
+            this.short
+              ? ""
+              : `${
+                  message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
+                }`
+          }`,
           this.toJson(ioLogObject)
         );
+        return ioLogObject;
       } else if (this.format === "hidden") {
-        return;
+        return ioLogObject;
       }
     }
 
@@ -65,7 +78,7 @@ export class LoggerMethod extends LoggerUtils {
 
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
-  ): IOReturnType | undefined {
+  ): IOReturnType {
     const timeAndType = this.getTimeAndType("Fatal", (chalk.Color = "magenta"));
     try {
       const ioLogDataError = this.getDataError(errorList, errorList.detail);
@@ -78,11 +91,15 @@ export class LoggerMethod extends LoggerUtils {
       if (this.format === "pretty") {
         console.error(
           `${
-            errorList
-              ? `${chalk.keyword("magenta")(
-                  timeAndType.ToString
-                )}\n--------------------------------------------------------------------------`
-              : ""
+            this.short
+              ? ""
+              : `${
+                  errorList
+                    ? `${chalk.keyword("magenta")(
+                        timeAndType.ToString
+                      )}\n--------------------------------------------------------------------------`
+                    : ""
+                }`
           }`
         );
         errorList.errors.forEach((err: Error) => {
@@ -117,13 +134,19 @@ export class LoggerMethod extends LoggerUtils {
       } else if (this.format === "json") {
         console.error(
           `${
-            errorList ? `${chalk.keyword("magenta")(timeAndType.ToString)}` : ""
+            this.short
+              ? ""
+              : `${
+                  errorList
+                    ? `${chalk.keyword("magenta")(timeAndType.ToString)}`
+                    : ""
+                }`
           }`,
           this.toJson(ioLogObject)
         );
+        return ioLogObject;
       } else if (this.format === "hidden") {
-        // console.error();
-        return;
+        return ioLogObject;
       }
       return ioLogObject;
     } catch (err: any) {

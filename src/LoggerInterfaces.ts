@@ -5,6 +5,7 @@ interface IOLoggerInterface {
   isDisplayRootFile?: boolean;
   cagetoryName?: string;
   format?: "json" | "pretty" | "hidden";
+  short?: boolean;
 }
 
 interface IOSetting extends IOLoggerInterface {
