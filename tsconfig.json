@@ -14,7 +14,6 @@
     "declarationMap": true,
     "declarationDir": "dist/types",
     "strict": true,
-    "allowJs": true,
     "noEmitOnError": false
   }
 }
