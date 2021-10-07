@@ -1,6 +1,6 @@
 {
   "name": "logger",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "engines": {
@@ -25,11 +25,11 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
-    "stack-trace": "^1.0.0-pre1"
+    "stack-trace": "^1.0.0-pre1",
+    "@types/stack-trace": "0.0.29"
   },
   "devDependencies": {
-    "@types/node": "^16.10.2",
-    "@types/stack-trace": "0.0.29"
+    "@types/node": "^16.10.2"
   },
   "publishConfig": {
     "access": "public"
