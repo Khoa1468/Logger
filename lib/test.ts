@@ -1,9 +1,7 @@
 import Logger from "./Logger.js";
 
 const logger = new Logger({
-  isLoggedAt: false,
-  isDisplayRootFile: false,
-  isType: false,
+  format: "pretty",
 });
 
 const result = logger.log("Hello, World!");

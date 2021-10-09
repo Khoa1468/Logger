@@ -50,15 +50,11 @@ interface IOReturnError extends IOErrorStack {
 
 type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
 
-interface IOReturnType {
+interface IOReturnType extends IOErrorStack {
   levelLog: IOLevelLogId;
   data: (IOReturnError | unknown | IOReturnType)[];
   loggedAt: string;
-  filePath: string;
   hostName: string;
-  fullFilePath: string | null;
-  lineNumber: number | null;
-  lineColumm: number | null;
   instanceName: string;
   cagetory: string;
   setting?: IOSetting;

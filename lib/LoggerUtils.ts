@@ -19,10 +19,10 @@ export class LoggerUtils extends LoggerProperty {
     type: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
   ): IOReturnGetTimeAndType {
-    const filePath = this.cleanPath(callsites()[3].getFileName());
-    const fullFilePath = callsites()[3].getFileName();
-    const lineNumber = callsites()[3].getLineNumber();
-    const lineColumm = callsites()[3].getColumnNumber();
+    const filePath: string = this.cleanPath(callsites()[3].getFileName());
+    const fullFilePath: string = callsites()[3].getFileName();
+    const lineNumber: number = callsites()[3].getLineNumber();
+    const lineColumm: number = callsites()[3].getColumnNumber();
     return {
       ToString: `${
         this.isType || this.isLoggedAt || this.isDisplayRootFile
@@ -50,36 +50,69 @@ export class LoggerUtils extends LoggerProperty {
     };
   }
 
-  public getErrorStack(stack: StackFrame[]): IOErrorStack {
-    let isConstructor = false;
-    if (stack[0].getFunctionName() !== null) {
-      if (stack[0].getFunctionName().includes("new ")) {
-        isConstructor = true;
+  public getErrorStack(stack?: StackFrame[] | undefined): IOErrorStack {
+    if (stack) {
+      let isConstructor: boolean = false;
+      if (stack[0].getFunctionName() !== null) {
+        if (stack[0].getFunctionName().includes("new ")) {
+          isConstructor = true;
+        } else {
+          isConstructor = false;
+        }
       } else {
         isConstructor = false;
       }
+      const isClass: boolean =
+        (stack[0].getMethodName() !== null &&
+          stack[0].getTypeName() !== "Object" &&
+          stack[0].getTypeName() !== "Array" &&
+          stack[0].getTypeName() !== "String" &&
+          stack[0].getTypeName() !== "Number" &&
+          stack[0].getTypeName() !== "Boolean") ||
+        isConstructor;
+      return {
+        filePath: this.cleanPath(stack[0].getFileName()),
+        fullFilePath: stack[0].getFileName(),
+        lineNumber: stack[0].getLineNumber(),
+        lineColumm: stack[0].getColumnNumber(),
+        methodName: stack[0].getMethodName(),
+        functionName: stack[0].getFunctionName(),
+        isClass,
+        isConstructor: isConstructor,
+        typeName: stack[0].getTypeName(),
+      };
     } else {
-      isConstructor = false;
+      const localStack = callsites();
+      let isConstructor: boolean = false;
+      if (localStack[3].getFunctionName() !== null) {
+        if (localStack[3].getFunctionName().includes("new ")) {
+          isConstructor = true;
+        } else {
+          isConstructor = false;
+        }
+      } else {
+        isConstructor = false;
+      }
+      const isClass: boolean =
+        (localStack[3].getMethodName() !== null &&
+          localStack[3].getTypeName() !== "Object" &&
+          localStack[3].getTypeName() !== "Array" &&
+          localStack[3].getTypeName() !== "String" &&
+          localStack[3].getTypeName() !== "Number" &&
+          localStack[3].getTypeName() !== "Boolean") ||
+        isConstructor;
+      return {
+        filePath: this.cleanPath(localStack[3].getFileName()),
+        fullFilePath: localStack[3].getFileName(),
+        lineNumber: localStack[3].getLineNumber(),
+        lineColumm: localStack[3].getColumnNumber(),
+        methodName: localStack[3].getMethodName(),
+        functionName: localStack[3].getFunctionName(),
+        isClass,
+        isConstructor: isConstructor,
+        typeName: localStack[3].getTypeName(),
+      };
     }
-    const isClass =
-      (stack[0].getMethodName() !== null &&
-        stack[0].getTypeName() !== "Object" &&
-        stack[0].getTypeName() !== "Array" &&
-        stack[0].getTypeName() !== "String" &&
-        stack[0].getTypeName() !== "Number" &&
-        stack[0].getTypeName() !== "Boolean") ||
-      isConstructor;
-    return {
-      filePath: this.cleanPath(stack[0].getFileName()),
-      fullFilePath: stack[0].getFileName(),
-      lineNumber: stack[0].getLineNumber(),
-      lineColumm: stack[0].getColumnNumber(),
-      methodName: stack[0].getMethodName(),
-      functionName: stack[0].getFunctionName(),
-      isClass,
-      isConstructor: isConstructor,
-      typeName: stack[0].getTypeName(),
-    };
   }
 
   public setSettings({
@@ -110,20 +143,20 @@ export class LoggerUtils extends LoggerProperty {
     };
   }
 
-  get loggerName(): string {
+  public get loggerName(): string {
     return this.name;
   }
-  set loggerName(newName: string) {
+  public set loggerName(newName: string) {
     if (newName.length > 1) {
       this.loggerName = newName;
     } else {
       throw Error("newName error");
     }
   }
-  toJson(data: IOReturnType): string {
+  public toJson(data: IOReturnType): string {
     return JSON.stringify(data);
   }
-  toPretty(data: string): IOReturnType {
+  public toPretty(data: string): IOReturnType {
     return JSON.parse(data);
   }
   public getAllLogObj(): IOAllLogObj {

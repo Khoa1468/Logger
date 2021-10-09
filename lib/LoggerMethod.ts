@@ -1,4 +1,4 @@
-import { parse } from "stack-trace";
+import { parse, StackFrame } from "stack-trace";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
@@ -8,6 +8,7 @@ import {
   IOSetting,
   IOStd,
   IOReturnError,
+  IOErrorStack,
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
@@ -18,11 +19,14 @@ export class LoggerMethod extends LoggerUtils {
     typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
   ): IOReturnType {
-    const timeAndType = this.getTimeAndType(typeTime, color);
-    const ioLogObject = this.returnTypeFunction(
+    const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
+      typeTime,
+      color
+    );
+    const ioLogObject: IOReturnType = this.returnTypeFunction(
       type,
-      timeAndType,
       message,
+      this.getErrorStack(),
       this.listSetting()
     );
     this.allLoggerObj.push(ioLogObject);
@@ -64,7 +68,7 @@ export class LoggerMethod extends LoggerUtils {
   ): IOReturnError[] {
     const returnLogObject: IOReturnError[] = [];
     errorList.errors.map((err: Error) => {
-      const stack = parse(err);
+      const stack: StackFrame[] = parse(err);
       returnLogObject.push({
         nativeError: err,
         detail,
@@ -79,11 +83,17 @@ export class LoggerMethod extends LoggerUtils {
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
   ): IOReturnType {
-    const timeAndType = this.getTimeAndType("Fatal", (chalk.Color = "magenta"));
+    const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
+      "Fatal",
+      (chalk.Color = "magenta")
+    );
     try {
-      const ioLogDataError = this.getDataError(errorList, errorList.detail);
-      const ioLogObject = this.returnFatalTypeFunction(
-        timeAndType,
+      const ioLogDataError: IOReturnError[] = this.getDataError(
+        errorList,
+        errorList.detail
+      );
+      const ioLogObject: IOReturnType = this.returnFatalTypeFunction(
+        this.getErrorStack(),
         ioLogDataError,
         this.listSetting()
       );
@@ -157,27 +167,24 @@ export class LoggerMethod extends LoggerUtils {
 
   protected returnTypeFunction(
     type: IOLevelLogId,
-    objToReturn: IOReturnGetTimeAndType,
     message: unknown[],
+    stack: IOErrorStack,
     setting?: IOSetting
   ): IOReturnType {
     return {
       levelLog: type,
       data: message,
       loggedAt: `${this.loggedAt}`,
-      filePath: objToReturn.filePath,
-      fullFilePath: objToReturn.fullFilePath,
-      lineNumber: objToReturn.lineNumber,
       hostName: this.hostname,
-      lineColumm: objToReturn.lineColumm,
       instanceName: this.loggerName,
       cagetory: this.cagetoryName,
+      ...stack,
       setting,
     };
   }
 
   protected returnFatalTypeFunction(
-    objToReturn: IOReturnGetTimeAndType,
+    stack: IOErrorStack,
     dataError: IOReturnError[],
     setting?: IOSetting
   ): IOReturnType {
@@ -186,12 +193,9 @@ export class LoggerMethod extends LoggerUtils {
       data: dataError,
       loggedAt: `${this.loggedAt}`,
       hostName: this.hostname,
-      filePath: objToReturn.filePath,
-      fullFilePath: objToReturn.fullFilePath,
-      lineNumber: objToReturn.lineNumber,
-      lineColumm: objToReturn.lineColumm,
       instanceName: this.loggerName,
       cagetory: this.cagetoryName,
+      ...stack,
       setting,
     };
   }
