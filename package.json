@@ -13,8 +13,8 @@
     "dist/*"
   ],
   "dist": {
-    "fileCount": 24,
-    "unpackedSize": 23570
+    "fileCount": 27,
+    "unpackedSize": 28938
   },
   "scripts": {
     "start": "nodemon",
