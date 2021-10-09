@@ -58,6 +58,7 @@ interface IOReturnType extends IOErrorStack {
   instanceName: string;
   cagetory: string;
   setting?: IOSetting;
+  toJson: () => string;
 }
 
 interface IOErrorParam<T> {

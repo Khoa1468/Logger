@@ -180,6 +180,9 @@ export class LoggerMethod extends LoggerUtils {
       cagetory: this.cagetoryName,
       ...stack,
       setting,
+      toJson() {
+        return JSON.stringify(this);
+      },
     };
   }
 
@@ -197,6 +200,9 @@ export class LoggerMethod extends LoggerUtils {
       cagetory: this.cagetoryName,
       ...stack,
       setting,
+      toJson() {
+        return JSON.stringify(this);
+      },
     };
   }
 }
