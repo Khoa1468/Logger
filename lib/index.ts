@@ -11,6 +11,7 @@ import {
   IOErrorStack,
   IOStd,
   IOAllLogObj,
+  IOLevelLog,
 } from "./LoggerInterfaces.js";
 import { LoggerConsole } from "./LoggerConsole.js";
 import { LoggerMethod } from "./LoggerMethod.js";

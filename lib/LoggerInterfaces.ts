@@ -6,6 +6,7 @@ interface IOLoggerInterface {
   cagetoryName?: string;
   format?: "json" | "pretty" | "hidden";
   short?: boolean;
+  levelLog?: IOLevelLog;
 }
 
 interface IOSetting extends IOLoggerInterface {
@@ -68,6 +69,8 @@ interface IOErrorParam<T> {
 
 type IOError = Error | any;
 
+type IOLevelLog = (0 | 1 | 2 | 3 | 4 | 5)[];
+
 export {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -80,4 +83,5 @@ export {
   IOErrorStack,
   IOStd,
   IOAllLogObj,
+  IOLevelLog,
 };

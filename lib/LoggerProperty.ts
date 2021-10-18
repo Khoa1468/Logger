@@ -1,5 +1,9 @@
 import { hostname } from "os";
-import { IOLoggerInterface, IOReturnType } from "./LoggerInterfaces.js";
+import {
+  IOLevelLog,
+  IOLoggerInterface,
+  IOReturnType,
+} from "./LoggerInterfaces.js";
 
 const date = new Date();
 
@@ -16,6 +20,7 @@ export class LoggerProperty {
   protected format: "hidden" | "json" | "pretty" = "hidden";
   protected allLoggerObj: IOReturnType[] = [];
   protected short: boolean = false;
+  protected levelLog: IOLevelLog = [0];
   /**
    * This Is My Logger
    */
@@ -27,6 +32,7 @@ export class LoggerProperty {
     cagetoryName = instanceName,
     format = "hidden",
     short = false,
+    levelLog = [0],
   }: IOLoggerInterface) {
     this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
@@ -35,5 +41,6 @@ export class LoggerProperty {
     this.cagetoryName = cagetoryName;
     this.format = format;
     this.short = short;
+    this.levelLog = levelLog;
   }
 }
