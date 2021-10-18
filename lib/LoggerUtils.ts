@@ -122,6 +122,7 @@ export class LoggerUtils extends LoggerProperty {
     isDisplayRootFile = this.isDisplayRootFile,
     cagetoryName = this.cagetoryName,
     format = this.format,
+    levelLog = this.levelLog,
   }: IOLoggerInterface): void {
     this.name = instanceName;
     this.isLoggedAt = isLoggedAt;
@@ -129,6 +130,7 @@ export class LoggerUtils extends LoggerProperty {
     this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
     this.format = format;
+    this.levelLog = levelLog;
   }
 
   public listSetting(): IOSetting {
@@ -140,6 +142,7 @@ export class LoggerUtils extends LoggerProperty {
       cagetoryName: this.cagetoryName,
       hostName: this.hostname,
       format: this.format,
+      levelLog: this.levelLog,
     };
   }
 
