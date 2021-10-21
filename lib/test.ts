@@ -21,6 +21,7 @@ logger.setSettings({ levelLog: [5] });
 
 logger.log(log);
 logger.log(warn);
+logger.log(error);
 logger.log(debug);
 logger.log(info);
 logger.log(fatal);
