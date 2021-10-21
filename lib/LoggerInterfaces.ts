@@ -86,4 +86,5 @@ export {
   IOStd,
   IOAllLogObj,
   IOLevelLog,
+  IOArgumentData,
 };

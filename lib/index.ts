@@ -12,6 +12,7 @@ import {
   IOStd,
   IOAllLogObj,
   IOLevelLog,
+  IOArgumentData,
 } from "./LoggerInterfaces.js";
 import { LoggerConsole } from "./LoggerConsole.js";
 import { LoggerMethod } from "./LoggerMethod.js";
@@ -37,4 +38,6 @@ export {
   IOErrorStack,
   IOStd,
   IOAllLogObj,
+  IOLevelLog,
+  IOArgumentData,
 };
