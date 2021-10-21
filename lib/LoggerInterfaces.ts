@@ -51,9 +51,11 @@ interface IOReturnError extends IOErrorStack {
 
 type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
 
+type IOArgumentData = unknown;
+
 interface IOReturnType extends IOErrorStack {
   levelLog: IOLevelLogId;
-  data: (IOReturnError | unknown | IOReturnType)[];
+  data: (IOReturnError | IOArgumentData | IOReturnType)[];
   loggedAt: string;
   hostName: string;
   instanceName: string;

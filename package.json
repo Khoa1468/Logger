@@ -1,6 +1,6 @@
 {
   "name": "logger",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "engines": {
@@ -18,6 +18,7 @@
   },
   "scripts": {
     "start": "nodemon",
+    "test": "nodemon dist/test.js",
     "build": "tsc"
   },
   "type": "module",

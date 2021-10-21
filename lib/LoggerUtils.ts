@@ -115,6 +115,39 @@ export class LoggerUtils extends LoggerProperty {
     }
   }
 
+  protected getErrorStack2(): IOErrorStack {
+    const localStack = callsites();
+    let isConstructor: boolean = false;
+    if (localStack[2].getFunctionName() !== null) {
+      if (localStack[2].getFunctionName().includes("new ")) {
+        isConstructor = true;
+      } else {
+        isConstructor = false;
+      }
+    } else {
+      isConstructor = false;
+    }
+    const isClass: boolean =
+      (localStack[2].getMethodName() !== null &&
+        localStack[2].getTypeName() !== "Object" &&
+        localStack[2].getTypeName() !== "Array" &&
+        localStack[2].getTypeName() !== "String" &&
+        localStack[2].getTypeName() !== "Number" &&
+        localStack[2].getTypeName() !== "Boolean") ||
+      isConstructor;
+    return {
+      filePath: this.cleanPath(localStack[2].getFileName()),
+      fullFilePath: localStack[2].getFileName(),
+      lineNumber: localStack[2].getLineNumber(),
+      lineColumm: localStack[2].getColumnNumber(),
+      methodName: localStack[2].getMethodName(),
+      functionName: localStack[2].getFunctionName(),
+      isClass,
+      isConstructor: isConstructor,
+      typeName: localStack[2].getTypeName(),
+    };
+  }
+
   public setSettings({
     instanceName = this.name,
     isLoggedAt = this.isLoggedAt,
