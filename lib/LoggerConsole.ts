@@ -12,7 +12,7 @@ export class LoggerConsole extends LoggerMethod {
     const ioLogObject: IOReturnType = this.returnTypeFunction(
       "log",
       message,
-      this.getErrorStack2(),
+      this.getErrorStack(undefined, 2),
       this.listSetting()
     );
     this.allLoggerObj.push(ioLogObject);
@@ -26,7 +26,7 @@ export class LoggerConsole extends LoggerMethod {
     const ioLogObject: IOReturnType = this.returnTypeFunction(
       "warn",
       message,
-      this.getErrorStack2(),
+      this.getErrorStack(undefined, 2),
       this.listSetting()
     );
     this.allLoggerObj.push(ioLogObject);
@@ -40,7 +40,7 @@ export class LoggerConsole extends LoggerMethod {
     const ioLogObject: IOReturnType = this.returnTypeFunction(
       "error",
       message,
-      this.getErrorStack2(),
+      this.getErrorStack(undefined, 2),
       this.listSetting()
     );
     this.allLoggerObj.push(ioLogObject);
@@ -54,7 +54,7 @@ export class LoggerConsole extends LoggerMethod {
     const ioLogObject: IOReturnType = this.returnTypeFunction(
       "info",
       message,
-      this.getErrorStack2(),
+      this.getErrorStack(undefined, 2),
       this.listSetting()
     );
     this.allLoggerObj.push(ioLogObject);
@@ -70,7 +70,7 @@ export class LoggerConsole extends LoggerMethod {
       error.detail
     );
     const ioLogObject: IOReturnType = this.returnFatalTypeFunction(
-      this.getErrorStack2(),
+      this.getErrorStack(undefined, 2),
       ioLogDataError,
       this.listSetting()
     );
@@ -85,7 +85,7 @@ export class LoggerConsole extends LoggerMethod {
     const ioLogObject: IOReturnType = this.returnTypeFunction(
       "debug",
       message,
-      this.getErrorStack2(),
+      this.getErrorStack(undefined, 2),
       this.listSetting()
     );
 

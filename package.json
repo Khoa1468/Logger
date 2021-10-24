@@ -1,6 +1,6 @@
 {
   "name": "logger",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "engines": {
@@ -14,7 +14,7 @@
   ],
   "dist": {
     "fileCount": 27,
-    "unpackedSize": 28938
+    "unpackedSize": 32684
   },
   "scripts": {
     "start": "nodemon",
