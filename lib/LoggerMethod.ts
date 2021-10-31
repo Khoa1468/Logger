@@ -9,6 +9,7 @@ import {
   IOStd,
   IOReturnError,
   IOErrorStack,
+  IOAllLogObj,
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
@@ -29,6 +30,7 @@ export class LoggerMethod extends LoggerUtils {
       this.getErrorStack(),
       this.listSetting()
     );
+    this.allLogObj.push(ioLogObject);
     if (type !== "fatal") {
       if (this.format === "pretty") {
         console[type](
@@ -97,6 +99,7 @@ export class LoggerMethod extends LoggerUtils {
           ioLogDataError,
           this.listSetting()
         );
+      this.allLogObj.push(ioLogObject);
       if (this.format === "pretty") {
         console.error(
           `${

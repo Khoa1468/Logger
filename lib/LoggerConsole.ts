@@ -18,6 +18,7 @@ export class LoggerConsole extends LoggerMethod {
     if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
       return this.handleLog("log", message, "Log");
     } else {
+      this.allLogObj.push(ioLogObject);
       return ioLogObject;
     }
   }
@@ -31,6 +32,7 @@ export class LoggerConsole extends LoggerMethod {
     if (this.levelLog.includes(2) || this.levelLog.includes(5)) {
       return this.handleLog("warn", message, "Warn", (chalk.Color = "yellow"));
     } else {
+      this.allLogObj.push(ioLogObject);
       return ioLogObject;
     }
   }
@@ -44,6 +46,7 @@ export class LoggerConsole extends LoggerMethod {
     if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
       return this.handleLog("error", message, "Error", (chalk.Color = "red"));
     } else {
+      this.allLogObj.push(ioLogObject);
       return ioLogObject;
     }
   }
@@ -57,6 +60,7 @@ export class LoggerConsole extends LoggerMethod {
     if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
       return this.handleLog("info", message, "Info", (chalk.Color = "cyan"));
     } else {
+      this.allLogObj.push(ioLogObject);
       return ioLogObject;
     }
   }
@@ -76,6 +80,7 @@ export class LoggerConsole extends LoggerMethod {
     if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
       return this.handleLogFatal<T>(error);
     } else {
+      this.allLogObj.push(ioLogObject);
       return ioLogObject;
     }
   }
@@ -89,6 +94,7 @@ export class LoggerConsole extends LoggerMethod {
     if (this.levelLog.includes(3) || this.levelLog.includes(5)) {
       return this.handleLog("debug", message, "Debug", (chalk.Color = "green"));
     } else {
+      this.allLogObj.push(ioLogObject);
       return ioLogObject;
     }
   }
