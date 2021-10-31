@@ -8,8 +8,8 @@ import {
 import chalk from "chalk";
 
 export class LoggerConsole extends LoggerMethod {
-  public log(...message: IOStd[]): IOReturnType {
-    const ioLogObject: IOReturnType = this.returnTypeFunction(
+  public log<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
       "log",
       message,
       this.getErrorStack(undefined, 2),
@@ -22,8 +22,8 @@ export class LoggerConsole extends LoggerMethod {
       return ioLogObject;
     }
   }
-  public warn(...message: IOStd[]): IOReturnType {
-    const ioLogObject: IOReturnType = this.returnTypeFunction(
+  public warn<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
       "warn",
       message,
       this.getErrorStack(undefined, 2),
@@ -36,8 +36,8 @@ export class LoggerConsole extends LoggerMethod {
       return ioLogObject;
     }
   }
-  public error(...message: IOStd[]): IOReturnType {
-    const ioLogObject: IOReturnType = this.returnTypeFunction(
+  public error<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
       "error",
       message,
       this.getErrorStack(undefined, 2),
@@ -50,8 +50,8 @@ export class LoggerConsole extends LoggerMethod {
       return ioLogObject;
     }
   }
-  public info(...message: IOStd[]): IOReturnType {
-    const ioLogObject: IOReturnType = this.returnTypeFunction(
+  public info<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
       "info",
       message,
       this.getErrorStack(undefined, 2),
@@ -64,16 +64,19 @@ export class LoggerConsole extends LoggerMethod {
       return ioLogObject;
     }
   }
-  public fatal<T extends object>(error: IOErrorParam<T>): IOReturnType {
+  public fatal<T extends object>(
+    error: IOErrorParam<T>
+  ): IOReturnType<IOReturnError[]> {
     const ioLogDataError: IOReturnError[] = this.getDataError(
       error,
       error.detail
     );
-    const ioLogObject: IOReturnType = this.returnFatalTypeFunction(
-      this.getErrorStack(undefined, 2),
-      ioLogDataError,
-      this.listSetting()
-    );
+    const ioLogObject: IOReturnType<IOReturnError[]> =
+      this.returnFatalTypeFunction(
+        this.getErrorStack(undefined, 2),
+        ioLogDataError,
+        this.listSetting()
+      );
     this.allLoggerObj.push(ioLogObject);
     if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
       return this.handleLogFatal<T>(error);
@@ -81,8 +84,8 @@ export class LoggerConsole extends LoggerMethod {
       return ioLogObject;
     }
   }
-  public debug(...message: IOStd[]): IOReturnType {
-    const ioLogObject: IOReturnType = this.returnTypeFunction(
+  public debug<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
       "debug",
       message,
       this.getErrorStack(undefined, 2),

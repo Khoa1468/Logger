@@ -2,7 +2,7 @@ import Logger from "./Logger.js";
 
 const logger = new Logger({
   format: "pretty",
-  levelLog: [0],
+  // levelLog: [0],
 });
 
 const log = logger.log("Hello, I Am A Normal Log!");
@@ -17,7 +17,9 @@ const fatal = logger.fatal({
   ],
 });
 
-logger.setSettings({ levelLog: [5] });
+logger.setSettings({ levelLog: [4] });
+
+// logger.log(logger.getAllLogObj().allLogObj.data);
 
 logger.log(log);
 logger.log(warn);

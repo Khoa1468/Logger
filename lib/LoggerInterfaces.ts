@@ -16,7 +16,7 @@ interface IOSetting extends IOLoggerInterface {
 interface IOAllLogObj {
   total: number;
   allLogObj: {
-    data: IOReturnType[];
+    data: IOReturnType<[]>;
   };
 }
 
@@ -28,7 +28,7 @@ interface IOReturnGetTimeAndType {
   fullFilePath: string | null;
 }
 
-type IOStd = unknown;
+type IOStd<T extends any[]> = T;
 
 interface IOErrorStack {
   filePath: string;
@@ -51,11 +51,11 @@ interface IOReturnError extends IOErrorStack {
 
 type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
 
-type IOArgumentData = unknown;
+type IOArgumentData<T extends any[]> = T;
 
-interface IOReturnType extends IOErrorStack {
+interface IOReturnType<T extends any[]> extends IOErrorStack {
   levelLog: IOLevelLogId;
-  data: (IOReturnError | IOArgumentData | IOReturnType)[];
+  data: (IOReturnError | IOArgumentData<T>)[];
   loggedAt: string;
   hostName: string;
   instanceName: string;

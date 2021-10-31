@@ -13,17 +13,17 @@ import {
 import { LoggerUtils } from "./LoggerUtils.js";
 
 export class LoggerMethod extends LoggerUtils {
-  protected handleLog(
+  protected handleLog<T extends any[]>(
     type: IOLevelLogId,
-    message: IOStd[],
+    message: IOStd<T>,
     typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
-  ): IOReturnType {
+  ): IOReturnType<T> {
     const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
       typeTime,
       color
     );
-    const ioLogObject: IOReturnType = this.returnTypeFunction(
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
       type,
       message,
       this.getErrorStack(),
@@ -82,7 +82,7 @@ export class LoggerMethod extends LoggerUtils {
 
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
-  ): IOReturnType {
+  ): IOReturnType<IOReturnError[]> {
     const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
       "Fatal",
       (chalk.Color = "magenta")
@@ -92,11 +92,12 @@ export class LoggerMethod extends LoggerUtils {
         errorList,
         errorList.detail
       );
-      const ioLogObject: IOReturnType = this.returnFatalTypeFunction(
-        this.getErrorStack(),
-        ioLogDataError,
-        this.listSetting()
-      );
+      const ioLogObject: IOReturnType<IOReturnError[]> =
+        this.returnFatalTypeFunction(
+          this.getErrorStack(),
+          ioLogDataError,
+          this.listSetting()
+        );
       this.allLoggerObj.push(ioLogObject);
       if (this.format === "pretty") {
         console.error(
@@ -165,12 +166,12 @@ export class LoggerMethod extends LoggerUtils {
     }
   }
 
-  protected returnTypeFunction(
+  protected returnTypeFunction<T extends any[]>(
     type: IOLevelLogId,
-    message: unknown[],
+    message: T,
     stack: IOErrorStack,
     setting?: IOSetting
-  ): IOReturnType {
+  ): IOReturnType<T> {
     return {
       levelLog: type,
       data: message,
@@ -190,7 +191,7 @@ export class LoggerMethod extends LoggerUtils {
     stack: IOErrorStack,
     dataError: IOReturnError[],
     setting?: IOSetting
-  ): IOReturnType {
+  ): IOReturnType<IOReturnError[]> {
     return {
       levelLog: "fatal",
       data: dataError,
