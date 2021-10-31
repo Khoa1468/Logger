@@ -148,7 +148,6 @@ export class LoggerUtils extends LoggerProperty {
       levelLog: this.levelLog,
     };
   }
-
   public get loggerName(): string {
     return this.name;
   }
@@ -164,5 +163,11 @@ export class LoggerUtils extends LoggerProperty {
   }
   public toPretty<T extends any[]>(data: string): IOReturnType<T> {
     return JSON.parse(data);
+  }
+  public getAllLogObj(): IOAllLogObj {
+    return {
+      total: this.allLogObj.length,
+      allLogObj: { data: this.allLogObj },
+    };
   }
 }

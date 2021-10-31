@@ -16,7 +16,7 @@ interface IOSetting extends IOLoggerInterface {
 interface IOAllLogObj {
   total: number;
   allLogObj: {
-    data: IOReturnType<[]>;
+    data: IOReturnType<any[]>[];
   };
 }
 

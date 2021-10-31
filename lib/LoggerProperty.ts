@@ -20,6 +20,7 @@ export class LoggerProperty {
   protected format: "hidden" | "json" | "pretty" = "hidden";
   protected short: boolean = false;
   protected levelLog: IOLevelLog = [0];
+  protected allLogObj: Array<IOReturnType<any[]>> = [];
   /**
    * This Is My Logger
    */
