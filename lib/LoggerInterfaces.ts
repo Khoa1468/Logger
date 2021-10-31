@@ -55,7 +55,7 @@ type IOArgumentData<T extends any[]> = T;
 
 interface IOReturnType<T extends any[]> extends IOErrorStack {
   levelLog: IOLevelLogId;
-  data: (IOReturnError | IOArgumentData<T>)[];
+  data: IOArgumentData<T>;
   loggedAt: string;
   hostName: string;
   instanceName: string;
