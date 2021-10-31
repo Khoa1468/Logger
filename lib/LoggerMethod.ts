@@ -29,7 +29,6 @@ export class LoggerMethod extends LoggerUtils {
       this.getErrorStack(),
       this.listSetting()
     );
-    this.allLoggerObj.push(ioLogObject);
     if (type !== "fatal") {
       if (this.format === "pretty") {
         console[type](
@@ -98,7 +97,6 @@ export class LoggerMethod extends LoggerUtils {
           ioLogDataError,
           this.listSetting()
         );
-      this.allLoggerObj.push(ioLogObject);
       if (this.format === "pretty") {
         console.error(
           `${

@@ -18,7 +18,6 @@ export class LoggerProperty {
   protected cagetoryName: string = "";
   protected hostname = hostname();
   protected format: "hidden" | "json" | "pretty" = "hidden";
-  protected allLoggerObj: IOReturnType[] = [];
   protected short: boolean = false;
   protected levelLog: IOLevelLog = [0];
   /**

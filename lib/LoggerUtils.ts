@@ -159,16 +159,10 @@ export class LoggerUtils extends LoggerProperty {
       throw Error("newName error");
     }
   }
-  public toJson(data: IOReturnType): string {
+  public toJson<T extends any[]>(data: IOReturnType<T>): string {
     return JSON.stringify(data);
   }
-  public toPretty(data: string): IOReturnType {
+  public toPretty<T extends any[]>(data: string): IOReturnType<T> {
     return JSON.parse(data);
-  }
-  public getAllLogObj(): IOAllLogObj {
-    return {
-      total: this.allLoggerObj.length,
-      allLogObj: { data: this.allLoggerObj },
-    };
   }
 }
