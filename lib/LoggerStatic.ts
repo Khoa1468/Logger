@@ -4,7 +4,7 @@ interface SubscribeInterface {
   subscribe: () => string;
 }
 
-const VERSION_STR = "Version 1.5.3";
+const VERSION_STR = "Version 1.5.4";
 
 export class LoggerStatic extends LoggerConsole {
   public static thankYou(): SubscribeInterface {
