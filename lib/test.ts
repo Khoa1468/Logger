@@ -17,7 +17,7 @@ const fatal = logger.fatal({
   ],
 });
 
-logger.setSettings({ levelLog: [4] });
+// logger.setSettings({ levelLog: [4] });
 
 // logger.log(logger.getAllLogObj().allLogObj.data);
 
@@ -28,3 +28,6 @@ logger.log(debug);
 logger.log(info);
 logger.log(fatal);
 // logger.log(logger.getAllLogObj().allLogObj.data);
+logger.setSettings({ levelLog: [4] });
+
+logger.log(logger.isProd());

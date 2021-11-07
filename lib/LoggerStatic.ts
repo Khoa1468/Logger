@@ -4,7 +4,7 @@ interface SubscribeInterface {
   subscribe: () => string;
 }
 
-const VERSION_STR = "Version 1.5.4";
+const VERSION_STR = "Version 1.5.5";
 
 export class LoggerStatic extends LoggerConsole {
   public static thankYou(): SubscribeInterface {
@@ -20,5 +20,21 @@ export class LoggerStatic extends LoggerConsole {
   }
   public get VERSION(): string {
     return VERSION_STR;
+  }
+  public static isProd(env: string = "LOGGER_ENV"): boolean {
+    const envValue = env in process.env;
+    const getFromProcess =
+      Number.parseInt(process.env[env]!, 10) === 1 ||
+      process.env[env] === "production" ||
+      process.env[env] === "prod";
+    return envValue ? getFromProcess : false;
+  }
+  public isProd(env: string = "LOGGER_ENV"): boolean {
+    const envValue = env in process.env;
+    const getFromProcess =
+      Number.parseInt(process.env[env]!, 10) === 1 ||
+      process.env[env] === "production" ||
+      process.env[env] === "prod";
+    return envValue ? getFromProcess : false;
   }
 }
