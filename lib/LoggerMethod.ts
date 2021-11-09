@@ -9,7 +9,6 @@ import {
   IOStd,
   IOReturnError,
   IOErrorStack,
-  IOAllLogObj,
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
@@ -20,14 +19,19 @@ export class LoggerMethod extends LoggerUtils {
     typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
     color: string = (chalk.Color = "white")
   ): IOReturnType<T> {
+    const loggedAt = `${
+      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+    }`;
     const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
       typeTime,
-      color
+      color,
+      loggedAt
     );
     const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
       type,
       message,
       this.getErrorStack(),
+      loggedAt,
       this.listSetting()
     );
     this.allLogObj.push(ioLogObject);
@@ -62,7 +66,6 @@ export class LoggerMethod extends LoggerUtils {
 
     return ioLogObject;
   }
-
   protected getDataError<T extends object>(
     errorList: IOErrorParam<T>,
     detail: object = {}
@@ -80,13 +83,16 @@ export class LoggerMethod extends LoggerUtils {
     });
     return returnLogObject;
   }
-
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
   ): IOReturnType<IOReturnError[]> {
+    const loggedAt = `${
+      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+    }`;
     const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
       "Fatal",
-      (chalk.Color = "magenta")
+      (chalk.Color = "magenta"),
+      loggedAt
     );
     try {
       const ioLogDataError: IOReturnError[] = this.getDataError(
@@ -97,6 +103,7 @@ export class LoggerMethod extends LoggerUtils {
         this.returnFatalTypeFunction(
           this.getErrorStack(),
           ioLogDataError,
+          loggedAt,
           this.listSetting()
         );
       this.allLogObj.push(ioLogObject);
@@ -166,17 +173,17 @@ export class LoggerMethod extends LoggerUtils {
       return err;
     }
   }
-
   protected returnTypeFunction<T extends any[]>(
     type: IOLevelLogId,
     message: T,
     stack: IOErrorStack,
+    loggedAt: string,
     setting?: IOSetting
   ): IOReturnType<T> {
     return {
       levelLog: type,
       data: message,
-      loggedAt: `${this.loggedAt}`,
+      loggedAt: loggedAt,
       hostName: this.hostname,
       instanceName: this.loggerName,
       cagetory: this.cagetoryName,
@@ -187,16 +194,16 @@ export class LoggerMethod extends LoggerUtils {
       },
     };
   }
-
   protected returnFatalTypeFunction(
     stack: IOErrorStack,
     dataError: IOReturnError[],
+    loggedAt: string,
     setting?: IOSetting
   ): IOReturnType<IOReturnError[]> {
     return {
       levelLog: "fatal",
       data: dataError,
-      loggedAt: `${this.loggedAt}`,
+      loggedAt: loggedAt,
       hostName: this.hostname,
       instanceName: this.loggerName,
       cagetory: this.cagetoryName,

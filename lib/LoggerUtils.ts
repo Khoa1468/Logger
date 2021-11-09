@@ -17,7 +17,8 @@ export class LoggerUtils extends LoggerProperty {
   }
   public getTimeAndType(
     type: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
-    color: string = (chalk.Color = "white")
+    color: string = (chalk.Color = "white"),
+    loggedAt: string
   ): IOReturnGetTimeAndType {
     const filePath: string = this.cleanPath(callsites()[3].getFileName());
     const fullFilePath: string = callsites()[3].getFileName();
@@ -28,7 +29,7 @@ export class LoggerUtils extends LoggerProperty {
         this.isType || this.isLoggedAt || this.isDisplayRootFile
           ? `[${this.isType ? `Type: ${chalk.keyword(color)(type)}` : ""}${
               this.isLoggedAt
-                ? `${this.isType ? `, ` : ""}Time: ${this.loggedAt}${
+                ? `${this.isType ? `, ` : ""}Time: ${loggedAt}${
                     this.isDisplayRootFile ? "," : ""
                   }`
                 : ""
@@ -49,7 +50,6 @@ export class LoggerUtils extends LoggerProperty {
       fullFilePath,
     };
   }
-
   public getErrorStack(
     stack?: StackFrame[] | undefined,
     range: number = 3
@@ -117,7 +117,6 @@ export class LoggerUtils extends LoggerProperty {
       };
     }
   }
-
   public setSettings({
     instanceName = this.name,
     isLoggedAt = this.isLoggedAt,
@@ -135,7 +134,6 @@ export class LoggerUtils extends LoggerProperty {
     this.format = format;
     this.levelLog = levelLog;
   }
-
   public listSetting(): IOSetting {
     return {
       instanceName: this.name,
@@ -158,8 +156,15 @@ export class LoggerUtils extends LoggerProperty {
       throw Error("newName error");
     }
   }
-  public toJson<T extends any[]>(data: IOReturnType<T>): string {
-    return JSON.stringify(data);
+  public toJson<T extends any[]>(data: IOReturnType<T>): string | undefined {
+    try {
+      return JSON.stringify(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.name + ": " + error.message);
+        console.log(error.stack);
+      }
+    }
   }
   public toPretty<T extends any[]>(data: string): IOReturnType<T> {
     return JSON.parse(data);
@@ -169,5 +174,10 @@ export class LoggerUtils extends LoggerProperty {
       total: this.allLogObj.length,
       allLogObj: { data: this.allLogObj },
     };
+  }
+  protected getLoggedTime(): string {
+    return `${
+      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+    }`;
   }
 }
