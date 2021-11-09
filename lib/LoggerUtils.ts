@@ -156,19 +156,6 @@ export class LoggerUtils extends LoggerProperty {
       throw Error("newName error");
     }
   }
-  public toJson<T extends any[]>(data: IOReturnType<T>): string | undefined {
-    try {
-      return JSON.stringify(data);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.name + ": " + error.message);
-        console.log(error.stack);
-      }
-    }
-  }
-  public toPretty<T extends any[]>(data: string): IOReturnType<T> {
-    return JSON.parse(data);
-  }
   public getAllLogObj(): IOAllLogObj {
     return {
       total: this.allLogObj.length,
