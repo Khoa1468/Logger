@@ -13,6 +13,7 @@ export class LoggerConsole extends LoggerMethod {
       "log",
       message,
       this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
       this.listSetting()
     );
     if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
@@ -27,6 +28,7 @@ export class LoggerConsole extends LoggerMethod {
       "warn",
       message,
       this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
       this.listSetting()
     );
     if (this.levelLog.includes(2) || this.levelLog.includes(5)) {
@@ -41,6 +43,7 @@ export class LoggerConsole extends LoggerMethod {
       "error",
       message,
       this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
       this.listSetting()
     );
     if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
@@ -55,6 +58,7 @@ export class LoggerConsole extends LoggerMethod {
       "info",
       message,
       this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
       this.listSetting()
     );
     if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
@@ -75,6 +79,7 @@ export class LoggerConsole extends LoggerMethod {
       this.returnFatalTypeFunction(
         this.getErrorStack(undefined, 2),
         ioLogDataError,
+        this.getLoggedTime(),
         this.listSetting()
       );
     if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
@@ -89,6 +94,7 @@ export class LoggerConsole extends LoggerMethod {
       "debug",
       message,
       this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
       this.listSetting()
     );
     if (this.levelLog.includes(3) || this.levelLog.includes(5)) {

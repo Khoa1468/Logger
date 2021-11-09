@@ -5,13 +5,8 @@ import {
   IOReturnType,
 } from "./LoggerInterfaces.js";
 
-const date = new Date();
-
 export class LoggerProperty {
   protected name: string = "";
-  readonly loggedAt: string = `${
-    date.toLocaleTimeString() + " " + date.toLocaleDateString()
-  }`;
   protected isLoggedAt: boolean = true;
   protected isType: boolean = true;
   protected isDisplayRootFile: boolean = true;
