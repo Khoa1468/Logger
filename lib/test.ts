@@ -1,9 +1,15 @@
 import Logger from "./Logger.js";
 
-const logger = new Logger({
-  format: "pretty",
-  // levelLog: [0],
-});
+const logger = new Logger(
+  {
+    format: "pretty",
+    // levelLog: [0],
+  },
+  (Logger) => {
+    const logger = new Logger({ format: "pretty", levelLog: [5] });
+    logger.info("Logger Loaded");
+  }
+);
 
 const log = logger.log("Hello, I Am A Normal Log!");
 const warn = logger.warn("Hello, I A Warning Log!");
@@ -30,4 +36,6 @@ logger.log(fatal);
 // logger.log(logger.getAllLogObj().allLogObj.data);
 logger.setSettings({ levelLog: [4] });
 
-logger.log(logger.isProd());
+logger.onload(Logger);
+
+// logger.log(logger.isProd());

@@ -1,3 +1,5 @@
+import { default as LoggerClass } from "./Logger.js";
+
 interface IOLoggerInterface {
   instanceName?: string;
   isLoggedAt?: boolean;
@@ -18,6 +20,10 @@ interface IOAllLogObj {
   allLogObj: {
     data: IOReturnType<any[]>[];
   };
+}
+
+interface IOOnloadInterface {
+  (Logger: typeof LoggerClass): void;
 }
 
 interface IOReturnGetTimeAndType {
@@ -87,4 +93,5 @@ export {
   IOAllLogObj,
   IOLevelLog,
   IOArgumentData,
+  IOOnloadInterface,
 };

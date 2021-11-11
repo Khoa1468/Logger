@@ -9,6 +9,7 @@ import {
 } from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
 import { get as callsites, StackFrame } from "stack-trace";
+import { default as LoggerClass } from "./Logger.js";
 
 export class LoggerUtils extends LoggerProperty {
   protected cleanPath(path: string | null): string {
@@ -167,4 +168,5 @@ export class LoggerUtils extends LoggerProperty {
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
     }`;
   }
+  public onload(Logger: typeof LoggerClass) {}
 }

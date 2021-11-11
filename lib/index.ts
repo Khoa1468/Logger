@@ -13,6 +13,7 @@ import {
   IOAllLogObj,
   IOLevelLog,
   IOArgumentData,
+  IOOnloadInterface,
 } from "./LoggerInterfaces.js";
 import { LoggerConsole } from "./LoggerConsole.js";
 import { LoggerMethod } from "./LoggerMethod.js";
@@ -40,4 +41,5 @@ export {
   IOAllLogObj,
   IOLevelLog,
   IOArgumentData,
+  IOOnloadInterface,
 };
