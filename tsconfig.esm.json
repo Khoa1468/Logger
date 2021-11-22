@@ -1,17 +1,14 @@
 {
+  "$schema": "http://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "esnext",
     "module": "esnext",
-    "outDir": "./dist",
+    "outDir": "./dist/esm",
     "rootDir": "./lib",
     "moduleResolution": "Node",
     "esModuleInterop": true,
-    "watch": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationMap": true,
-    "declarationDir": "dist/types"
+    "forceConsistentCasingInFileNames": true
   }
 }

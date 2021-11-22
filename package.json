@@ -1,8 +1,9 @@
 {
   "name": "logger",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
+  "module": "./dist/esm/index.js",
   "engines": {
     "node": ">=10.0"
   },
@@ -19,9 +20,8 @@
   "scripts": {
     "start": "nodemon",
     "test": "nodemon dist/test.js",
-    "build": "tsc"
+    "build": "tsc -b tsconfig.build.json tsconfig.esm.json tsconfig.types.json"
   },
-  "type": "module",
   "author": "Khoa1468 <khoalam1468@gmail.com>",
   "license": "MIT",
   "dependencies": {

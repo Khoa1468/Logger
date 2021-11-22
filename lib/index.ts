@@ -16,7 +16,7 @@ import {
   IOOnloadInterface,
 } from "./LoggerInterfaces.js";
 
-export default Logger;
+export { Logger };
 export {
   IOLoggerInterface,
   IOReturnGetTimeAndType,

@@ -8,7 +8,7 @@ import {
   IOSetting,
 } from "./LoggerInterfaces.js";
 import { LoggerProperty } from "./LoggerProperty.js";
-import { get as callsites, StackFrame } from "stack-trace";
+import { get as callsites, StackFrame } from "./stacktrace";
 import { default as LoggerClass } from "./Logger.js";
 
 export class LoggerUtils extends LoggerProperty {
