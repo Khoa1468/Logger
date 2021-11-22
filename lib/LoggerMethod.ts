@@ -1,4 +1,4 @@
-import { parse, StackFrame } from "stack-trace";
+import { parse, StackFrame } from "./stacktrace.js";
 import chalk from "chalk";
 import {
   IOReturnGetTimeAndType,
