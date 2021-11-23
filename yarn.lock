@@ -7,11 +7,6 @@
   "resolved" "https://registry.npmjs.org/@types/node/-/node-16.10.2.tgz"
   "version" "16.10.2"
 
-"@types/stack-trace@0.0.29":
-  "integrity" "sha512-TgfOX+mGY/NyNxJLIbDWrO9DjGoVSW9+aB8H2yy1fy32jsvxijhmyJI9fDFgvz3YP4lvJaq9DzdR/M1bOgVc9g=="
-  "resolved" "https://registry.npmjs.org/@types/stack-trace/-/stack-trace-0.0.29.tgz"
-  "version" "0.0.29"
-
 "ansi-styles@^4.1.0":
   "integrity" "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg=="
   "resolved" "https://registry.npmjs.org/ansi-styles/-/ansi-styles-4.3.0.tgz"
@@ -43,11 +38,6 @@
   "integrity" "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ=="
   "resolved" "https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz"
   "version" "4.0.0"
-
-"stack-trace@^1.0.0-pre1":
-  "integrity" "sha512-biM7OwS3J2hcou7tfozHcsqhJZxX5pqMMqe/Zr6stw9uVn8Gh7ct3eFR9Gb66BBi/ToSeOgk4FsjKgZVrDIyew=="
-  "resolved" "https://registry.npmjs.org/stack-trace/-/stack-trace-1.0.0-pre1.tgz"
-  "version" "1.0.0-pre1"
 
 "supports-color@^7.1.0":
   "integrity" "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="

@@ -1,4 +1,8 @@
-export interface StackFrame extends NodeJS.CallSite {}
+export interface StackFrame extends NodeJS.CallSite {
+  getFunctionName(): string;
+  getMethodName(): string;
+  getTypeName(): string;
+}
 
 export function get(belowFn?: () => void): StackFrame[] {
   const oldLimit = Error.stackTraceLimit;
@@ -14,11 +18,11 @@ export function get(belowFn?: () => void): StackFrame[] {
   };
   Error.captureStackTrace(dummyObject, belowFn || get);
 
-  const v8StackTrace: StackFrame[] = dummyObject.stack;
+  const v8StackTrace: StackFrame[] | null = dummyObject.stack;
   Error.prepareStackTrace = v8Handler;
   Error.stackTraceLimit = oldLimit;
 
-  return v8StackTrace;
+  return v8StackTrace!;
 }
 
 export function parse(err: Error): StackFrame[] {
@@ -28,22 +32,22 @@ export function parse(err: Error): StackFrame[] {
 
   const lines = err.stack.split("\n").slice(1);
   return lines
-    .map(function (line) {
+    .map(function (line): StackFrame {
       if (line.match(/^\s*[-]{4,}$/)) {
         return {
           getThis: () => null,
-          getTypeName: () => null,
-          getFunction: () => null,
-          getFunctionName: () => null,
-          getMethodName: () => null,
+          getTypeName: () => null!,
+          getFunction: () => null!,
+          getFunctionName: () => null!,
+          getMethodName: () => null!,
           getFileName: () => line,
           getLineNumber: () => null,
           getColumnNumber: () => null,
-          isNative: () => null,
-          getEvalOrigin: () => null,
-          isEval: () => null,
-          isConstructor: () => null,
-          isToplevel: () => null,
+          isNative: () => null!,
+          getEvalOrigin: () => null!,
+          isEval: () => null!,
+          isConstructor: () => null!,
+          isToplevel: () => null!,
         };
       }
 
@@ -51,14 +55,28 @@ export function parse(err: Error): StackFrame[] {
         /at (?:(.+?)\s+\()?(?:(.+?):(\d+)(?::(\d+))?|([^)]+))\)?/
       );
       if (!lineMatch) {
-        return;
+        return {
+          getThis: () => null,
+          getTypeName: () => null!,
+          getFunction: () => null!,
+          getFunctionName: () => null!,
+          getMethodName: () => null!,
+          getFileName: () => null,
+          getLineNumber: () => null,
+          getColumnNumber: () => null,
+          isNative: () => null!,
+          getEvalOrigin: () => null!,
+          isEval: () => null!,
+          isConstructor: () => null!,
+          isToplevel: () => null!,
+        };
       }
 
       let object = null;
       let method = null;
-      let functionName = null;
-      let typeName = null;
-      let methodName = null;
+      let functionName: string | null = null;
+      let typeName: string | null = null;
+      let methodName: string | null = null;
       let isNative = lineMatch[5] === "native";
       let isConstructor = false;
 
@@ -87,24 +105,24 @@ export function parse(err: Error): StackFrame[] {
         functionName = null;
       }
 
-      if (functionName?.startsWith("new")) {
+      if (functionName?.startsWith("new ")) {
         isConstructor = true;
         typeName = object;
       }
 
       const properties: StackFrame = {
-        getTypeName: () => typeName,
+        getTypeName: () => typeName!,
         getFileName: () => lineMatch[2] || null,
         getLineNumber: () => parseInt(lineMatch[3], 10) || null,
         getColumnNumber: () => parseInt(lineMatch[4], 10) || null,
-        getFunctionName: () => functionName,
-        getMethodName: () => methodName,
+        getFunctionName: () => functionName!,
+        getMethodName: () => methodName!,
         isNative: () => isNative,
-        isEval: () => null,
+        isEval: () => null!,
         isConstructor: () => isConstructor,
-        isToplevel: () => null,
-        getFunction: () => null,
-        getEvalOrigin: () => null,
+        isToplevel: () => null!,
+        getFunction: () => null!,
+        getEvalOrigin: () => null!,
         getThis: () => null,
       };
 

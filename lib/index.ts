@@ -1,4 +1,4 @@
-import Logger from "./Logger.js";
+import { Logger } from "./Logger.js";
 import {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -16,7 +16,6 @@ import {
   IOOnloadInterface,
 } from "./LoggerInterfaces.js";
 
-export { Logger };
 export {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -32,4 +31,5 @@ export {
   IOLevelLog,
   IOArgumentData,
   IOOnloadInterface,
+  Logger,
 };
