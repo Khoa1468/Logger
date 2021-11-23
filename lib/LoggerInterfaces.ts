@@ -1,4 +1,4 @@
-import { default as LoggerClass } from "./Logger.js";
+import { Logger as LoggerClass } from "./Logger.js";
 
 interface IOLoggerInterface {
   instanceName?: string;
@@ -43,7 +43,6 @@ interface IOErrorStack {
   lineColumm: number | null;
   functionName: string;
   methodName: string;
-  isClass: boolean;
   isConstructor: boolean;
   typeName: string;
 }
