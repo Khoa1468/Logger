@@ -214,22 +214,4 @@ export class LoggerMethod extends LoggerUtils {
       },
     };
   }
-  public toJson<T extends any[]>(
-    data: IOReturnType<T>
-  ): string | undefined | IOReturnType<IOReturnError[]> {
-    try {
-      return JSON.stringify(data);
-    } catch (error) {
-      if (error instanceof Error) {
-        const oldFormat = this.format;
-        this.format = "pretty";
-        const errorDetail = this.handleLogFatal({ errors: [error] });
-        this.format = oldFormat;
-        return errorDetail;
-      }
-    }
-  }
-  public toPretty<T extends any[]>(data: string): IOReturnType<T> {
-    return JSON.parse(data);
-  }
 }

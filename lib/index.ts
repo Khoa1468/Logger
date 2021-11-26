@@ -14,6 +14,7 @@ import {
   IOLevelLog,
   IOArgumentData,
   IOOnloadInterface,
+  SubscribeInterface,
 } from "./LoggerInterfaces.js";
 
 export {
@@ -32,4 +33,5 @@ export {
   IOArgumentData,
   IOOnloadInterface,
   Logger,
+  SubscribeInterface,
 };
