@@ -49,7 +49,7 @@ interface IOErrorStack {
 }
 
 interface IOReturnError extends IOErrorStack {
-  nativeError: IOError;
+  nativeError: string;
   detail: object | undefined;
   user: string;
   isError: true;

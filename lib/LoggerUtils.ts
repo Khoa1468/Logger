@@ -120,27 +120,10 @@ export class LoggerUtils extends LoggerProperty {
     }
   }
   public getAllLogObj(): IOAllLogObj {
-    function censor(censor: any) {
-      var i = 0;
-
-      return function (key: string, value: any) {
-        if (
-          i !== 0 &&
-          typeof censor === "object" &&
-          typeof value == "object" &&
-          censor == value
-        )
-          return "[Circular]";
-
-        ++i;
-
-        return value;
-      };
-    }
     return {
       total: this.allLogObj.length,
       allLogObj: { data: this.allLogObj },
-      toJson: this.toJson(this.allLogObj, censor(this.allLogObj), 2),
+      toJson: this.toJson(this.allLogObj, this.censor(this.allLogObj), 2),
     };
   }
   protected getLoggedTime(): string {
@@ -158,5 +141,22 @@ export class LoggerUtils extends LoggerProperty {
   }
   public toPretty<T extends any[]>(data: string): IOReturnType<T> {
     return JSON.parse(data);
+  }
+  protected censor(censor: any) {
+    var i = 0;
+
+    return function (key: string, value: any) {
+      if (
+        i !== 0 &&
+        typeof censor === "object" &&
+        typeof value == "object" &&
+        censor == value
+      )
+        return "[Circular]";
+
+      ++i;
+
+      return value;
+    };
   }
 }
