@@ -1,7 +1,5 @@
 # My First Logger Package
 
-### This Package Built In Typescript And Using Only ES6 Import Module
-
 # Installation
 
 ```console

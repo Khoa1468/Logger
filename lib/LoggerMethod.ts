@@ -56,7 +56,7 @@ export class LoggerMethod extends LoggerUtils {
                   message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
                 }`
           }`,
-          this.toJson(ioLogObject)
+          this.toJson(ioLogObject, this.censor(ioLogObject))
         );
         return ioLogObject;
       } else if (this.format === "hidden") {
@@ -74,7 +74,7 @@ export class LoggerMethod extends LoggerUtils {
     errorList.errors.map((err: Error) => {
       const stack: StackFrame[] = parse(err);
       returnLogObject.push({
-        nativeError: err,
+        nativeError: err.stack!,
         detail,
         user: this.hostname,
         isError: true,
@@ -161,7 +161,7 @@ export class LoggerMethod extends LoggerUtils {
                     : ""
                 }`
           }`,
-          this.toJson(ioLogObject)
+          this.toJson(ioLogObject, this.censor(ioLogObject))
         );
         return ioLogObject;
       } else if (this.format === "hidden") {

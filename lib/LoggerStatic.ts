@@ -1,7 +1,7 @@
 import { LoggerConsole } from "./LoggerConsole.js";
 import { SubscribeInterface } from "./LoggerInterfaces.js";
 
-const VERSION_STR = "Version 1.6.3";
+const VERSION_STR = "1.6.4";
 
 export class LoggerStatic extends LoggerConsole {
   public static thankYou(): SubscribeInterface {
