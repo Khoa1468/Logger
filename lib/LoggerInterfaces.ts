@@ -1,5 +1,16 @@
 import { Logger as LoggerClass } from "./Logger.js";
 
+const enum IOLevelLog {
+  ALL = 5,
+  NORMAL = 4,
+  WARN = 2,
+  ERROR = 1,
+  NONE = 0,
+  DEBUG = 3,
+}
+
+type IOLevelLogList = IOLevelLog[] | (0 | 1 | 2 | 3 | 4 | 5)[];
+
 interface IOLoggerInterface {
   instanceName?: string;
   isLoggedAt?: boolean;
@@ -8,7 +19,7 @@ interface IOLoggerInterface {
   cagetoryName?: string;
   format?: "json" | "pretty" | "hidden";
   short?: boolean;
-  levelLog?: IOLevelLog;
+  levelLog?: IOLevelLogList;
 }
 
 interface IOSetting extends IOLoggerInterface {
@@ -55,7 +66,14 @@ interface IOReturnError extends IOErrorStack {
   isError: true;
 }
 
-type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
+type IOLevelLogId =
+  | "log"
+  | "warn"
+  | "info"
+  | "error"
+  | "fatal"
+  | "debug"
+  | "prefix";
 
 type IOArgumentData<T extends any[] = []> = T;
 
@@ -77,7 +95,7 @@ interface IOErrorParam<T> {
 
 type IOError = Error | any;
 
-type IOLevelLog = (0 | 1 | 2 | 3 | 4 | 5)[];
+// type IOLevelLog = (0 | 1 | 2 | 3 | 4 | 5)[];
 
 interface SubscribeInterface {
   subscribe: () => string;
@@ -95,8 +113,10 @@ export {
   IOErrorStack,
   IOStd,
   IOAllLogObj,
-  IOLevelLog,
+  IOLevelLogList,
   IOArgumentData,
   IOOnloadInterface,
   SubscribeInterface,
+  IOLevelLog,
+  // LevelLog,
 };
