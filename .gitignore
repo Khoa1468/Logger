@@ -7,6 +7,5 @@ public/
 public/*
 dist/
 dist/*
-.npmrc
 storage
 .env
