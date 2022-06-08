@@ -20,6 +20,7 @@ interface IOAllLogObj {
   allLogObj: {
     data: IOReturnType<any[]>[];
   };
+  toJson: string;
 }
 
 interface IOOnloadInterface {
@@ -48,7 +49,7 @@ interface IOErrorStack {
 }
 
 interface IOReturnError extends IOErrorStack {
-  nativeError: IOError;
+  nativeError: string;
   detail: object | undefined;
   user: string;
   isError: true;
@@ -56,9 +57,9 @@ interface IOReturnError extends IOErrorStack {
 
 type IOLevelLogId = "log" | "warn" | "info" | "error" | "fatal" | "debug";
 
-type IOArgumentData<T extends any[]> = T;
+type IOArgumentData<T extends any[] = []> = T;
 
-interface IOReturnType<T extends any[]> extends IOErrorStack {
+interface IOReturnType<T extends any[] = []> extends IOErrorStack {
   levelLog: IOLevelLogId;
   data: IOArgumentData<T>;
   loggedAt: string;
@@ -78,6 +79,10 @@ type IOError = Error | any;
 
 type IOLevelLog = (0 | 1 | 2 | 3 | 4 | 5)[];
 
+interface SubscribeInterface {
+  subscribe: () => string;
+}
+
 export {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -93,4 +98,5 @@ export {
   IOLevelLog,
   IOArgumentData,
   IOOnloadInterface,
+  SubscribeInterface,
 };

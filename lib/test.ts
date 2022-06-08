@@ -2,7 +2,7 @@ import { Logger } from "./Logger.js";
 
 const logger = new Logger(
   {
-    format: "pretty",
+    format: "json",
     // levelLog: [0],
   },
   (Logger) => {
@@ -34,8 +34,9 @@ logger.log(debug);
 logger.log(info);
 logger.log(fatal);
 // logger.log(logger.getAllLogObj().allLogObj.data);
+
+// logger.onload(Logger);
+
 logger.setSettings({ levelLog: [4] });
 
-logger.onload(Logger);
-
-// logger.log(logger.isProd());
+logger.log(logger.getAllLogObj().allLogObj.data);

@@ -1,4 +1,5 @@
 import { Logger } from "./Logger.js";
+import { hostname } from "os";
 import {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -14,7 +15,30 @@ import {
   IOLevelLog,
   IOArgumentData,
   IOOnloadInterface,
+  SubscribeInterface,
 } from "./LoggerInterfaces.js";
+
+function getLogger(
+  opts?: IOLoggerInterface,
+  onInit: IOOnloadInterface = (Logger) => {}
+): Logger {
+  const instanceName = opts?.instanceName || hostname();
+  return new Logger(
+    opts != null
+      ? opts
+      : {
+          instanceName,
+          isLoggedAt: true,
+          isType: true,
+          isDisplayRootFile: true,
+          cagetoryName: instanceName,
+          format: "hidden",
+          short: false,
+          levelLog: [0],
+        },
+    onInit
+  );
+}
 
 export {
   IOLoggerInterface,
@@ -32,4 +56,6 @@ export {
   IOArgumentData,
   IOOnloadInterface,
   Logger,
+  SubscribeInterface,
+  getLogger,
 };

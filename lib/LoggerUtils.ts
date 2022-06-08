@@ -1,16 +1,54 @@
 import chalk from "chalk";
 import {
   IOAllLogObj,
-  IOErrorStack,
   IOLoggerInterface,
   IOReturnGetTimeAndType,
+  IOLevelLogId,
+  IOReturnType,
+  IOLevelLog,
+  IOErrorParam,
   IOSetting,
+  IOStd,
+  IOReturnError,
+  IOErrorStack,
 } from "./LoggerInterfaces.js";
-import { LoggerProperty } from "./LoggerProperty.js";
-import { get as callsites, StackFrame } from "./stacktrace";
+import { get as callsites, StackFrame, parse } from "./stacktrace";
 import { Logger as LoggerClass } from "./Logger.js";
+import { hostname } from "os";
 
-export class LoggerUtils extends LoggerProperty {
+export class LoggerUtils {
+  protected name: string = "";
+  protected isLoggedAt: boolean = true;
+  protected isType: boolean = true;
+  protected isDisplayRootFile: boolean = true;
+  protected cagetoryName: string = "";
+  protected hostname = hostname();
+  protected format: "hidden" | "json" | "pretty" = "hidden";
+  protected short: boolean = false;
+  protected levelLog: IOLevelLog = [0];
+  protected allLogObj: Array<IOReturnType<any[]>> = [];
+  /**
+   * This Is My Logger
+   */
+  constructor({
+    instanceName = hostname(),
+    isLoggedAt = true,
+    isType = true,
+    isDisplayRootFile = true,
+    cagetoryName = instanceName,
+    format = "hidden",
+    short = false,
+    levelLog = [0],
+  }: IOLoggerInterface) {
+    this.name = instanceName;
+    this.isLoggedAt = isLoggedAt;
+    this.isType = isType;
+    this.isDisplayRootFile = isDisplayRootFile;
+    this.cagetoryName = cagetoryName;
+    this.format = format;
+    this.short = short;
+    this.levelLog = levelLog;
+  }
   protected cleanPath(path: string | null): string {
     if (path === null) return "";
     return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
@@ -122,6 +160,7 @@ export class LoggerUtils extends LoggerProperty {
     return {
       total: this.allLogObj.length,
       allLogObj: { data: this.allLogObj },
+      toJson: this.toJson(this.allLogObj, this.censor(this.allLogObj), 2),
     };
   }
   protected getLoggedTime(): string {
@@ -129,5 +168,330 @@ export class LoggerUtils extends LoggerProperty {
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
     }`;
   }
-  public onload(Logger: typeof LoggerClass) {}
+  public onInit(Logger: typeof LoggerClass) {}
+  public toJson(
+    data: any,
+    replacer?: ((this: any, key: string, value: any) => any) | undefined,
+    spacing?: number | undefined | string
+  ): string {
+    return JSON.stringify(data, replacer, spacing);
+  }
+  public toPretty<T extends any[]>(data: string): IOReturnType<T> {
+    return JSON.parse(data);
+  }
+  protected censor(censor: any) {
+    var i = 0;
+
+    return function (key: string, value: any) {
+      if (
+        i !== 0 &&
+        typeof censor === "object" &&
+        typeof value == "object" &&
+        censor == value
+      )
+        return "[Circular]";
+
+      ++i;
+
+      return value;
+    };
+  }
+
+  protected handleLog<T extends any[]>(
+    type: IOLevelLogId,
+    message: IOStd<T>,
+    typeTime: "Log" | "Error" | "Info" | "Warn" | "Fatal" | "Debug",
+    color: string = (chalk.Color = "white")
+  ): IOReturnType<T> {
+    const loggedAt = `${
+      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+    }`;
+    const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
+      typeTime,
+      color,
+      loggedAt
+    );
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+      type,
+      message,
+      this.getErrorStack(),
+      loggedAt,
+      this.listSetting()
+    );
+    this.allLogObj.push(ioLogObject);
+    if (type !== "fatal") {
+      if (this.format === "pretty") {
+        console[type](
+          `${
+            this.short
+              ? ""
+              : `${
+                  message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
+                }`
+          }`,
+          ...message
+        );
+      } else if (this.format === "json") {
+        console[type](
+          `${
+            this.short
+              ? ""
+              : `${
+                  message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
+                }`
+          }`,
+          this.toJson(ioLogObject, this.censor(ioLogObject))
+        );
+        return ioLogObject;
+      } else if (this.format === "hidden") {
+        return ioLogObject;
+      }
+    }
+
+    return ioLogObject;
+  }
+  protected getDataError<T extends object>(
+    errorList: IOErrorParam<T>,
+    detail: object = {}
+  ): IOReturnError[] {
+    const returnLogObject: IOReturnError[] = [];
+    errorList.errors.map((err: Error) => {
+      const stack: StackFrame[] = parse(err);
+      returnLogObject.push({
+        nativeError: err.stack!,
+        detail,
+        user: this.hostname,
+        isError: true,
+        ...this.getErrorStack(stack),
+      });
+    });
+    return returnLogObject;
+  }
+  protected handleLogFatal<T extends object>(
+    errorList: IOErrorParam<T>
+  ): IOReturnType<IOReturnError[]> {
+    const loggedAt = `${
+      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+    }`;
+    const timeAndType: IOReturnGetTimeAndType = this.getTimeAndType(
+      "Fatal",
+      (chalk.Color = "magenta"),
+      loggedAt
+    );
+    try {
+      const ioLogDataError: IOReturnError[] = this.getDataError(
+        errorList,
+        errorList.detail
+      );
+      const ioLogObject: IOReturnType<IOReturnError[]> =
+        this.returnFatalTypeFunction(
+          this.getErrorStack(),
+          ioLogDataError,
+          loggedAt,
+          this.listSetting()
+        );
+      this.allLogObj.push(ioLogObject);
+      if (this.format === "pretty") {
+        console.error(
+          `${
+            this.short
+              ? ""
+              : `${
+                  errorList
+                    ? `${chalk.keyword("magenta")(
+                        timeAndType.ToString
+                      )}\n--------------------------------------------------------------------------`
+                    : ""
+                }`
+          }`
+        );
+        errorList.errors.forEach((err: Error) => {
+          console.error("", "Message:", chalk.redBright(err.message), "\n");
+          console.error(
+            "",
+            `============================================== \n`,
+            ""
+          );
+          console.error("", `${chalk.bgRed("STACK:")} \n`, "");
+          console.error(
+            "",
+            chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
+            "\n"
+          );
+          if (errorList.errors.length >= 2) {
+            console.error(
+              `--------------------------------------------------------------------------`
+            );
+          } else {
+            false;
+          }
+          return err;
+        });
+        if (errorList.errors.length < 2) {
+          console.error(
+            `--------------------------------------------------------------------------`
+          );
+        } else {
+          false;
+        }
+      } else if (this.format === "json") {
+        console.error(
+          `${
+            this.short
+              ? ""
+              : `${
+                  errorList
+                    ? `${chalk.keyword("magenta")(timeAndType.ToString)}`
+                    : ""
+                }`
+          }`,
+          this.toJson(ioLogObject, this.censor(ioLogObject))
+        );
+        return ioLogObject;
+      } else if (this.format === "hidden") {
+        return ioLogObject;
+      }
+      return ioLogObject;
+    } catch (err: any) {
+      this.handleLogFatal({ errors: [err] });
+      return err;
+    }
+  }
+  protected returnTypeFunction<T extends any[]>(
+    type: IOLevelLogId,
+    message: T,
+    stack: IOErrorStack,
+    loggedAt: string,
+    setting?: IOSetting
+  ): IOReturnType<T> {
+    return {
+      levelLog: type,
+      data: message,
+      loggedAt: loggedAt,
+      hostName: this.hostname,
+      instanceName: this.loggerName,
+      cagetory: this.cagetoryName,
+      ...stack,
+      setting,
+      toJson() {
+        return JSON.stringify(this);
+      },
+    };
+  }
+  protected returnFatalTypeFunction(
+    stack: IOErrorStack,
+    dataError: IOReturnError[],
+    loggedAt: string,
+    setting?: IOSetting
+  ): IOReturnType<IOReturnError[]> {
+    return {
+      levelLog: "fatal",
+      data: dataError,
+      loggedAt: loggedAt,
+      hostName: this.hostname,
+      instanceName: this.loggerName,
+      cagetory: this.cagetoryName,
+      ...stack,
+      setting,
+      toJson() {
+        return JSON.stringify(this);
+      },
+    };
+  }
+  public log<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+      "log",
+      message,
+      this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
+      this.listSetting()
+    );
+    if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
+      return this.handleLog("log", message, "Log");
+    } else {
+      this.allLogObj.push(ioLogObject);
+      return ioLogObject;
+    }
+  }
+  public warn<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+      "warn",
+      message,
+      this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
+      this.listSetting()
+    );
+    if (this.levelLog.includes(2) || this.levelLog.includes(5)) {
+      return this.handleLog("warn", message, "Warn", (chalk.Color = "yellow"));
+    } else {
+      this.allLogObj.push(ioLogObject);
+      return ioLogObject;
+    }
+  }
+  public error<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+      "error",
+      message,
+      this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
+      this.listSetting()
+    );
+    if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
+      return this.handleLog("error", message, "Error", (chalk.Color = "red"));
+    } else {
+      this.allLogObj.push(ioLogObject);
+      return ioLogObject;
+    }
+  }
+  public info<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+      "info",
+      message,
+      this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
+      this.listSetting()
+    );
+    if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
+      return this.handleLog("info", message, "Info", (chalk.Color = "cyan"));
+    } else {
+      this.allLogObj.push(ioLogObject);
+      return ioLogObject;
+    }
+  }
+  public fatal<T extends object>(
+    error: IOErrorParam<T>
+  ): IOReturnType<IOReturnError[]> {
+    const ioLogDataError: IOReturnError[] = this.getDataError(
+      error,
+      error.detail
+    );
+    const ioLogObject: IOReturnType<IOReturnError[]> =
+      this.returnFatalTypeFunction(
+        this.getErrorStack(undefined, 2),
+        ioLogDataError,
+        this.getLoggedTime(),
+        this.listSetting()
+      );
+    if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
+      return this.handleLogFatal<T>(error);
+    } else {
+      this.allLogObj.push(ioLogObject);
+      return ioLogObject;
+    }
+  }
+  public debug<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
+    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+      "debug",
+      message,
+      this.getErrorStack(undefined, 2),
+      this.getLoggedTime(),
+      this.listSetting()
+    );
+    if (this.levelLog.includes(3) || this.levelLog.includes(5)) {
+      return this.handleLog("debug", message, "Debug", (chalk.Color = "green"));
+    } else {
+      this.allLogObj.push(ioLogObject);
+      return ioLogObject;
+    }
+  }
 }
