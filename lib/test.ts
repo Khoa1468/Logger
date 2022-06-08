@@ -1,16 +1,17 @@
 import { Logger } from "./Logger.js";
+import { IOLevelLog } from "./LoggerInterfaces.js";
 
 const logger = new Logger(
   {
-    format: "json",
-    // levelLog: [0],
+    format: "pretty",
+    levelLog: [IOLevelLog.ALL],
   },
   (Logger) => {
     const logger = new Logger({ format: "pretty", levelLog: [5] });
     logger.info("Logger Loaded");
   }
 );
-
+console.time("time start");
 const log = logger.log("Hello, I Am A Normal Log!");
 const warn = logger.warn("Hello, I A Warning Log!");
 const error = logger.error("Hello, I Am A Error");
@@ -22,8 +23,9 @@ const fatal = logger.fatal({
     new Error("This Is A My Error"),
   ],
 });
-
-// logger.setSettings({ levelLog: [4] });
+const prefix = logger.prefix("Custom", "Hello, I Am A Prefix Log!");
+console.timeEnd("time start");
+logger.setSettings({ levelLog: [IOLevelLog.NORMAL] });
 
 // logger.log(logger.getAllLogObj().allLogObj.data);
 
@@ -33,10 +35,5 @@ logger.log(error);
 logger.log(debug);
 logger.log(info);
 logger.log(fatal);
+logger.log(prefix);
 // logger.log(logger.getAllLogObj().allLogObj.data);
-
-// logger.onload(Logger);
-
-logger.setSettings({ levelLog: [4] });
-
-logger.log(logger.getAllLogObj().allLogObj.data);

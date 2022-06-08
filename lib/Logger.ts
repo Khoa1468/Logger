@@ -1,9 +1,13 @@
 import { hostname } from "os";
-import { IOLoggerInterface, IOOnloadInterface } from "./LoggerInterfaces.js";
+import {
+  IOLoggerInterface,
+  IOOnloadInterface,
+  IOLevelLog,
+} from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 import { SubscribeInterface } from "./LoggerInterfaces.js";
 
-const VERSION_STR = "1.6.6";
+const VERSION_STR = "1.6.7 pre-alpha";
 /**
  * This Is My Logger
  */
@@ -21,7 +25,7 @@ export class Logger extends LoggerUtils {
       cagetoryName = instanceName,
       format = "hidden",
       short = false,
-      levelLog = [0],
+      levelLog = [IOLevelLog.NONE],
     }: IOLoggerInterface,
     onInit: IOOnloadInterface = (Logger) => {}
   ) {
@@ -47,7 +51,7 @@ export class Logger extends LoggerUtils {
       cagetoryName = instanceName,
       format = "hidden",
       short = false,
-      levelLog = [0],
+      levelLog = [IOLevelLog.NONE],
     }: IOLoggerInterface,
     onInit: IOOnloadInterface = (Logger) => {}
   ) {
