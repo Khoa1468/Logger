@@ -1,6 +1,6 @@
-# Start From 1.6.7 pre-alpha version
+# Start From 1.6.7 version
 
-## 1.6.7 pre-alpha
+## 1.6.7
 
 - Adding enum level of log
 

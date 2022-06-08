@@ -7,7 +7,7 @@ import {
 import { LoggerUtils } from "./LoggerUtils.js";
 import { SubscribeInterface } from "./LoggerInterfaces.js";
 
-const VERSION_STR = "1.6.7 pre-alpha";
+const VERSION_STR = "1.6.7";
 /**
  * This Is My Logger
  */
