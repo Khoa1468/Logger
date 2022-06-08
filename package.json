@@ -1,5 +1,5 @@
 {
-  "name": "logger",
+  "name": "@khoa1468/logger",
   "version": "1.6.6",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Khoa1468/Logger"
+    "url": "git+https://github.com/Khoa1468/Logger.git"
   },
   "bugs": {
     "url": "https://github.com/Khoa1468/Logger/issues"
@@ -53,5 +53,8 @@
     "js logger",
     "ts log",
     "js log"
-  ]
+  ],
+  "directories": {
+    "lib": "lib"
+  }
 }
