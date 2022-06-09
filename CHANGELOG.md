@@ -30,7 +30,7 @@
   ```
 
   ```bash
-  [Type: Info, Time: <Time and Date>, File: <File and Directory run a code>, PID: <Process ID>] [Khoa] Hello, I Am A Info Log!
+  [Type: Info, Time: <Time and Date>, File: <File and Directory run a code>, PID: <Process ID>] [Khoa] Hi
   ```
 
   ```ts
