@@ -5,77 +5,62 @@ import {
   IOLevelLog,
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
-import { SubscribeInterface } from "./LoggerInterfaces.js";
 
-const VERSION_STR = "1.6.7";
+const VERSION_STR = "1.6.8";
 /**
  * This Is My Logger
  */
 
-export class Logger extends LoggerUtils {
+export class Logger<P extends {}> extends LoggerUtils<P> {
   /**
    * This Is My Logger
    */
   constructor(
     {
       instanceName = hostname(),
-      isLoggedAt = true,
-      isType = true,
-      isDisplayRootFile = true,
       cagetoryName = instanceName,
       format = "hidden",
       short = false,
       levelLog = [IOLevelLog.NONE],
     }: IOLoggerInterface,
-    onInit: IOOnloadInterface = (Logger) => {}
+    onInit: IOOnloadInterface = (Logger) => {},
+    childOpt: P = {} as P
   ) {
-    super({
-      instanceName,
-      isLoggedAt,
-      isType,
-      isDisplayRootFile,
-      cagetoryName,
-      format,
-      short,
-      levelLog,
-    });
-    onInit(Logger);
-    this.onInit = onInit;
-  }
-  public static create(
-    {
-      instanceName = hostname(),
-      isLoggedAt = true,
-      isType = true,
-      isDisplayRootFile = true,
-      cagetoryName = instanceName,
-      format = "hidden",
-      short = false,
-      levelLog = [IOLevelLog.NONE],
-    }: IOLoggerInterface,
-    onInit: IOOnloadInterface = (Logger) => {}
-  ) {
-    return new Logger(
+    super(
       {
         instanceName,
-        isLoggedAt,
-        isType,
-        isDisplayRootFile,
         cagetoryName,
         format,
         short,
         levelLog,
       },
-      onInit
+      childOpt
     );
+    onInit(Logger);
+    this.onInit = onInit;
   }
-  public static thankYou(): SubscribeInterface {
-    console.log("Thank You For Using This Logger");
-    return {
-      subscribe(): string {
-        return "Please follow my github: https://github.com/Khoa1468/";
+  public static create<P extends {} = {}>(
+    {
+      instanceName = hostname(),
+      cagetoryName = instanceName,
+      format = "hidden",
+      short = false,
+      levelLog = [IOLevelLog.NONE],
+    }: IOLoggerInterface,
+    onInit: IOOnloadInterface = (Logger) => {},
+    childOpt: P = {} as P
+  ) {
+    return new Logger(
+      {
+        instanceName,
+        cagetoryName,
+        format,
+        short,
+        levelLog,
       },
-    };
+      onInit,
+      childOpt
+    );
   }
   public static get VERSION(): string {
     return VERSION_STR;

@@ -1,10 +1,8 @@
 import chalk from "chalk";
 import {
-  IOAllLogObj,
   IOLoggerInterface,
   IOReturnGetTimeAndType,
   IOLevelLogId,
-  IOReturnType,
   IOLevelLog,
   IOErrorParam,
   IOSetting,
@@ -12,43 +10,41 @@ import {
   IOReturnError,
   IOErrorStack,
   IOLevelLogList,
+  IOPrefixOption,
+  IOReturnType,
 } from "./LoggerInterfaces.js";
 import { get as callsites, StackFrame, parse } from "./stacktrace";
 import { Logger as LoggerClass } from "./Logger.js";
 import { hostname } from "os";
 
-export class LoggerUtils {
+export class LoggerUtils<P extends {}> {
   protected name: string = "";
-  protected isLoggedAt: boolean = true;
-  protected isType: boolean = true;
-  protected isDisplayRootFile: boolean = true;
   protected cagetoryName: string = "";
   protected hostname = hostname();
   protected format: "hidden" | "json" | "pretty" = "hidden";
   protected short: boolean = false;
+  protected childProp: P;
+  private pid = process.pid;
   protected levelLog: IOLevelLogList = [IOLevelLog.NONE];
-  protected allLogObj: Array<IOReturnType<any[]>> = [];
   /**
    * This Is My Logger
    */
-  constructor({
-    instanceName = hostname(),
-    isLoggedAt = true,
-    isType = true,
-    isDisplayRootFile = true,
-    cagetoryName = instanceName,
-    format = "hidden",
-    short = false,
-    levelLog = [IOLevelLog.NONE],
-  }: IOLoggerInterface) {
+  constructor(
+    {
+      instanceName = hostname(),
+      cagetoryName = instanceName,
+      format = "hidden",
+      short = false,
+      levelLog = [IOLevelLog.NONE],
+    }: IOLoggerInterface,
+    childOpt: P = {} as P
+  ) {
     this.name = instanceName;
-    this.isLoggedAt = isLoggedAt;
-    this.isType = isType;
-    this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
     this.format = format;
     this.short = short;
     this.levelLog = levelLog;
+    this.childProp = childOpt;
   }
   protected cleanPath(path: string | null): string {
     if (path === null) return "";
@@ -64,25 +60,11 @@ export class LoggerUtils {
     const lineNumber: number | null = callsites()[3].getLineNumber();
     const lineColumm: number | null = callsites()[3].getColumnNumber();
     return {
-      ToString: `${
-        this.isType || this.isLoggedAt || this.isDisplayRootFile
-          ? `[${this.isType ? `Type: ${chalk.keyword(color)(type)}` : ""}${
-              this.isLoggedAt
-                ? `${this.isType ? `, ` : ""}Time: ${loggedAt}${
-                    this.isDisplayRootFile ? "," : ""
-                  }`
-                : ""
-            }${this.isLoggedAt && this.isDisplayRootFile ? " " : ""}${
-              this.isDisplayRootFile && this.isType && !this.isLoggedAt
-                ? ", "
-                : ""
-            }${
-              this.isDisplayRootFile
-                ? `File: "${filePath}:${lineNumber}:${lineColumm}"`
-                : ""
-            }] ${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
-          : `${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
-      }`,
+      ToString: `[Type: ${chalk.keyword(color)(
+        type
+      )}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${
+        this.pid
+      }] ${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`,
       filePath,
       lineNumber,
       lineColumm,
@@ -106,10 +88,6 @@ export class LoggerUtils {
       };
     } else {
       const localStack = callsites();
-      // localStack.map((stack) => {
-      //   console.log(stack.getFileName());
-      //   console.log(stack.getLineNumber());
-      // });
       return {
         filePath: this.cleanPath(localStack[range].getFileName()),
         fullFilePath: localStack[range].getFileName(),
@@ -124,17 +102,11 @@ export class LoggerUtils {
   }
   public setSettings({
     instanceName = this.name,
-    isLoggedAt = this.isLoggedAt,
-    isType = this.isType,
-    isDisplayRootFile = this.isDisplayRootFile,
     cagetoryName = this.cagetoryName,
     format = this.format,
     levelLog = this.levelLog,
   }: IOLoggerInterface): void {
     this.name = instanceName;
-    this.isLoggedAt = isLoggedAt;
-    this.isType = isType;
-    this.isDisplayRootFile = isDisplayRootFile;
     this.cagetoryName = cagetoryName;
     this.format = format;
     this.levelLog = levelLog;
@@ -142,9 +114,6 @@ export class LoggerUtils {
   public listSetting(): IOSetting {
     return {
       instanceName: this.name,
-      isLoggedAt: this.isLoggedAt,
-      isType: this.isType,
-      isDisplayRootFile: this.isDisplayRootFile,
       cagetoryName: this.cagetoryName,
       hostName: this.hostname,
       format: this.format,
@@ -161,13 +130,6 @@ export class LoggerUtils {
       throw Error("newName error");
     }
   }
-  public getAllLogObj(): IOAllLogObj {
-    return {
-      total: this.allLogObj.length,
-      allLogObj: { data: this.allLogObj },
-      toJson: this.toJson(this.allLogObj, this.censor(this.allLogObj), 2),
-    };
-  }
   protected getLoggedTime(): string {
     return `${
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
@@ -181,7 +143,7 @@ export class LoggerUtils {
   ): string {
     return JSON.stringify(data, replacer, spacing);
   }
-  public toPretty<T extends any[]>(data: string): IOReturnType<T> {
+  public toPretty<T extends any[]>(data: string): IOReturnType<T, P> {
     return JSON.parse(data);
   }
   protected censor(censor: any) {
@@ -206,8 +168,9 @@ export class LoggerUtils {
     type: IOLevelLogId,
     message: IOStd<T>,
     color: string = (chalk.Color = "white"),
-    prefix?: string
-  ): IOReturnType<T> {
+    prefix?: string,
+    levelRange: IOLevelLog = 0
+  ): IOReturnType<T, P> {
     const typeUpper = prefix ?? type.charAt(0).toUpperCase() + type.slice(1);
     const loggedAt = `${
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
@@ -217,15 +180,44 @@ export class LoggerUtils {
       color,
       loggedAt
     );
-    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+    const ioLogObject: IOReturnType<T, P> = this.returnTypeFunction(
       type,
-      message,
-      4
+      message
     );
-    this.allLogObj.push(ioLogObject);
-    if (type !== "fatal" && type !== "prefix") {
-      if (this.format === "pretty") {
-        console[type](
+    if (this.levelLog.includes(levelRange) || this.levelLog.includes(5)) {
+      if (type !== "fatal" && type !== "prefix") {
+        if (this.format === "pretty") {
+          console[type](
+            `${
+              this.short
+                ? ""
+                : `${
+                    message
+                      ? `${chalk.keyword(color)(timeAndType.ToString)}`
+                      : ""
+                  }`
+            }`,
+            ...message
+          );
+        } else if (this.format === "json") {
+          console[type](
+            `${
+              this.short
+                ? ""
+                : `${
+                    message
+                      ? `${chalk.keyword(color)(timeAndType.ToString)}`
+                      : ""
+                  }`
+            }`,
+            this.toJson(ioLogObject, this.censor(ioLogObject))
+          );
+          return ioLogObject;
+        } else if (this.format === "hidden") {
+          return ioLogObject;
+        }
+      } else if (type === "prefix") {
+        console["log"](
           `${
             this.short
               ? ""
@@ -235,32 +227,7 @@ export class LoggerUtils {
           }`,
           ...message
         );
-      } else if (this.format === "json") {
-        console[type](
-          `${
-            this.short
-              ? ""
-              : `${
-                  message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
-                }`
-          }`,
-          this.toJson(ioLogObject, this.censor(ioLogObject))
-        );
-        return ioLogObject;
-      } else if (this.format === "hidden") {
-        return ioLogObject;
       }
-    } else if (type === "prefix") {
-      console["log"](
-        `${
-          this.short
-            ? ""
-            : `${
-                message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
-              }`
-        }`,
-        ...message
-      );
     }
 
     return ioLogObject;
@@ -284,7 +251,7 @@ export class LoggerUtils {
   }
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
-  ): IOReturnType<IOReturnError[]> {
+  ): IOReturnType<IOReturnError[], P> {
     const loggedAt = `${
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
     }`;
@@ -298,67 +265,69 @@ export class LoggerUtils {
         errorList,
         errorList.detail
       );
-      const ioLogObject: IOReturnType<IOReturnError[]> =
-        this.returnFatalTypeFunction(this.getErrorStack(), ioLogDataError);
-      this.allLogObj.push(ioLogObject);
-      if (this.format === "pretty") {
-        console.error(
-          `${
-            this.short
-              ? ""
-              : `${
-                  errorList
-                    ? `${chalk.keyword("magenta")(
-                        timeAndType.ToString
-                      )}\n--------------------------------------------------------------------------`
-                    : ""
-                }`
-          }`
-        );
-        errorList.errors.forEach((err: Error) => {
-          console.error("", "Message:", chalk.redBright(err.message), "\n");
+      const ioLogObject: IOReturnType<IOReturnError[], P> =
+        this.returnTypeFunction("fatal", ioLogDataError);
+      if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
+        if (this.format === "pretty") {
           console.error(
-            "",
-            `============================================== \n`,
-            ""
+            `${
+              this.short
+                ? ""
+                : `${
+                    errorList
+                      ? `${chalk.keyword("magenta")(
+                          timeAndType.ToString
+                        )}\n--------------------------------------------------------------------------`
+                      : ""
+                  }`
+            }`
           );
-          console.error("", `${chalk.bgRed("STACK:")} \n`, "");
-          console.error(
-            "",
-            chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
-            "\n"
-          );
-          if (errorList.errors.length >= 2) {
+          errorList.errors.forEach((err: Error) => {
+            console.error("", "Message:", chalk.redBright(err.message), "\n");
+            console.error(
+              "",
+              `============================================== \n`,
+              ""
+            );
+            console.error("", `${chalk.bgRed("STACK:")} \n`, "");
+            console.error(
+              "",
+              chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
+              "\n"
+            );
+            if (errorList.errors.length >= 2) {
+              console.error(
+                `--------------------------------------------------------------------------`
+              );
+            } else {
+              false;
+            }
+            return err;
+          });
+          if (errorList.errors.length < 2) {
             console.error(
               `--------------------------------------------------------------------------`
             );
           } else {
             false;
           }
-          return err;
-        });
-        if (errorList.errors.length < 2) {
+        } else if (this.format === "json") {
           console.error(
-            `--------------------------------------------------------------------------`
+            `${
+              this.short
+                ? ""
+                : `${
+                    errorList
+                      ? `${chalk.keyword("magenta")(timeAndType.ToString)}`
+                      : ""
+                  }`
+            }`,
+            this.toJson(ioLogObject, this.censor(ioLogObject))
           );
-        } else {
-          false;
+          return ioLogObject;
+        } else if (this.format === "hidden") {
+          return ioLogObject;
         }
-      } else if (this.format === "json") {
-        console.error(
-          `${
-            this.short
-              ? ""
-              : `${
-                  errorList
-                    ? `${chalk.keyword("magenta")(timeAndType.ToString)}`
-                    : ""
-                }`
-          }`,
-          this.toJson(ioLogObject, this.censor(ioLogObject))
-        );
-        return ioLogObject;
-      } else if (this.format === "hidden") {
         return ioLogObject;
       }
       return ioLogObject;
@@ -369,10 +338,9 @@ export class LoggerUtils {
   }
   protected returnTypeFunction<T extends any[]>(
     type: IOLevelLogId,
-    message: T,
-    range: number = 3
-  ): IOReturnType<T> {
-    const stackObj = this.getErrorStack(undefined, range);
+    message: T
+  ): IOReturnType<T, P> {
+    const stackObj = this.getErrorStack(undefined, 4);
     return {
       levelLog: type,
       data: message,
@@ -382,126 +350,56 @@ export class LoggerUtils {
       cagetory: this.cagetoryName,
       ...stackObj,
       setting: this.listSetting(),
+      ...this.childProp,
       toJson() {
         return JSON.stringify(this);
       },
+      pid: this.pid,
     };
   }
-  protected returnFatalTypeFunction(
-    stack: IOErrorStack,
-    dataError: IOReturnError[]
-  ): IOReturnType<IOReturnError[]> {
-    return {
-      levelLog: "fatal",
-      data: dataError,
-      loggedAt: this.getLoggedTime(),
-      hostName: this.hostname,
-      instanceName: this.loggerName,
-      cagetory: this.cagetoryName,
-      ...stack,
-      setting: this.listSetting(),
-      toJson() {
-        return JSON.stringify(this);
-      },
-    };
-  }
-  public log<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
-    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
-      "log",
-      message
-    );
-    if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
-      return this.handleLog("log", message);
-    } else {
-      this.allLogObj.push(ioLogObject);
-      return ioLogObject;
-    }
-  }
-  public warn<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
-    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+  public warn<T extends any[]>(...message: IOStd<T>): IOReturnType<T, P> {
+    return this.handleLog(
       "warn",
-      message
+      message,
+      (chalk.Color = "yellow"),
+      undefined,
+      2
     );
-    if (this.levelLog.includes(2) || this.levelLog.includes(5)) {
-      return this.handleLog("warn", message, (chalk.Color = "yellow"));
-    } else {
-      this.allLogObj.push(ioLogObject);
-      return ioLogObject;
-    }
   }
-  public error<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
-    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+  public error<T extends any[]>(...message: IOStd<T>): IOReturnType<T, P> {
+    return this.handleLog(
       "error",
-      message
+      message,
+      (chalk.Color = "red"),
+      undefined,
+      1
     );
-    if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
-      return this.handleLog("error", message, (chalk.Color = "red"));
-    } else {
-      this.allLogObj.push(ioLogObject);
-      return ioLogObject;
-    }
   }
-  public info<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
-    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
+  public info<T extends any[]>(...message: IOStd<T>): IOReturnType<T, P> {
+    return this.handleLog(
       "info",
-      message
+      message,
+      (chalk.Color = "cyan"),
+      undefined,
+      4
     );
-    if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
-      return this.handleLog("info", message, (chalk.Color = "cyan"));
-    } else {
-      this.allLogObj.push(ioLogObject);
-      return ioLogObject;
-    }
   }
   public fatal<T extends object>(
     error: IOErrorParam<T>
-  ): IOReturnType<IOReturnError[]> {
-    const ioLogDataError: IOReturnError[] = this.getDataError(
-      error,
-      error.detail
-    );
-    const ioLogObject: IOReturnType<IOReturnError[]> =
-      this.returnFatalTypeFunction(
-        this.getErrorStack(undefined, 2),
-        ioLogDataError
-      );
-    if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
-      return this.handleLogFatal<T>(error);
-    } else {
-      this.allLogObj.push(ioLogObject);
-      return ioLogObject;
-    }
-  }
-  public debug<T extends any[]>(...message: IOStd<T>): IOReturnType<T> {
-    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
-      "debug",
-      message
-    );
-    if (this.levelLog.includes(3) || this.levelLog.includes(5)) {
-      return this.handleLog("debug", message, (chalk.Color = "green"));
-    } else {
-      this.allLogObj.push(ioLogObject);
-      return ioLogObject;
-    }
+  ): IOReturnType<IOReturnError[], P> {
+    return this.handleLogFatal<T>(error);
   }
   public prefix<T extends any[]>(
-    prefix?: string,
+    opt: IOPrefixOption,
     ...message: IOStd<T>
-  ): IOReturnType<T> {
-    const ioLogObject: IOReturnType<T> = this.returnTypeFunction(
-      "prefix",
-      message
-    );
-    if (this.levelLog.includes(4) || this.levelLog.includes(5)) {
-      return this.handleLog(
-        "prefix",
-        message,
-        (chalk.Color = "magenta"),
-        prefix || "Prefix"
-      );
-    } else {
-      this.allLogObj.push(ioLogObject);
-      return ioLogObject;
-    }
+  ): IOReturnType<T, P> {
+    opt = { prefix: opt.prefix ?? "Prefix", color: opt.color ?? "magenta" };
+    return this.handleLog("prefix", message, opt.color, opt.prefix, 4);
+  }
+  public child<T>(binding?: T) {
+    return new LoggerClass<P & T>(this.listSetting(), this.onInit, {
+      ...this.childProp,
+      ...(binding ?? ({} as T)),
+    });
   }
 }
