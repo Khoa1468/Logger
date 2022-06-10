@@ -12,6 +12,8 @@
 
 - Print-out function changed to process.stdout; process.stderr for better perfomance
 
+- Removed onInit() method
+
 - Adding NEW IOReturnType
 
   ```ts
