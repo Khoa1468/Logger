@@ -6,7 +6,7 @@ import {
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
-const VERSION_STR = "1.6.8-fixed";
+const VERSION_STR = "1.6.8-lastest";
 /**
  * This Is My Logger
  */
