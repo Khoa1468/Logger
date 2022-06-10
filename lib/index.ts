@@ -4,39 +4,34 @@ import {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
   IOLevelLogId,
-  IOReturnType,
+  IOBaseReturnType,
   IOError,
   IOReturnError,
   IOErrorParam,
   IOSetting,
   IOErrorStack,
   IOStd,
-  IOAllLogObj,
   IOLevelLog,
-  IOArgumentData,
   IOOnloadInterface,
-  SubscribeInterface,
+  IOLevelLogList,
+  IOReturnType,
 } from "./LoggerInterfaces.js";
 
-function getLogger(
+function getLogger<P extends {}>(
   opts?: IOLoggerInterface,
-  onInit: IOOnloadInterface = (Logger) => {}
-): Logger {
+  bindingOpt: P = {} as P
+): Logger<P> {
   const instanceName = opts?.instanceName || hostname();
   return new Logger(
     opts != null
       ? opts
       : {
-          instanceName,
-          isLoggedAt: true,
-          isType: true,
-          isDisplayRootFile: true,
           cagetoryName: instanceName,
           format: "hidden",
           short: false,
           levelLog: [0],
         },
-    onInit
+    bindingOpt
   );
 }
 
@@ -44,18 +39,17 @@ export {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
   IOLevelLogId,
-  IOReturnType,
+  IOBaseReturnType,
   IOError,
   IOReturnError,
   IOErrorParam,
   IOSetting,
   IOErrorStack,
   IOStd,
-  IOAllLogObj,
   IOLevelLog,
-  IOArgumentData,
   IOOnloadInterface,
   Logger,
-  SubscribeInterface,
+  IOLevelLogList,
+  IOReturnType,
   getLogger,
 };

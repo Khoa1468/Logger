@@ -1,6 +1,6 @@
 {
   "name": "@khoa1468/logger",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "module": "./dist/esm/index.js",
@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "nodemon",
-    "test": "nodemon dist/test.js",
+    "test": "npm run build && node ./dist/test.js",
     "build": "tsc -b tsconfig.build.json tsconfig.esm.json tsconfig.types.json"
   },
   "author": "Khoa1468 <khoalam1468@gmail.com>",
