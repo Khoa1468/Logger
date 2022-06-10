@@ -193,7 +193,7 @@ export class LoggerUtils<P extends {}> {
       message
     );
     if (this.levelLog.includes(levelRange) || this.levelLog.includes(5)) {
-      if (type !== "fatal" && type !== "prefix") {
+      if (type !== "fatal") {
         if (this.format === "pretty") {
           this.write(
             `${
@@ -224,17 +224,6 @@ export class LoggerUtils<P extends {}> {
         } else if (this.format === "hidden") {
           return ioLogObject;
         }
-      } else if (type === "prefix") {
-        this.write(
-          `${
-            this.short
-              ? ""
-              : `${
-                  message ? `${chalk.keyword(color)(timeAndType.ToString)}` : ""
-                }`
-          }`,
-          ...message
-        );
       }
     }
 

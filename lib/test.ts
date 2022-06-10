@@ -8,7 +8,13 @@ const logger = new Logger({
 
 const info = logger.info("Hello, I Am A Info Log!");
 
+const prefix = logger.prefix(
+  { prefix: "My Prefix", color: "white" },
+  "Hello, I Am A Prefix Log!"
+);
+
 logger.info(info);
+logger.info(prefix);
 
 const childLogger = logger.child({ a: "b" }, { c: "d", childProp: { a: "c" } });
 
