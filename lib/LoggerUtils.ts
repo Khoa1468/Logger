@@ -291,14 +291,7 @@ export class LoggerUtils<P extends {}> {
             }`
           );
           errorList.errors.forEach((err: Error) => {
-            this.errWrite(
-              format.apply(null, [
-                "",
-                "Message:",
-                chalk.redBright(err.message),
-                "\n",
-              ])
-            );
+            this.errWrite("", "Message:", chalk.redBright(err.message));
             this.errWrite(
               "",
               `============================================== \n`,
