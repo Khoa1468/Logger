@@ -12,10 +12,13 @@ import {
   IOLevelLogList,
   IOPrefixOption,
   IOReturnType,
+  ChildLogger,
 } from "./LoggerInterfaces.js";
 import { get as callsites, StackFrame, parse } from "./stacktrace";
 import { Logger as LoggerClass } from "./Logger.js";
 import { hostname } from "os";
+import { defaults } from "./merge.js";
+import { format } from "util";
 
 export class LoggerUtils<P extends {}> {
   protected name: string = "";
@@ -45,6 +48,12 @@ export class LoggerUtils<P extends {}> {
     this.short = short;
     this.levelLog = levelLog;
     this.childProp = childOpt;
+  }
+  private write(...data: any[]): void {
+    process.stdout.write(format.apply(null, [...data, "\n"]));
+  }
+  private errWrite(...data: any[]): void {
+    process.stderr.write(format.apply(null, [...data, "\n"]));
   }
   protected cleanPath(path: string | null): string {
     if (path === null) return "";
@@ -135,7 +144,6 @@ export class LoggerUtils<P extends {}> {
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
     }`;
   }
-  public onInit(Logger: typeof LoggerClass) {}
   public toJson(
     data: any,
     replacer?: ((this: any, key: string, value: any) => any) | undefined,
@@ -187,7 +195,7 @@ export class LoggerUtils<P extends {}> {
     if (this.levelLog.includes(levelRange) || this.levelLog.includes(5)) {
       if (type !== "fatal" && type !== "prefix") {
         if (this.format === "pretty") {
-          console[type](
+          this.write(
             `${
               this.short
                 ? ""
@@ -200,7 +208,7 @@ export class LoggerUtils<P extends {}> {
             ...message
           );
         } else if (this.format === "json") {
-          console[type](
+          this.write(
             `${
               this.short
                 ? ""
@@ -217,7 +225,7 @@ export class LoggerUtils<P extends {}> {
           return ioLogObject;
         }
       } else if (type === "prefix") {
-        console["log"](
+        this.write(
           `${
             this.short
               ? ""
@@ -269,7 +277,7 @@ export class LoggerUtils<P extends {}> {
         this.returnTypeFunction("fatal", ioLogDataError);
       if (this.levelLog.includes(1) || this.levelLog.includes(5)) {
         if (this.format === "pretty") {
-          console.error(
+          this.errWrite(
             `${
               this.short
                 ? ""
@@ -283,20 +291,26 @@ export class LoggerUtils<P extends {}> {
             }`
           );
           errorList.errors.forEach((err: Error) => {
-            console.error("", "Message:", chalk.redBright(err.message), "\n");
-            console.error(
+            this.errWrite(
+              format.apply(null, [
+                "",
+                "Message:",
+                chalk.redBright(err.message),
+                "\n",
+              ])
+            );
+            this.errWrite(
               "",
               `============================================== \n`,
               ""
             );
-            console.error("", `${chalk.bgRed("STACK:")} \n`, "");
-            console.error(
+            this.errWrite("", `${chalk.bgRed("STACK:")} \n`, "");
+            this.errWrite(
               "",
-              chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
-              "\n"
+              chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`))
             );
             if (errorList.errors.length >= 2) {
-              console.error(
+              this.errWrite(
                 `--------------------------------------------------------------------------`
               );
             } else {
@@ -305,14 +319,14 @@ export class LoggerUtils<P extends {}> {
             return err;
           });
           if (errorList.errors.length < 2) {
-            console.error(
+            this.errWrite(
               `--------------------------------------------------------------------------`
             );
           } else {
             false;
           }
         } else if (this.format === "json") {
-          console.error(
+          this.errWrite(
             `${
               this.short
                 ? ""
@@ -396,10 +410,14 @@ export class LoggerUtils<P extends {}> {
     opt = { prefix: opt.prefix ?? "Prefix", color: opt.color ?? "magenta" };
     return this.handleLog("prefix", message, opt.color, opt.prefix, 4);
   }
-  public child<T>(binding?: T) {
-    return new LoggerClass<P & T>(this.listSetting(), this.onInit, {
+  public child<T extends {}, LP extends {} = {}>(
+    bindingOpt?: T,
+    loggerOpt?: LP
+  ): ChildLogger<P & T, LP> {
+    const childLogger = new LoggerClass<P & T>(this.listSetting(), {
       ...this.childProp,
-      ...(binding ?? ({} as T)),
+      ...(bindingOpt ?? ({} as T)),
     });
+    return defaults(childLogger, loggerOpt);
   }
 }

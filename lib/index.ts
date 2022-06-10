@@ -19,8 +19,7 @@ import {
 
 function getLogger<P extends {}>(
   opts?: IOLoggerInterface,
-  onInit: IOOnloadInterface = (Logger) => {},
-  childOpt: P = {} as P
+  bindingOpt: P = {} as P
 ): Logger<P> {
   const instanceName = opts?.instanceName || hostname();
   return new Logger(
@@ -32,8 +31,7 @@ function getLogger<P extends {}>(
           short: false,
           levelLog: [0],
         },
-    onInit,
-    childOpt
+    bindingOpt
   );
 }
 

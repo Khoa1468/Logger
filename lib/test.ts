@@ -5,40 +5,17 @@ const logger = new Logger({
   format: "pretty",
   levelLog: [IOLevelLog.ALL],
 });
-console.time("time start");
-// const log = logger.log("Hello, I Am A Normal Log!");
-// const warn = logger.warn("Hello, I A Warning Log!");
-// const error = logger.error("Hello, I Am A Error");
-const info2 = logger.info("Hello, I Am A Info Log!");
-// const fatal = logger.fatal({
-//   errors: [
-//     new Error("Hello, I Am A Fatal Log!"),
-//     new Error("This Is A My Error"),
-//   ],
-// });
-// const prefix = logger.prefix(undefined, "Hello, I Am A Prefix Log!");
-console.timeEnd("time start");
-logger.setSettings({ levelLog: [IOLevelLog.ALL] });
 
-// logger.log(logger.getAllLogObj().allLogObj.data);
+const info = logger.info("Hello, I Am A Info Log!");
 
-// const loggerChild = logger.child({ key: "value" });
+logger.info(info);
 
-// const info = loggerChild.info("Hello This Is A Child Logger");
+const childLogger = logger.child({ a: "b" }, { c: "d", childProp: { a: "c" } });
 
-// loggerChild.info(info);
+const info1 = childLogger.info(childLogger);
 
-// logger.log(log);
-// logger.info(warn);
-// logger.info(error);
-// logger.log(debug);
-// logger.info(info);
-// logger.info(fatal);
-// logger.info(prefix);
-// logger.log(logger.getAllLogObj().allLogObj.data);
+childLogger.info(info1);
 
-// const childLogger = logger.child({ a: "b" });
+const info2 = childLogger.info("hi");
 
-// const info = childLogger.info("Hello");
-
-// logger.info(info);
+childLogger.info(info2);

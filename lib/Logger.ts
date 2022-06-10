@@ -23,8 +23,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       short = false,
       levelLog = [IOLevelLog.NONE],
     }: IOLoggerInterface,
-    onInit: IOOnloadInterface = (Logger) => {},
-    childOpt: P = {} as P
+    bindingOpt: P = {} as P
   ) {
     super(
       {
@@ -34,10 +33,8 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
         short,
         levelLog,
       },
-      childOpt
+      bindingOpt
     );
-    onInit(Logger);
-    this.onInit = onInit;
   }
   public static create<P extends {} = {}>(
     {
@@ -48,7 +45,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       levelLog = [IOLevelLog.NONE],
     }: IOLoggerInterface,
     onInit: IOOnloadInterface = (Logger) => {},
-    childOpt: P = {} as P
+    bindingOpt: P = {} as P
   ) {
     return new Logger(
       {
@@ -58,8 +55,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
         short,
         levelLog,
       },
-      onInit,
-      childOpt
+      bindingOpt
     );
   }
   public static get VERSION(): string {
@@ -67,21 +63,5 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
   }
   public get VERSION(): string {
     return VERSION_STR;
-  }
-  public static isProd(env: string = "LOGGER_ENV"): boolean {
-    const envValue = env in process.env;
-    const getFromProcess =
-      Number.parseInt(process.env[env]!, 10) === 1 ||
-      process.env[env] === "production" ||
-      process.env[env] === "prod";
-    return envValue ? getFromProcess : false;
-  }
-  public isProd(env: string = "LOGGER_ENV"): boolean {
-    const envValue = env in process.env;
-    const getFromProcess =
-      Number.parseInt(process.env[env]!, 10) === 1 ||
-      process.env[env] === "production" ||
-      process.env[env] === "prod";
-    return envValue ? getFromProcess : false;
   }
 }

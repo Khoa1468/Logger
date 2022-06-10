@@ -1,6 +1,5 @@
 import { Logger as LoggerClass } from "./Logger.js";
 import { ForegroundColor } from "chalk";
-import internal from "stream";
 
 const enum IOLevelLog {
   NONE = 0,
@@ -25,6 +24,8 @@ interface IOSetting extends IOLoggerInterface {
 }
 
 type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & P;
+
+type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> & LP;
 
 interface IOOnloadInterface {
   (Logger: typeof LoggerClass): void;
@@ -102,5 +103,6 @@ export {
   IOLevelLog,
   IOPrefixOption,
   IOReturnType,
+  ChildLogger,
   // LevelLog,
 };

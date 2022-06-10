@@ -2,13 +2,15 @@
 
 ## 1.6.8
 
-- Remove log(), debug() logging method
+- Removed log(), debug() logging method
 
 - Optimized the code for better perfomance
 
-- Removing isLoggedAt, isType, isDisplayRootFile
+- Removed isLoggedAt, isType, isDisplayRootFile
 
 - Change name IOReturnType interface to IOBaseReturnType
+
+- Print-out function changed to process.stdout; process.stderr for better perfomance
 
 - Adding NEW IOReturnType
 
@@ -47,7 +49,7 @@
 - Adding child() method
 
   ```ts
-  // child() method will create children logger object will extends all properties in IOReturnType interface and merge with your properties binding in args
+  // child() method will create children logger object will extends all properties in IOReturnType interface and parent logger then merge with your properties binding in args
 
   import { Logger, IOLevelLog } from "@khoa1468/logger";
 
@@ -56,8 +58,9 @@
     levelLog: [IOLevelLog.ALL],
   });
 
-  const childLogger = logger.child({ a: "b" });
-
+  const childLogger = logger.child({ a: "b" }, { c: "d" });
+  //                               ↑               ↑
+  //                    <Binding argument> <Logger properties argument>
   const info = childLogger.info("Hi");
 
   /*----------------LOG DATA----------------*/
@@ -66,31 +69,22 @@
     {
       a: "b" <YOUR BINDING DATA>
       pid: <Process ID>
-      levelLog: 'info', <Your prefix>
-      data: [ 'Hi' ], <Your message datas format as array>
-      loggedAt: <Your Time>,
-      hostName: <Your Host Name>,
-      instanceName: <Your Instance Name>,
-      cagetory: <Your Cagetory By Default Is Your Host Name>,
-      filePath: <Your File Path>,
-      fullFilePath: <Your File Path>,
-      lineNumber: <Line Number>,
-      lineColumm: <Line Culumm>,
-      methodName: <Method Using prefix() logging function>,
-      functionName: <Function Using prefix() logging function>,
-      isConstructor: <Is Using In Constructor Of Your Class>,
-      typeName: <Type Of Scope>,
-      setting: {
-        instanceName: <Your Instance Name>,
-        isLoggedAt: true,
-        isType: true,
-        isDisplayRootFile: true,
-        cagetoryName: <Your Cagetory By Default Is Your Host Name>,
-        hostName: <Your Host Name>,
-        format: 'pretty',
-        levelLog: [ 5 ]
-      },
-      toJson: [Function: toJson]
+      <Some Log Object Property>
+  */
+
+  /*----------------LOGGER PROPERTY WHEN PRINT OUT CONSOLE----------------*/
+
+  /*
+    Logger {
+      name: <Logger Name>,
+      cagetoryName: <Your Cagetory Name>,
+      hostname: <Host Name>,
+      format: <Your Format>,
+      short: <Print Short>,
+      pid: <Process ID>,
+      levelLog: <Level Log>,
+      childProp: <Your Binding Argument>,
+      c: 'd' <Your Logger Properties Argument>
     }
   */
   ```
