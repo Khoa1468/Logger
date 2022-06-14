@@ -22,6 +22,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       format = "hidden",
       short = false,
       levelLog = [IOLevelLog.NONE],
+      useColor = true,
     }: IOLoggerInterface,
     bindingOpt: P = {} as P
   ) {
@@ -32,6 +33,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
         format,
         short,
         levelLog,
+        useColor,
       },
       bindingOpt
     );
@@ -43,6 +45,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       format = "hidden",
       short = false,
       levelLog = [IOLevelLog.NONE],
+      useColor = true,
     }: IOLoggerInterface,
     onInit: IOOnloadInterface = (Logger) => {},
     bindingOpt: P = {} as P
@@ -54,6 +57,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
         format,
         short,
         levelLog,
+        useColor,
       },
       bindingOpt
     );

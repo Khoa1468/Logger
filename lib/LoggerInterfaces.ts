@@ -11,12 +11,15 @@ const enum IOLevelLog {
 
 type IOLevelLogList = IOLevelLog[];
 
+type IOChildLoggerProperty<LP> = { loggerProps: LP };
+
 interface IOLoggerInterface {
   instanceName?: string;
   cagetoryName?: string;
   format?: "json" | "pretty" | "hidden";
   short?: boolean;
   levelLog?: IOLevelLogList;
+  useColor?: boolean;
 }
 
 interface IOSetting extends IOLoggerInterface {
@@ -25,7 +28,8 @@ interface IOSetting extends IOLoggerInterface {
 
 type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & P;
 
-type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> & LP;
+type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> &
+  IOChildLoggerProperty<LP>;
 
 interface IOOnloadInterface {
   (Logger: typeof LoggerClass): void;
@@ -78,9 +82,7 @@ interface IOErrorParam<T> {
   detail?: T;
 }
 
-type IOError = Error | any;
-
-// type IOLevelLog = (0 | 1 | 2 | 3 | 4 | 5)[];
+type IOError = Error;
 
 interface IOPrefixOption {
   prefix?: string;
@@ -104,5 +106,5 @@ export {
   IOPrefixOption,
   IOReturnType,
   ChildLogger,
-  // LevelLog,
+  IOChildLoggerProperty,
 };

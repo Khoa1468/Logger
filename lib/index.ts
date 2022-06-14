@@ -30,6 +30,7 @@ function getLogger<P extends {}>(
           format: "hidden",
           short: false,
           levelLog: [0],
+          useColor: true,
         },
     bindingOpt
   );

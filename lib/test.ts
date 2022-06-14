@@ -1,27 +1,35 @@
+import { format } from "util";
 import { Logger } from "./Logger.js";
 import { IOLevelLog } from "./LoggerInterfaces.js";
 
 const logger = new Logger({
   format: "pretty",
   levelLog: [IOLevelLog.ALL],
+  useColor: true,
 });
 
-const info = logger.info("Hello, I Am A Info Log!");
+// console.time("time");
 
-const prefix = logger.prefix(
-  { prefix: "My Prefix", color: "white" },
-  "Hello, I Am A Prefix Log!"
-);
+// logger.info("This is a info message");
 
-logger.info(info);
-logger.info(prefix);
+// // console.timeEnd("time");
 
-const childLogger = logger.child({ a: "b" }, { c: "d", childProp: { a: "c" } });
+// const childLogger = logger.child(
+//   { childLoggerReturnProperty: "Hi" },
+//   { childLoggerProperty: "Hello" }
+// );
 
-const info1 = childLogger.info(childLogger);
+// console.time("time");
 
-childLogger.info(info1);
+// const info = childLogger.info("This is a info message");
 
-const info2 = childLogger.info("hi");
+// childLogger.info(info.childLoggerReturnProperty);
 
-childLogger.info(info2);
+// childLogger.info(childLogger.loggerProps.childLoggerProperty);
+
+// console.timeEnd("time");
+console.time("time");
+// logger.fatal({ errors: [new Error("Hi")] });
+logger.info("Hello");
+// process.stdout.write(format.apply(null, ["Hello"]));
+console.timeEnd("time");
