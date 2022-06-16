@@ -8,28 +8,11 @@ const logger = new Logger({
   useColor: true,
 });
 
-// console.time("time");
+const childLogger = logger.child(
+  { a: "b" },
+  { c: "d", childProps: { a: "c" } }
+);
 
-// logger.info("This is a info message");
+const info = childLogger.info(childLogger.loggerProps);
 
-// // console.timeEnd("time");
-
-// const childLogger = logger.child(
-//   { childLoggerReturnProperty: "Hi" },
-//   { childLoggerProperty: "Hello" }
-// );
-
-// console.time("time");
-
-// const info = childLogger.info("This is a info message");
-
-// childLogger.info(info.childLoggerReturnProperty);
-
-// childLogger.info(childLogger.loggerProps.childLoggerProperty);
-
-// console.timeEnd("time");
-console.time("time");
-// logger.fatal({ errors: [new Error("Hi")] });
-logger.info("Hello");
-// process.stdout.write(format.apply(null, ["Hello"]));
-console.timeEnd("time");
+childLogger.info({ hello: "world" });

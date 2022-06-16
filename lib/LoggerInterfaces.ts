@@ -26,7 +26,9 @@ interface IOSetting extends IOLoggerInterface {
   hostName: string;
 }
 
-type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & P;
+type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & {
+  bindingProps: P;
+};
 
 type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> &
   IOChildLoggerProperty<LP>;

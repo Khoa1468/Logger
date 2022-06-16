@@ -16,7 +16,7 @@ import {
   IOChildLoggerProperty,
 } from "./LoggerInterfaces.js";
 import { get as callsites, StackFrame, parse } from "./stacktrace";
-import { Logger as LoggerClass } from "./Logger.js";
+import { ChildClass, Logger as LoggerClass } from "./Logger.js";
 import { hostname } from "os";
 import { format } from "util";
 
@@ -26,7 +26,7 @@ export class LoggerUtils<P extends {}> {
   protected hostname = hostname();
   protected format: "hidden" | "json" | "pretty" = "hidden";
   protected short: boolean = false;
-  protected childProp: P;
+  protected childProps: P;
   protected useColor: boolean;
   private pid = process.pid;
   protected levelLog: IOLevelLogList = [IOLevelLog.NONE];
@@ -49,7 +49,7 @@ export class LoggerUtils<P extends {}> {
     this.format = format;
     this.short = short;
     this.levelLog = levelLog;
-    this.childProp = childOpt;
+    this.childProps = childOpt;
     this.useColor = useColor;
   }
   private write(...data: any[]): void {
@@ -71,16 +71,13 @@ export class LoggerUtils<P extends {}> {
     const fullFilePath: string | null = callsites()[3].getFileName();
     const lineNumber: number | null = callsites()[3].getLineNumber();
     const lineColumm: number | null = callsites()[3].getColumnNumber();
-    const basePrefixString = `[Type: ${type}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${
-      this.pid
-    }] ${
-      this.useColor
-        ? chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)
-        : `[${this.cagetoryName}]`
-    }`;
     const prefixString = this.useColor
-      ? chalk.keyword(color)(basePrefixString)
-      : basePrefixString;
+      ? chalk.keyword(color)(
+          `[Type: ${type}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${
+            this.pid
+          }] ${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
+        )
+      : `[Type: ${type}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${this.pid}] [${this.cagetoryName}]`;
     return {
       ToString: prefixString,
       filePath,
@@ -321,7 +318,7 @@ export class LoggerUtils<P extends {}> {
       cagetory: this.cagetoryName,
       ...stackObj,
       setting: this.listSetting(),
-      ...this.childProp,
+      bindingProps: this.childProps,
       toJson() {
         return JSON.stringify(this);
       },
@@ -371,10 +368,10 @@ export class LoggerUtils<P extends {}> {
     bindingOpt?: T,
     loggerOpt?: LP
   ): ChildLogger<P & T, LP> {
-    const childLogger: LoggerClass<P & T> = new LoggerClass<P & T>(
+    const childLogger: LoggerClass<P & T> = new ChildClass<P & T>(
       this.listSetting(),
       {
-        ...this.childProp,
+        ...this.childProps,
         ...(bindingOpt ?? ({} as T)),
       }
     );
