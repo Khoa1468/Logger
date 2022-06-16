@@ -13,11 +13,11 @@ import {
   IOPrefixOption,
   IOReturnType,
   ChildLogger,
+  IOChildLoggerProperty,
 } from "./LoggerInterfaces.js";
 import { get as callsites, StackFrame, parse } from "./stacktrace";
-import { Logger as LoggerClass } from "./Logger.js";
+import { ChildClass, Logger as LoggerClass } from "./Logger.js";
 import { hostname } from "os";
-import { defaults } from "./merge.js";
 import { format } from "util";
 
 export class LoggerUtils<P extends {}> {
@@ -26,7 +26,8 @@ export class LoggerUtils<P extends {}> {
   protected hostname = hostname();
   protected format: "hidden" | "json" | "pretty" = "hidden";
   protected short: boolean = false;
-  protected childProp: P;
+  protected childProps: P;
+  protected useColor: boolean;
   private pid = process.pid;
   protected levelLog: IOLevelLogList = [IOLevelLog.NONE];
   /**
@@ -39,6 +40,7 @@ export class LoggerUtils<P extends {}> {
       format = "hidden",
       short = false,
       levelLog = [IOLevelLog.NONE],
+      useColor = true,
     }: IOLoggerInterface,
     childOpt: P = {} as P
   ) {
@@ -47,7 +49,8 @@ export class LoggerUtils<P extends {}> {
     this.format = format;
     this.short = short;
     this.levelLog = levelLog;
-    this.childProp = childOpt;
+    this.childProps = childOpt;
+    this.useColor = useColor;
   }
   private write(...data: any[]): void {
     process.stdout.write(format.apply(null, [...data, "\n"]));
@@ -68,12 +71,15 @@ export class LoggerUtils<P extends {}> {
     const fullFilePath: string | null = callsites()[3].getFileName();
     const lineNumber: number | null = callsites()[3].getLineNumber();
     const lineColumm: number | null = callsites()[3].getColumnNumber();
+    const prefixString = this.useColor
+      ? chalk.keyword(color)(
+          `[Type: ${type}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${
+            this.pid
+          }] ${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`
+        )
+      : `[Type: ${type}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${this.pid}] [${this.cagetoryName}]`;
     return {
-      ToString: `[Type: ${chalk.keyword(color)(
-        type
-      )}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${
-        this.pid
-      }] ${chalk.whiteBright(`[${chalk.cyanBright(this.cagetoryName)}]`)}`,
+      ToString: prefixString,
       filePath,
       lineNumber,
       lineColumm,
@@ -127,6 +133,7 @@ export class LoggerUtils<P extends {}> {
       hostName: this.hostname,
       format: this.format,
       levelLog: this.levelLog,
+      useColor: this.useColor,
     };
   }
   public get loggerName(): string {
@@ -197,31 +204,18 @@ export class LoggerUtils<P extends {}> {
         if (this.format === "pretty") {
           this.write(
             `${
-              this.short
-                ? ""
-                : `${
-                    message
-                      ? `${chalk.keyword(color)(timeAndType.ToString)}`
-                      : ""
-                  }`
+              this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`
             }`,
             ...message
           );
+          return ioLogObject;
         } else if (this.format === "json") {
           this.write(
             `${
-              this.short
-                ? ""
-                : `${
-                    message
-                      ? `${chalk.keyword(color)(timeAndType.ToString)}`
-                      : ""
-                  }`
+              this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`
             }`,
             this.toJson(ioLogObject, this.censor(ioLogObject))
           );
-          return ioLogObject;
-        } else if (this.format === "hidden") {
           return ioLogObject;
         }
       }
@@ -272,56 +266,34 @@ export class LoggerUtils<P extends {}> {
                 ? ""
                 : `${
                     errorList
-                      ? `${chalk.keyword("magenta")(
-                          timeAndType.ToString
-                        )}\n--------------------------------------------------------------------------`
+                      ? `${timeAndType.ToString}\n--------------------------------------------------------------------------`
                       : ""
                   }`
             }`
           );
-          errorList.errors.forEach((err: Error) => {
-            this.errWrite("", "Message:", chalk.redBright(err.message));
-            this.errWrite(
-              "",
-              `============================================== \n`,
-              ""
-            );
-            this.errWrite("", `${chalk.bgRed("STACK:")} \n`, "");
+          for (var i = 0, len = errorList.errors.length; i < len; i++) {
+            let err = errorList.errors[i];
+            this.errWrite("", "Message:", chalk.redBright(err.message), "\n");
+            this.errWrite("", `${chalk.bgRed("STACK:")} \n`);
             this.errWrite(
               "",
               chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`))
             );
-            if (errorList.errors.length >= 2) {
+            if (errorList.errors.length >= 1) {
               this.errWrite(
                 `--------------------------------------------------------------------------`
               );
             } else {
               false;
             }
-            return err;
-          });
-          if (errorList.errors.length < 2) {
-            this.errWrite(
-              `--------------------------------------------------------------------------`
-            );
-          } else {
-            false;
           }
         } else if (this.format === "json") {
           this.errWrite(
             `${
-              this.short
-                ? ""
-                : `${
-                    errorList
-                      ? `${chalk.keyword("magenta")(timeAndType.ToString)}`
-                      : ""
-                  }`
+              this.short ? "" : `${errorList ? `${timeAndType.ToString}` : ""}`
             }`,
             this.toJson(ioLogObject, this.censor(ioLogObject))
           );
-          return ioLogObject;
-        } else if (this.format === "hidden") {
           return ioLogObject;
         }
         return ioLogObject;
@@ -346,7 +318,7 @@ export class LoggerUtils<P extends {}> {
       cagetory: this.cagetoryName,
       ...stackObj,
       setting: this.listSetting(),
-      ...this.childProp,
+      bindingProps: this.childProps,
       toJson() {
         return JSON.stringify(this);
       },
@@ -396,10 +368,16 @@ export class LoggerUtils<P extends {}> {
     bindingOpt?: T,
     loggerOpt?: LP
   ): ChildLogger<P & T, LP> {
-    const childLogger = new LoggerClass<P & T>(this.listSetting(), {
-      ...this.childProp,
-      ...(bindingOpt ?? ({} as T)),
-    });
-    return defaults(childLogger, loggerOpt);
+    const childLogger: LoggerClass<P & T> = new ChildClass<P & T>(
+      this.listSetting(),
+      {
+        ...this.childProps,
+        ...(bindingOpt ?? ({} as T)),
+      }
+    );
+
+    return Object.assign(childLogger, {
+      loggerProps: loggerOpt,
+    } as IOChildLoggerProperty<LP>);
   }
 }

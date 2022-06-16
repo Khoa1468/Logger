@@ -1,5 +1,9 @@
 # Start From 1.6.7 version
 
+## 1.6.9
+
+- Small fixed, increase perfomance
+
 ## 1.6.8
 
 - Removed log(), debug() logging method

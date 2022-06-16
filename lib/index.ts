@@ -17,10 +17,7 @@ import {
   IOReturnType,
 } from "./LoggerInterfaces.js";
 
-function getLogger<P extends {}>(
-  opts?: IOLoggerInterface,
-  bindingOpt: P = {} as P
-): Logger<P> {
+function getLogger<P extends {}>(opts?: IOLoggerInterface): Logger<P> {
   const instanceName = opts?.instanceName || hostname();
   return new Logger(
     opts != null
@@ -30,8 +27,8 @@ function getLogger<P extends {}>(
           format: "hidden",
           short: false,
           levelLog: [0],
-        },
-    bindingOpt
+          useColor: true,
+        }
   );
 }
 

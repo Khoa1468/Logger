@@ -6,7 +6,7 @@ import {
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
-const VERSION_STR = "1.6.8-lastest";
+const VERSION_STR = "1.6.9";
 /**
  * This Is My Logger
  */
@@ -15,16 +15,14 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
   /**
    * This Is My Logger
    */
-  constructor(
-    {
-      instanceName = hostname(),
-      cagetoryName = instanceName,
-      format = "hidden",
-      short = false,
-      levelLog = [IOLevelLog.NONE],
-    }: IOLoggerInterface,
-    bindingOpt: P = {} as P
-  ) {
+  constructor({
+    instanceName = hostname(),
+    cagetoryName = instanceName,
+    format = "hidden",
+    short = false,
+    levelLog = [IOLevelLog.NONE],
+    useColor = true,
+  }: IOLoggerInterface) {
     super(
       {
         instanceName,
@@ -32,8 +30,9 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
         format,
         short,
         levelLog,
+        useColor,
       },
-      bindingOpt
+      {} as P
     );
   }
   public static create<P extends {} = {}>(
@@ -43,25 +42,48 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       format = "hidden",
       short = false,
       levelLog = [IOLevelLog.NONE],
+      useColor = true,
     }: IOLoggerInterface,
     onInit: IOOnloadInterface = (Logger) => {},
     bindingOpt: P = {} as P
   ) {
-    return new Logger(
-      {
-        instanceName,
-        cagetoryName,
-        format,
-        short,
-        levelLog,
-      },
-      bindingOpt
-    );
+    return new Logger({
+      instanceName,
+      cagetoryName,
+      format,
+      short,
+      levelLog,
+      useColor,
+    });
   }
   public static get VERSION(): string {
     return VERSION_STR;
   }
   public get VERSION(): string {
     return VERSION_STR;
+  }
+}
+
+export class ChildClass<P extends {}> extends Logger<P> {
+  constructor(
+    {
+      instanceName = hostname(),
+      cagetoryName = instanceName,
+      format = "hidden",
+      short = false,
+      levelLog = [IOLevelLog.NONE],
+      useColor = true,
+    }: IOLoggerInterface,
+    bindingOpts: P = {} as P
+  ) {
+    super({
+      instanceName,
+      cagetoryName,
+      format,
+      short,
+      levelLog,
+      useColor,
+    });
+    this.childProps = bindingOpts;
   }
 }
