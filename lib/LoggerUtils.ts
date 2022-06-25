@@ -15,10 +15,13 @@ import {
   ChildLogger,
   IOChildLoggerProperty,
 } from "./LoggerInterfaces.js";
-import { get as callsites, StackFrame, parse } from "./stacktrace";
 import { ChildClass, Logger as LoggerClass } from "./Logger.js";
 import { hostname } from "os";
 import { format } from "util";
+import ErrorStackParser from "error-stack-parser";
+import { StackFrame } from "error-stack-parser";
+
+const parse = ErrorStackParser.parse.bind(ErrorStackParser);
 
 export class LoggerUtils<P extends {}> {
   protected name: string = "";
@@ -58,8 +61,11 @@ export class LoggerUtils<P extends {}> {
   private errWrite(...data: any[]): void {
     process.stderr.write(format.apply(null, [...data, "\n"]));
   }
-  protected cleanPath(path: string | null): string {
-    if (path === null) return "";
+  public getBindingOpt(): Readonly<P> {
+    return Object.freeze(this.childProps);
+  }
+  protected cleanPath(path: string | undefined): string {
+    if (path === undefined) return "";
     return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
   }
   public getTimeAndType(
@@ -67,10 +73,10 @@ export class LoggerUtils<P extends {}> {
     color: string = (chalk.Color = "white"),
     loggedAt: string
   ): IOReturnGetTimeAndType {
-    const filePath: string = this.cleanPath(callsites()[3].getFileName());
-    const fullFilePath: string | null = callsites()[3].getFileName();
-    const lineNumber: number | null = callsites()[3].getLineNumber();
-    const lineColumm: number | null = callsites()[3].getColumnNumber();
+    const frame = parse(new Error("Genesis Error"))[3];
+    const filePath: string = this.cleanPath(frame.getFileName());
+    const lineNumber: number | undefined = frame.getLineNumber();
+    const lineColumm: number | undefined = frame.getColumnNumber();
     const prefixString = this.useColor
       ? chalk.keyword(color)(
           `[Type: ${type}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${
@@ -80,10 +86,6 @@ export class LoggerUtils<P extends {}> {
       : `[Type: ${type}, Time: ${loggedAt}, File: "${filePath}:${lineNumber}:${lineColumm}", PID: ${this.pid}] [${this.cagetoryName}]`;
     return {
       ToString: prefixString,
-      filePath,
-      lineNumber,
-      lineColumm,
-      fullFilePath,
     };
   }
   public getErrorStack(
@@ -96,22 +98,20 @@ export class LoggerUtils<P extends {}> {
         fullFilePath: stack[0].getFileName(),
         lineNumber: stack[0].getLineNumber(),
         lineColumm: stack[0].getColumnNumber(),
-        methodName: stack[0].getMethodName(),
+        methodName: stack[0].getFunctionName(),
         functionName: stack[0].getFunctionName(),
-        isConstructor: stack[0].isConstructor(),
-        typeName: stack[0].getTypeName(),
+        isConstructor: stack[0].getIsConstructor(),
       };
     } else {
-      const localStack = callsites();
+      const localStack = parse(new Error("Genesis Error"));
       return {
         filePath: this.cleanPath(localStack[range].getFileName()),
         fullFilePath: localStack[range].getFileName(),
         lineNumber: localStack[range].getLineNumber(),
         lineColumm: localStack[range].getColumnNumber(),
-        methodName: localStack[range].getMethodName(),
+        methodName: localStack[range].getFunctionName(),
         functionName: localStack[range].getFunctionName(),
-        isConstructor: localStack[range].isConstructor(),
-        typeName: localStack[range].getTypeName(),
+        isConstructor: localStack[range].getIsConstructor(),
       };
     }
   }
@@ -178,7 +178,9 @@ export class LoggerUtils<P extends {}> {
       return value;
     };
   }
-
+  protected checkLevel(range: IOLevelLog): boolean {
+    return this.levelLog.includes(range) || this.levelLog.includes(5);
+  }
   protected handleLog<T extends any[]>(
     type: IOLevelLogId,
     message: IOStd<T>,
@@ -199,25 +201,19 @@ export class LoggerUtils<P extends {}> {
       type,
       message
     );
-    if (this.levelLog.includes(levelRange) || this.levelLog.includes(5)) {
-      if (type !== "fatal") {
-        if (this.format === "pretty") {
-          this.write(
-            `${
-              this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`
-            }`,
-            ...message
-          );
-          return ioLogObject;
-        } else if (this.format === "json") {
-          this.write(
-            `${
-              this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`
-            }`,
-            this.toJson(ioLogObject, this.censor(ioLogObject))
-          );
-          return ioLogObject;
-        }
+    if (this.checkLevel(levelRange)) {
+      if (this.format === "pretty") {
+        this.write(
+          `${this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`}`,
+          ...message
+        );
+        return ioLogObject;
+      } else if (this.format === "json") {
+        this.write(
+          `${this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`}`,
+          this.toJson(ioLogObject, this.censor(ioLogObject))
+        );
+        return ioLogObject;
       }
     }
 
@@ -228,8 +224,8 @@ export class LoggerUtils<P extends {}> {
     detail: object = {}
   ): IOReturnError[] {
     const returnLogObject: IOReturnError[] = [];
-    errorList.errors.map((err: Error) => {
-      const stack: StackFrame[] = parse(err);
+    for (const err of errorList.errors) {
+      const stack = parse(err);
       returnLogObject.push({
         nativeError: err.stack!,
         detail,
@@ -237,7 +233,7 @@ export class LoggerUtils<P extends {}> {
         isError: true,
         ...this.getErrorStack(stack),
       });
-    });
+    }
     return returnLogObject;
   }
   protected handleLogFatal<T extends object>(
@@ -376,8 +372,11 @@ export class LoggerUtils<P extends {}> {
       }
     );
 
-    return Object.assign(childLogger, {
-      loggerProps: loggerOpt,
-    } as IOChildLoggerProperty<LP>);
+    return Object.assign(
+      childLogger,
+      Object.freeze({
+        loggerProps: Object.freeze(loggerOpt),
+      } as IOChildLoggerProperty<LP>)
+    );
   }
 }

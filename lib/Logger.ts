@@ -44,8 +44,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       levelLog = [IOLevelLog.NONE],
       useColor = true,
     }: IOLoggerInterface,
-    onInit: IOOnloadInterface = (Logger) => {},
-    bindingOpt: P = {} as P
+    onInit: IOOnloadInterface = (Logger) => {}
   ) {
     return new Logger({
       instanceName,

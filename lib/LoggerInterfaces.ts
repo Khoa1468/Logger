@@ -11,7 +11,7 @@ const enum IOLevelLog {
 
 type IOLevelLogList = IOLevelLog[];
 
-type IOChildLoggerProperty<LP> = { loggerProps: LP };
+type IOChildLoggerProperty<LP> = Readonly<{ loggerProps: Readonly<LP> }>;
 
 interface IOLoggerInterface {
   instanceName?: string;
@@ -31,7 +31,7 @@ type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & {
 };
 
 type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> &
-  IOChildLoggerProperty<LP>;
+  Readonly<IOChildLoggerProperty<LP>>;
 
 interface IOOnloadInterface {
   (Logger: typeof LoggerClass): void;
@@ -39,23 +39,18 @@ interface IOOnloadInterface {
 
 interface IOReturnGetTimeAndType {
   ToString: string;
-  filePath: string;
-  lineNumber: number | null;
-  lineColumm: number | null;
-  fullFilePath: string | null;
 }
 
 type IOStd<T extends any[] = []> = T;
 
 interface IOErrorStack {
   filePath: string;
-  fullFilePath: string | null;
-  lineNumber: number | null;
-  lineColumm: number | null;
-  functionName: string;
-  methodName: string;
-  isConstructor: boolean;
-  typeName: string;
+  fullFilePath: string | undefined;
+  lineNumber: number | undefined;
+  lineColumm: number | undefined;
+  functionName: string | undefined;
+  methodName: string | undefined;
+  isConstructor: boolean | undefined;
 }
 
 interface IOReturnError extends IOErrorStack {

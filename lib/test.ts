@@ -1,4 +1,3 @@
-import { format } from "util";
 import { Logger } from "./Logger.js";
 import { IOLevelLog } from "./LoggerInterfaces.js";
 
@@ -8,11 +7,15 @@ const logger = new Logger({
   useColor: true,
 });
 
+// const info = logger.info("hi");
+
 const childLogger = logger.child(
-  { a: "b" },
-  { c: "d", childProps: { a: "c" } }
+  { thisIsChild: true },
+  { thisIsLoggerOpt: true, hi: "hi" }
 );
 
-const info = childLogger.info(childLogger.loggerProps);
+console.time("time");
 
-childLogger.info({ hello: "world" });
+const info2 = childLogger.info("hi");
+
+console.timeEnd("time");
