@@ -6,7 +6,6 @@ const enum IOLevelLog {
   ERROR = 1,
   WARN = 2,
   NORMAL = 4,
-  ALL = 5,
 }
 
 type IOLevelLogList = IOLevelLog[];
@@ -18,7 +17,7 @@ interface IOLoggerInterface {
   cagetoryName?: string;
   format?: "json" | "pretty" | "hidden";
   short?: boolean;
-  levelLog?: IOLevelLogList;
+  levelLog?: IOLevelLog;
   useColor?: boolean;
 }
 
@@ -33,8 +32,8 @@ type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & {
 type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> &
   Readonly<IOChildLoggerProperty<LP>>;
 
-interface IOOnloadInterface {
-  (Logger: typeof LoggerClass): void;
+interface IOOnloadInterface<P extends {}> {
+  (Logger: LoggerClass<P>): void;
 }
 
 interface IOReturnGetTimeAndType {
@@ -84,6 +83,25 @@ type IOError = Error;
 interface IOPrefixOption {
   prefix?: string;
   color?: typeof ForegroundColor;
+  levelLog?: number;
+}
+
+interface IOKeyEvent {
+  levelChange: [lvl: IOLevelLog, prevLvl: IOLevelLog];
+  logging: [
+    lvl: IOLevelLog,
+    data: IOBaseReturnType<any[]>,
+    msg: string,
+    timeStamp: Date
+  ];
+  fatalLogging: [
+    lvl: IOLevelLog,
+    data: IOBaseReturnType<IOReturnError[]>,
+    timeStamp: Date,
+    prefix: string,
+    ...errors: IOError[]
+  ];
+  settingChange: [prevSetting: IOSetting, newSetting: IOSetting];
 }
 
 export {
@@ -104,4 +122,5 @@ export {
   IOReturnType,
   ChildLogger,
   IOChildLoggerProperty,
+  IOKeyEvent,
 };

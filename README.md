@@ -1,24 +1,24 @@
 # My First Logger Package
 
-# Installation
+## Installation
 
 ```console
-$ npm install logger
+npm install logger
 ```
 
 or
 
 ```console
-$ yarn add logger
+yarn add logger
 ```
 
 or
 
 ```console
-$ pnpm install logger
+pnpm install logger
 ```
 
-# Basic Usage
+## Basic Usage
 
 - This Package Built In Typescript Declaration
 
@@ -29,7 +29,7 @@ import Logger from "logger";
 
 const logger: Logger = new Logger({});
 
-logger.log("Hello, I Am A Normal Log!");
+logger.info("Hello, I Am A Normal Log!");
 ```
 
 ### Javascript
@@ -39,7 +39,7 @@ import Logger from "logger";
 
 const logger = new Logger({});
 
-logger.log("Hello, I Am A Normal Log!");
+logger.info("Hello, I Am A Normal Log!");
 ```
 
-# I Published Package On My Private NPM Registry
+## I Published Package On My Private NPM Registry

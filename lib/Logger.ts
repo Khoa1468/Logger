@@ -15,14 +15,17 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
   /**
    * This Is My Logger
    */
-  constructor({
-    instanceName = hostname(),
-    cagetoryName = instanceName,
-    format = "hidden",
-    short = false,
-    levelLog = [IOLevelLog.NONE],
-    useColor = true,
-  }: IOLoggerInterface) {
+  constructor(
+    {
+      instanceName = hostname(),
+      cagetoryName = instanceName,
+      format = "hidden",
+      short = false,
+      levelLog = IOLevelLog.NONE,
+      useColor = true,
+    }: IOLoggerInterface,
+    onInit: IOOnloadInterface<P> = (Logger) => {}
+  ) {
     super(
       {
         instanceName,
@@ -34,6 +37,7 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       },
       {} as P
     );
+    onInit(this);
   }
   public static create<P extends {} = {}>(
     {
@@ -41,19 +45,22 @@ export class Logger<P extends {}> extends LoggerUtils<P> {
       cagetoryName = instanceName,
       format = "hidden",
       short = false,
-      levelLog = [IOLevelLog.NONE],
+      levelLog = IOLevelLog.NONE,
       useColor = true,
     }: IOLoggerInterface,
-    onInit: IOOnloadInterface = (Logger) => {}
+    onInit: IOOnloadInterface<P> = (Logger) => {}
   ) {
-    return new Logger({
-      instanceName,
-      cagetoryName,
-      format,
-      short,
-      levelLog,
-      useColor,
-    });
+    return new Logger(
+      {
+        instanceName,
+        cagetoryName,
+        format,
+        short,
+        levelLog,
+        useColor,
+      },
+      onInit
+    );
   }
   public static get VERSION(): string {
     return VERSION_STR;
@@ -70,7 +77,7 @@ export class ChildClass<P extends {}> extends Logger<P> {
       cagetoryName = instanceName,
       format = "hidden",
       short = false,
-      levelLog = [IOLevelLog.NONE],
+      levelLog = IOLevelLog.NONE,
       useColor = true,
     }: IOLoggerInterface,
     bindingOpts: P = {} as P
