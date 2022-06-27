@@ -29,11 +29,18 @@ type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & {
   bindingProps: P;
 };
 
-type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> &
-  Readonly<IOChildLoggerProperty<LP>>;
+type ChildLogger<P extends {}, T extends {}, LP extends {} = {}> = LoggerClass<
+  P & T,
+  P
+> &
+  Readonly<
+    Readonly<{
+      loggerProps: Readonly<LP>;
+    }>
+  >;
 
 interface IOOnloadInterface<P extends {}> {
-  (Logger: LoggerClass<P>): void;
+  (Logger: LoggerClass<P, {}>): void;
 }
 
 interface IOReturnGetTimeAndType {
@@ -86,7 +93,7 @@ interface IOPrefixOption {
   levelLog?: number;
 }
 
-interface IOKeyEvent {
+interface IOKeyEvents {
   levelChange: [lvl: IOLevelLog, prevLvl: IOLevelLog];
   logging: [
     lvl: IOLevelLog,
@@ -102,6 +109,22 @@ interface IOKeyEvent {
     ...errors: IOError[]
   ];
   settingChange: [prevSetting: IOSetting, newSetting: IOSetting];
+  childCreated: [
+    parentLogger: LoggerClass<any, any>,
+    childLogger: LoggerClass<any, any>,
+    childSetting: IOLoggerInterface,
+    childName: string,
+    childProps: any,
+    loggerProps: IOChildLoggerProperty<any>
+  ];
+  willLog: [
+    type: IOLevelLogId,
+    message: any[],
+    prefix: string | undefined,
+    level: IOLevelLog,
+    timeStamp: Date
+  ];
+  loggerNameChange: [prevName: string, newName: string];
 }
 
 export {
@@ -122,5 +145,5 @@ export {
   IOReturnType,
   ChildLogger,
   IOChildLoggerProperty,
-  IOKeyEvent,
+  IOKeyEvents,
 };

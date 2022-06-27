@@ -6,12 +6,17 @@
 
 - Remove `IOLevelLog.ALL`
 
-- Added `events.EventEmitter` with 4 events:
+- Added `events.EventEmitter` with 7 events:
 
-  - `levelChange`
-  - `logging`
-  - `fatalLogging`
-  - `settingChange`
+  - API interface `IOKeyEvents` to get 7 events:
+
+    - `levelChange`
+    - `logging`
+    - `fatalLogging`
+    - `settingChange`
+    - `childCreated`
+    - `willLog`
+    - `loggerNameChange`
 
 - Bring back `onInit()`
 
@@ -30,7 +35,7 @@
 
 - Changed `stacktrace.ts` to `error-stack-parser` package
 
-- `loggerProps` and `childProps` now is read-only
+- `loggerProps`, `childProps` and `getBindingOpt()` now is read-only
 
   ```ts
   const logger = new Logger({
@@ -48,17 +53,51 @@
   childLogger.loggerProps.isChild = false; /* This line will throw Error */
   ```
 
-- Edited `IOErrorStack`
+- Added `isChild`, `parentName`, `parentOldProps` and new `child()` method
 
   ```ts
-  interface IOErrorStack {
-    filePath: string;
-    fullFilePath: string | undefined;
-    lineNumber: number | undefined;
-    lineColumm: number | undefined;
-    functionName: string | undefined;
-    methodName: string | undefined;
-    isConstructor: boolean | undefined;
+  export class Logger<P extends {}, OP extends {} = {}> extends LoggerUtils<P> {
+    public isChild: boolean = false;
+    public parentName: string = "";
+    public parentOldProps: OP = {} as OP;
+
+    /* <Some logic code . . .> */
+
+    public child<T extends {}, LP extends {} = {}>(
+      bindingOpt?: T,
+      loggerOpt?: LP,
+      childSetting: IOLoggerInterface = this.listSetting()
+    ): ChildLogger<P, T, LP> {
+      const childLogger: Logger<P & T, P> = new Logger<P & T, P>({
+        ...this.listSetting(),
+        ...childSetting,
+      });
+
+      const loggerProps = Object.freeze({
+        loggerProps: Object.freeze(loggerOpt),
+      } as IOChildLoggerProperty<LP>);
+
+      let bindingLoggerProps = Object.assign(childLogger, loggerProps);
+
+      bindingLoggerProps.isChild = true;
+      bindingLoggerProps.childProps = {
+        ...this.childProps,
+        ...(bindingOpt ?? ({} as T)),
+      };
+      bindingLoggerProps.parentName = this.loggerName;
+      bindingLoggerProps.parentOldProps = this.getBindingOpt();
+
+      this.emit(
+        "childCreated",
+        this,
+        bindingLoggerProps,
+        childSetting,
+        childSetting.instanceName || this.listSetting().instanceName || "",
+        Object.freeze(bindingOpt!),
+        loggerProps
+      );
+      return bindingLoggerProps;
+    }
   }
   ```
 
@@ -81,12 +120,26 @@
   */
   ```
 
+- Edited `IOErrorStack`
+
+  ```ts
+  interface IOErrorStack {
+    filePath: string;
+    fullFilePath: string | undefined;
+    lineNumber: number | undefined;
+    lineColumm: number | undefined;
+    functionName: string | undefined;
+    methodName: string | undefined;
+    isConstructor: boolean | undefined;
+  }
+  ```
+
 - Added `useExpressLogger()` for `express`
 
   ```ts
   import express from "express";
-  import Logger from "Logger";
-  import { useExpressLogger } from "Logger";
+  import Logger from "@khoa1468/logger";
+  import { useExpressLogger } from "@khoa1468/logger";
 
   const app = express();
 

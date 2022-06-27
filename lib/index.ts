@@ -15,6 +15,7 @@ import {
   IOOnloadInterface,
   IOLevelLogList,
   IOReturnType,
+  IOKeyEvents,
 } from "./LoggerInterfaces.js";
 
 function getLogger<P extends {}>(
@@ -73,6 +74,7 @@ export {
   Logger,
   IOLevelLogList,
   IOReturnType,
+  IOKeyEvents,
   getLogger,
   useExpressLogger,
 };

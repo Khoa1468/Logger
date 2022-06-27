@@ -11,21 +11,17 @@ import {
   IOErrorStack,
   IOPrefixOption,
   IOReturnType,
-  ChildLogger,
-  IOChildLoggerProperty,
-  IOKeyEvent,
 } from "./LoggerInterfaces.js";
-import { ChildClass, Logger as LoggerClass } from "./Logger.js";
 import { hostname } from "os";
 import { format } from "util";
 import ErrorStackParser from "error-stack-parser";
 import { StackFrame } from "error-stack-parser";
 import type { ForegroundColor } from "chalk";
-import events from "node:events";
+import { LoggerEvent } from "./LoggerEvents.js";
 
 const parse = ErrorStackParser.parse.bind(ErrorStackParser);
 
-export class LoggerUtils<P extends {}> extends events.EventEmitter {
+export class LoggerUtils<P extends {}> extends LoggerEvent {
   protected name: string = "";
   protected cagetoryName: string = "";
   protected hostname = hostname();
@@ -57,15 +53,13 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
     this.levelLog = levelLog;
     this.childProps = childOpt;
     this.useColor = useColor;
+    this.setMaxListeners(0);
   }
   private formatString(...data: any[]): string {
     return format.apply(null, [...data]);
   }
   private write(...data: any[]): void {
     process.stdout.write(this.formatString(...data, "\n"));
-  }
-  private errWrite(...data: any[]): void {
-    process.stderr.write(this.formatString(...data, "\n"));
   }
   public getBindingOpt(): Readonly<P> {
     return Object.freeze(this.childProps);
@@ -130,6 +124,7 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
     useColor = this.useColor,
   }: IOLoggerInterface): void {
     this.emit("settingChange", this.listSetting(), {
+      ...this.listSetting(),
       instanceName,
       cagetoryName,
       format,
@@ -163,6 +158,11 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
   }
   public set loggerName(newName: string) {
     if (newName.length > 1) {
+      this.emit("loggerNameChange", this.loggerName, newName);
+      this.emit("settingChange", this.listSetting(), {
+        ...this.listSetting(),
+        instanceName: newName,
+      });
       this.loggerName = newName;
     } else {
       throw Error("newName error");
@@ -210,6 +210,7 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
     prefix?: string,
     levelRange: IOLevelLog = 0
   ): IOReturnType<T, P> {
+    this.emit("willLog", type, message, prefix, levelRange, new Date());
     const typeUpper = prefix ?? type.charAt(0).toUpperCase() + type.slice(1);
     const loggedAt = `${
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
@@ -265,9 +266,22 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
     }
     return returnLogObject;
   }
+  protected writePrettyFatal(err: Error) {
+    this.write(
+      "",
+      "Message:",
+      chalk.redBright(err.message),
+      "\n\n",
+      `${chalk.bgRed("STACK:")} \n\n`,
+      chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`)),
+      "\n",
+      `--------------------------------------------------------------------------`
+    );
+  }
   protected handleLogFatal<T extends object>(
     errorList: IOErrorParam<T>
   ): IOReturnType<IOReturnError[], P> {
+    this.emit("willLog", "fatal", errorList.errors, undefined, 1, new Date());
     const loggedAt = `${
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
     }`;
@@ -302,8 +316,9 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
         ...errorList.errors
       );
       if (!this.checkLevel(1)) return ioLogObject;
+      if (errorList.errors.length < 1) return ioLogObject;
       if (this.format === "pretty") {
-        this.errWrite(
+        this.write(
           `${
             this.short
               ? ""
@@ -316,22 +331,10 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
         );
         for (var i = 0, len = errorList.errors.length; i < len; i++) {
           let err = errorList.errors[i];
-          this.errWrite("", "Message:", chalk.redBright(err.message), "\n");
-          this.errWrite("", `${chalk.bgRed("STACK:")} \n`);
-          this.errWrite(
-            "",
-            chalk.yellow(err.stack?.replace(/at /g, `${chalk.red("• ")}`))
-          );
-          if (errorList.errors.length >= 1) {
-            this.errWrite(
-              `--------------------------------------------------------------------------`
-            );
-          } else {
-            false;
-          }
+          this.writePrettyFatal(err);
         }
       } else if (this.format === "json") {
-        this.errWrite(
+        this.write(
           `${
             this.short ? "" : `${errorList ? `${timeAndType.ToString}` : ""}`
           }`,
@@ -413,55 +416,5 @@ export class LoggerUtils<P extends {}> extends events.EventEmitter {
       opt.prefix,
       opt.levelLog
     );
-  }
-  public child<T extends {}, LP extends {} = {}>(
-    bindingOpt?: T,
-    loggerOpt?: LP
-  ): ChildLogger<P & T, LP> {
-    const childLogger: LoggerClass<P & T> = new ChildClass<P & T>(
-      this.listSetting(),
-      {
-        ...this.childProps,
-        ...(bindingOpt ?? ({} as T)),
-      }
-    );
-
-    return Object.assign(
-      childLogger,
-      Object.freeze({
-        loggerProps: Object.freeze(loggerOpt),
-      } as IOChildLoggerProperty<LP>)
-    );
-  }
-  public on<K extends keyof IOKeyEvent>(
-    eventName: K,
-    listener: (...args: IOKeyEvent[K]) => void
-  ): this {
-    super.on(eventName, listener as (...args: any) => void);
-    return this;
-  }
-  public emit<K extends keyof IOKeyEvent>(
-    eventName: K,
-    ...args: IOKeyEvent[K]
-  ): boolean {
-    return super.emit(eventName, ...args);
-  }
-  public once<K extends keyof IOKeyEvent>(
-    eventName: K,
-    listener: (...args: IOKeyEvent[K]) => void
-  ): this {
-    super.once(eventName, listener as (...args: any) => void);
-    return this;
-  }
-  public off<K extends keyof IOKeyEvent>(
-    eventName: K,
-    listener: (...args: IOKeyEvent[K]) => void
-  ): this {
-    super.off(eventName, listener as (...args: any) => void);
-    return this;
-  }
-  public removeAllListeners<K extends keyof IOKeyEvent>(event?: K): this {
-    super.removeAllListeners(event);
-    return this;
   }
 }

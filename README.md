@@ -25,7 +25,7 @@ pnpm install logger
 ### Typescript
 
 ```ts
-import Logger from "logger";
+import Logger from "@khoa1468/logger";
 
 const logger: Logger = new Logger({});
 
@@ -35,7 +35,7 @@ logger.info("Hello, I Am A Normal Log!");
 ### Javascript
 
 ```js
-import Logger from "logger";
+import Logger from "@khoa1468/logger";
 
 const logger = new Logger({});
 

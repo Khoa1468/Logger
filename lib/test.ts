@@ -1,40 +1,40 @@
 import { Logger } from "./Logger.js";
 import { format } from "util";
 
-const logger = new Logger({
+const logger = new Logger<{ hi: string } & { hi2: string }, { hi2: string }>({
   format: "pretty",
   levelLog: Number.POSITIVE_INFINITY,
   useColor: true,
+  instanceName: "mainLogger",
 });
 
-logger.on("logging", (lvl, data, msg) => {
-  process.stdout.write(format.apply(null, [msg]));
-});
-
-logger.on("fatalLogging", (lvl, data, timeStamp, prefix, errors) => {
-  process.stdout.write(format.apply(null, [prefix]));
-});
-
-logger.on("levelChange", (lvl, prev) => {
-  process.stdout.write(
-    format.apply(null, ["Previous level:", prev, "Now level:", lvl])
+logger.on("willLog", (type, message, prefix, level, timeStamp) => {
+  console.log(
+    format("%s %s %s %s %s", timeStamp, prefix, type, level, message)
   );
 });
 
-logger.on("settingChange", (prev, newSetting) => {
-  process.stdout.write(
-    format.apply(null, ["Previous setting:", prev, "Now setting: ", newSetting])
-  );
-});
+logger.on(
+  "childCreated",
+  (
+    parentLogger,
+    childLogger,
+    childSetting,
+    childName,
+    childProps,
+    loggerProps
+  ) => {
+    console.log(childName);
+  }
+);
 
-console.time("time");
+// console.time("time");
 
-logger.info("Hello");
+// logger.info("Hello");
 
-console.timeEnd("time");
+// console.timeEnd("time");
 
-const childLogger = logger.child({ a: "b" }, { isChild: true });
+const loggerChild = logger.child({ hi: "hello" });
+const loggerChild2 = loggerChild.child({ hi2: "hello" });
 
-childLogger.getBindingOpt().a;
-
-childLogger.loggerProps.isChild;
+loggerChild2.info(loggerChild2.isChild);
