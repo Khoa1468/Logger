@@ -220,26 +220,26 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       color,
       loggedAt
     );
+    const stringToPrint = this.formatString(
+      `${this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`}`,
+      ...message
+    );
     const ioLogObject: IOReturnType<T, P> = this.returnTypeFunction(
       type,
-      message
+      message,
+      stringToPrint
     );
     this.emit(
       "logging",
       this.levelLog,
       ioLogObject,
-      this.formatString(
-        `${this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`}`,
-        ...message
-      ),
+      this.formatString(...message),
+      stringToPrint,
       new Date()
     );
     if (!this.checkLevel(levelRange)) return ioLogObject;
     if (this.format === "pretty") {
-      this.write(
-        `${this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`}`,
-        ...message
-      );
+      this.write(stringToPrint);
     } else if (this.format === "json") {
       this.write(
         `${this.short ? "" : `${message ? `${timeAndType.ToString}` : ""}`}`,
@@ -295,26 +295,9 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
         errorList,
         errorList.detail
       );
+      let errorString = "";
       const ioLogObject: IOReturnType<IOReturnError[], P> =
-        this.returnTypeFunction("fatal", ioLogDataError);
-      this.emit(
-        "logging",
-        this.levelLog,
-        ioLogObject,
-        this.formatString(
-          `${timeAndType.ToString}`,
-          "This is A Fatal Logging Can't Print Out"
-        ),
-        new Date()
-      );
-      this.emit(
-        "fatalLogging",
-        this.levelLog,
-        ioLogObject,
-        new Date(),
-        timeAndType.ToString,
-        ...errorList.errors
-      );
+        this.returnTypeFunction("fatal", ioLogDataError, "");
       if (!this.checkLevel(1)) return ioLogObject;
       if (errorList.errors.length < 1) return ioLogObject;
       if (this.format === "pretty") {
@@ -332,7 +315,26 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
         for (var i = 0, len = errorList.errors.length; i < len; i++) {
           let err = errorList.errors[i];
           this.writePrettyFatal(err);
+          errorString += this.formatString(err);
         }
+        this.emit(
+          "logging",
+          this.levelLog,
+          ioLogObject,
+          errorString,
+          errorString,
+          new Date()
+        );
+        this.emit(
+          "fatalLogging",
+          this.levelLog,
+          ioLogObject,
+          new Date(),
+          timeAndType.ToString,
+          errorString,
+          ...errorList.errors
+        );
+        ioLogObject.ToString += errorString;
       } else if (this.format === "json") {
         this.write(
           `${
@@ -349,7 +351,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
   }
   protected returnTypeFunction<T extends any[]>(
     type: IOLevelLogId,
-    message: T
+    message: T,
+    ToString: string
   ): IOReturnType<T, P> {
     const stackObj = this.getErrorStack(undefined, 4);
     return {
@@ -362,6 +365,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       ...stackObj,
       setting: this.listSetting(),
       bindingProps: this.childProps,
+      ToString: ToString,
       toJson() {
         return JSON.stringify(this);
       },

@@ -78,6 +78,7 @@ interface IOBaseReturnType<T extends any[] = []> extends IOErrorStack {
   setting?: IOSetting;
   toJson: () => string;
   pid: number;
+  ToString: string | undefined | null;
 }
 
 interface IOErrorParam<T> {
@@ -99,6 +100,7 @@ interface IOKeyEvents {
     lvl: IOLevelLog,
     data: IOBaseReturnType<any[]>,
     msg: string,
+    toString: string,
     timeStamp: Date
   ];
   fatalLogging: [
@@ -106,6 +108,7 @@ interface IOKeyEvents {
     data: IOBaseReturnType<IOReturnError[]>,
     timeStamp: Date,
     prefix: string,
+    errorString: string,
     ...errors: IOError[]
   ];
   settingChange: [prevSetting: IOSetting, newSetting: IOSetting];

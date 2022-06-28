@@ -9,7 +9,7 @@ const logger = new Logger<{ hi: string } & { hi2: string }, { hi2: string }>({
 });
 
 logger.on("willLog", (type, message, prefix, level, timeStamp) => {
-  console.log(
+  process.stdout.write(
     format("%s %s %s %s %s", timeStamp, prefix, type, level, message)
   );
 });
@@ -28,13 +28,13 @@ logger.on(
   }
 );
 
-// console.time("time");
+console.time("time");
 
-// logger.info("Hello");
+const info = logger.info("Hello");
 
-// console.timeEnd("time");
+console.timeEnd("time");
 
-const loggerChild = logger.child({ hi: "hello" });
-const loggerChild2 = loggerChild.child({ hi2: "hello" });
+// const loggerChild = logger.child({ hi: "hello" });
+// const loggerChild2 = loggerChild.child({ hi2: "hello" });
 
-loggerChild2.info(loggerChild2.isChild);
+// loggerChild2.info(loggerChild2.isChild);
