@@ -4,11 +4,14 @@
     "target": "es2019",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./lib",
+    // "rootDir": "./lib",
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "exclude": [
+    "./test/"
+  ]
 }

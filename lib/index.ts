@@ -15,9 +15,13 @@ import {
   IOOnloadInterface,
   IOLevelLogList,
   IOReturnType,
+  IOKeyEvents,
 } from "./LoggerInterfaces.js";
 
-function getLogger<P extends {}>(opts?: IOLoggerInterface): Logger<P> {
+function getLogger<P extends {}>(
+  opts?: IOLoggerInterface,
+  onInit: IOOnloadInterface<P> = (Logger) => {}
+): Logger<P> {
   const instanceName = opts?.instanceName || hostname();
   return new Logger(
     opts != null
@@ -26,10 +30,32 @@ function getLogger<P extends {}>(opts?: IOLoggerInterface): Logger<P> {
           cagetoryName: instanceName,
           format: "hidden",
           short: false,
-          levelLog: [0],
+          levelLog: IOLevelLog.NONE,
           useColor: true,
-        }
+        },
+    onInit
   );
+}
+
+function useExpressLogger<P extends {}>(
+  logger: Logger<P>,
+  opts: IOLoggerInterface = {}
+) {
+  logger.setSettings(opts);
+
+  return async (req: any, res: any, next: any) => {
+    const start = Date.now();
+    next();
+    const ms = Date.now() - start;
+    const date = new Date().toLocaleString();
+    logger.info(
+      `[${date}] ${req.hostname} ${req.ip} - ${req.protocol.toUpperCase()} ${
+        req.method
+      } ${req.originalUrl} - ${ms}ms - ${req.headers["user-agent"]} - ${
+        res.statusCode
+      }`
+    );
+  };
 }
 
 export {
@@ -48,5 +74,7 @@ export {
   Logger,
   IOLevelLogList,
   IOReturnType,
+  IOKeyEvents,
   getLogger,
+  useExpressLogger,
 };

@@ -6,19 +6,18 @@ const enum IOLevelLog {
   ERROR = 1,
   WARN = 2,
   NORMAL = 4,
-  ALL = 5,
 }
 
 type IOLevelLogList = IOLevelLog[];
 
-type IOChildLoggerProperty<LP> = { loggerProps: LP };
+type IOChildLoggerProperty<LP> = Readonly<{ loggerProps: Readonly<LP> }>;
 
 interface IOLoggerInterface {
   instanceName?: string;
   cagetoryName?: string;
   format?: "json" | "pretty" | "hidden";
   short?: boolean;
-  levelLog?: IOLevelLogList;
+  levelLog?: IOLevelLog;
   useColor?: boolean;
 }
 
@@ -30,32 +29,34 @@ type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & {
   bindingProps: P;
 };
 
-type ChildLogger<P extends {}, LP extends {}> = LoggerClass<P> &
-  IOChildLoggerProperty<LP>;
+type ChildLogger<P extends {}, T extends {}, LP extends {} = {}> = LoggerClass<
+  P & T,
+  P
+> &
+  Readonly<
+    Readonly<{
+      loggerProps: Readonly<LP>;
+    }>
+  >;
 
-interface IOOnloadInterface {
-  (Logger: typeof LoggerClass): void;
+interface IOOnloadInterface<P extends {}> {
+  (Logger: LoggerClass<P, {}>): void;
 }
 
 interface IOReturnGetTimeAndType {
   ToString: string;
-  filePath: string;
-  lineNumber: number | null;
-  lineColumm: number | null;
-  fullFilePath: string | null;
 }
 
 type IOStd<T extends any[] = []> = T;
 
 interface IOErrorStack {
   filePath: string;
-  fullFilePath: string | null;
-  lineNumber: number | null;
-  lineColumm: number | null;
-  functionName: string;
-  methodName: string;
-  isConstructor: boolean;
-  typeName: string;
+  fullFilePath: string | undefined;
+  lineNumber: number | undefined;
+  lineColumm: number | undefined;
+  functionName: string | undefined;
+  methodName: string | undefined;
+  isConstructor: boolean | undefined;
 }
 
 interface IOReturnError extends IOErrorStack {
@@ -77,6 +78,7 @@ interface IOBaseReturnType<T extends any[] = []> extends IOErrorStack {
   setting?: IOSetting;
   toJson: () => string;
   pid: number;
+  ToString: string | undefined | null;
 }
 
 interface IOErrorParam<T> {
@@ -89,6 +91,43 @@ type IOError = Error;
 interface IOPrefixOption {
   prefix?: string;
   color?: typeof ForegroundColor;
+  levelLog?: number;
+}
+
+interface IOKeyEvents {
+  levelChange: [lvl: IOLevelLog, prevLvl: IOLevelLog];
+  logging: [
+    lvl: IOLevelLog,
+    data: IOBaseReturnType<any[]>,
+    msg: string,
+    toString: string,
+    timeStamp: Date
+  ];
+  fatalLogging: [
+    lvl: IOLevelLog,
+    data: IOBaseReturnType<IOReturnError[]>,
+    timeStamp: Date,
+    prefix: string,
+    errorString: string,
+    ...errors: IOError[]
+  ];
+  settingChange: [prevSetting: IOSetting, newSetting: IOSetting];
+  childCreated: [
+    parentLogger: LoggerClass<any, any>,
+    childLogger: LoggerClass<any, any>,
+    childSetting: IOLoggerInterface,
+    childName: string,
+    childProps: any,
+    loggerProps: IOChildLoggerProperty<any>
+  ];
+  willLog: [
+    type: IOLevelLogId,
+    message: any[],
+    prefix: string | undefined,
+    level: IOLevelLog,
+    timeStamp: Date
+  ];
+  loggerNameChange: [prevName: string, newName: string];
 }
 
 export {
@@ -109,4 +148,5 @@ export {
   IOReturnType,
   ChildLogger,
   IOChildLoggerProperty,
+  IOKeyEvents,
 };
