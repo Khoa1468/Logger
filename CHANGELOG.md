@@ -57,10 +57,15 @@
 
   ```ts
   export class Logger<P extends {}, OP extends {} = {}> extends LoggerUtils<P> {
-    public isChild: boolean = false;
-    public parentName: string = "";
-    public parentOldProps: OP = {} as OP;
-
+    private _isChild: boolean = false;
+    private _parentName: string = "";
+    public parentOldProps: Readonly<OP> = {} as Readonly<OP>;
+    public get isChild(): boolean {
+      return this._isChild;
+    }
+    public get parentName(): string {
+      return this._parentName;
+    }
     /* <Some logic code . . .> */
 
     public child<T extends {}, LP extends {} = {}>(
