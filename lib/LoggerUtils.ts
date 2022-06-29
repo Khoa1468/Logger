@@ -55,16 +55,16 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     this.useColor = useColor;
     this.setMaxListeners(0);
   }
-  private formatString(...data: any[]): string {
+  private _formatString(...data: any[]): string {
     return format.apply(null, [...data]);
   }
-  private write(...data: any[]): void {
-    process.stdout.write(this.formatString(...data, "\n"));
+  private _write(...data: any[]): void {
+    process.stdout.write(this._formatString(...data, "\n"));
   }
   public getBindingOpt(): Readonly<P> {
     return Object.freeze(this.childProps);
   }
-  protected cleanPath(path: string | undefined): string {
+  protected _cleanPath(path: string | undefined): string {
     if (path === undefined) return "";
     return path.replace(/file:\/\/\//, "").replace(/%20/g, " ");
   }
@@ -74,7 +74,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     loggedAt: string
   ): IOReturnGetTimeAndType {
     const frame = parse(new Error("Genesis Error"))[3];
-    const filePath: string = this.cleanPath(frame.getFileName());
+    const filePath: string = this._cleanPath(frame.getFileName());
     const lineNumber: number | undefined = frame.getLineNumber();
     const lineColumm: number | undefined = frame.getColumnNumber();
     const prefixString = this.useColor
@@ -94,7 +94,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
   ): IOErrorStack {
     if (stack) {
       return {
-        filePath: this.cleanPath(stack[0].getFileName()),
+        filePath: this._cleanPath(stack[0].getFileName()),
         fullFilePath: stack[0].getFileName(),
         lineNumber: stack[0].getLineNumber(),
         lineColumm: stack[0].getColumnNumber(),
@@ -105,7 +105,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     } else {
       const localStack = parse(new Error("Genesis Error"));
       return {
-        filePath: this.cleanPath(localStack[range].getFileName()),
+        filePath: this._cleanPath(localStack[range].getFileName()),
         fullFilePath: localStack[range].getFileName(),
         lineNumber: localStack[range].getLineNumber(),
         lineColumm: localStack[range].getColumnNumber(),
@@ -168,7 +168,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       throw Error("newName error");
     }
   }
-  protected getLoggedTime(): string {
+  protected _getLoggedTime(): string {
     return `${
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
     }`;
@@ -183,7 +183,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
   public toPretty<T extends any[]>(data: string): IOReturnType<T, P> {
     return JSON.parse(data);
   }
-  protected censor(censor: any) {
+  protected _censor(censor: any) {
     var i = 0;
 
     return function (key: string, value: any) {
@@ -200,10 +200,10 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       return value;
     };
   }
-  protected checkLevel(range: IOLevelLog): boolean {
+  protected _checkLevel(range: IOLevelLog): boolean {
     return this.levelLog >= range;
   }
-  protected printFatalLog(
+  protected _printFatalLog(
     logObject: IOReturnType<IOReturnError[], P>,
     timeAndType: IOReturnGetTimeAndType,
     errors: Error[] = []
@@ -212,7 +212,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
 
     if (logObject.data.length < 1) return;
     if (this.format === "pretty") {
-      this.write(
+      this._write(
         `${
           this.short
             ? ""
@@ -225,8 +225,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       );
       for (var i = 0, len = logObject.data.length; i < len; i++) {
         let err = logObject.data[i].defaultError;
-        this.writePrettyFatal(err);
-        errorString += this.formatString(err);
+        this._writePrettyFatal(err);
+        errorString += this._formatString(err);
       }
       this.emit(
         "fatalLogging",
@@ -238,7 +238,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       );
     }
   }
-  protected printPrettyLog<T extends any[]>(
+  protected _printPrettyLog<T extends any[]>(
     logObject: IOReturnType<T, P>,
     errors: Error[] = []
   ): void {
@@ -250,20 +250,20 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       logObject.color,
       loggedAt
     );
-    const stringToPrint = this.formatString(
+    const stringToPrint = this._formatString(
       `${
         this.short ? "" : `${logObject.data ? `${timeAndType.ToString}` : ""}`
       }`,
       ...logObject.data
     );
-    if (!this.checkLevel(logObject.levelRange)) return;
+    if (!this._checkLevel(logObject.levelRange)) return;
     if (logObject.levelLog !== "fatal") {
-      this.write(stringToPrint);
+      this._write(stringToPrint);
     } else {
-      this.printFatalLog(logObject, timeAndType, errors);
+      this._printFatalLog(logObject, timeAndType, errors);
     }
   }
-  protected printJsonLog<T extends any[]>(
+  protected _printJsonLog<T extends any[]>(
     logObject: IOReturnType<T, P>,
     errors: Error[] = []
   ): void {
@@ -285,15 +285,15 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
         errors
       );
     }
-    this.write(
+    this._write(
       `${
         this.short ? "" : `${logObject.data ? `${timeAndType.ToString}` : ""}`
       }`,
-      this.toJson(logObject, this.censor(logObject)),
+      this.toJson(logObject, this._censor(logObject)),
       "\n"
     );
   }
-  protected handleLog<T extends any[]>(
+  protected _handleLog<T extends any[]>(
     type: IOLevelLogId,
     message: IOStd<T>,
     color: typeof ForegroundColor = (chalk.Color = "white"),
@@ -302,7 +302,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     errors: Error[] = []
   ): IOReturnType<T, P> {
     this.emit("willLog", type, message, prefix, levelRange, new Date());
-    const ioLogObject: IOReturnType<T, P> = this.returnTypeFunction(
+    const ioLogObject: IOReturnType<T, P> = this._makeLogObject(
       type,
       message,
       prefix ?? type.charAt(0).toUpperCase() + type.slice(1),
@@ -313,18 +313,18 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       "logging",
       this.levelLog,
       ioLogObject,
-      this.formatString(...ioLogObject.data),
+      this._formatString(...ioLogObject.data),
       new Date()
     );
-    if (!this.checkLevel(levelRange)) return ioLogObject;
+    if (!this._checkLevel(levelRange)) return ioLogObject;
     if (this.format === "pretty") {
-      this.printPrettyLog(ioLogObject, errors);
+      this._printPrettyLog(ioLogObject, errors);
     } else if (this.format === "json") {
-      this.printJsonLog(ioLogObject);
+      this._printJsonLog(ioLogObject);
     }
     return ioLogObject;
   }
-  protected getDataError<T extends object>(
+  protected _getDataError<T extends object>(
     errorList: IOErrorParam<T>,
     detail: object = {}
   ): IOReturnError[] {
@@ -342,8 +342,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     }
     return returnLogObject;
   }
-  protected writePrettyFatal(err: Error) {
-    this.write(
+  protected _writePrettyFatal(err: Error) {
+    this._write(
       "",
       "Message:",
       chalk.redBright(err.message),
@@ -354,7 +354,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       `--------------------------------------------------------------------------`
     );
   }
-  protected returnTypeFunction<T extends any[]>(
+  protected _makeLogObject<T extends any[]>(
     type: IOLevelLogId,
     message: T,
     prefix: string = "",
@@ -365,7 +365,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     return {
       levelLog: type,
       data: message,
-      loggedAt: this.getLoggedTime(),
+      loggedAt: this._getLoggedTime(),
       hostName: this.hostname,
       instanceName: this.loggerName,
       cagetory: this.cagetoryName,
@@ -382,7 +382,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     };
   }
   public warn<T extends any[]>(...message: IOStd<T>): IOReturnType<T, P> {
-    return this.handleLog.apply(this, [
+    return this._handleLog.apply(this, [
       "warn",
       message,
       (chalk.Color = "yellowBright"),
@@ -391,7 +391,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     ]);
   }
   public error<T extends any[]>(...message: IOStd<T>): IOReturnType<T, P> {
-    return this.handleLog.apply(this, [
+    return this._handleLog.apply(this, [
       "error",
       message,
       (chalk.Color = "redBright"),
@@ -400,7 +400,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     ]);
   }
   public info<T extends any[]>(...message: IOStd<T>): IOReturnType<T, P> {
-    return this.handleLog.apply(this, [
+    return this._handleLog.apply(this, [
       "info",
       message,
       (chalk.Color = "cyanBright"),
@@ -411,11 +411,11 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
   public fatal<T extends object>(
     error: IOErrorParam<T>
   ): IOReturnType<IOReturnError[], P> {
-    const ioLogDataError: IOReturnError[] = this.getDataError(
+    const ioLogDataError: IOReturnError[] = this._getDataError(
       error,
       error.detail
     );
-    return this.handleLog.apply(this, [
+    return this._handleLog.apply(this, [
       "fatal",
       ioLogDataError,
       "magentaBright",
@@ -432,7 +432,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       color: opt.color ?? "magentaBright",
       levelLog: opt.levelLog ?? 4,
     };
-    return this.handleLog.apply(this, [
+    return this._handleLog.apply(this, [
       "prefix",
       message,
       opt.color,

@@ -14,11 +14,9 @@ const logger = new Logger({
 
 console.time("time");
 
-const info = logger.info("Hi");
+logger.info("Hi");
 
 console.timeEnd("time");
-
-logger.info(info);
 
 // logger.fatal({ errors: [new Error("Hi")] });
 
