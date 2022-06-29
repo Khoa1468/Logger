@@ -60,6 +60,7 @@ interface IOErrorStack {
 }
 
 interface IOReturnError extends IOErrorStack {
+  defaultError: Error;
   nativeError: string;
   detail: object | undefined;
   user: string;
@@ -70,6 +71,9 @@ type IOLevelLogId = "warn" | "info" | "error" | "fatal" | "prefix";
 
 interface IOBaseReturnType<T extends any[] = []> extends IOErrorStack {
   levelLog: IOLevelLogId;
+  prefix: string;
+  color: typeof ForegroundColor;
+  levelRange: IOLevelLog;
   data: IOStd<T>;
   loggedAt: string;
   hostName: string;
@@ -78,7 +82,6 @@ interface IOBaseReturnType<T extends any[] = []> extends IOErrorStack {
   setting?: IOSetting;
   toJson: () => string;
   pid: number;
-  ToString: string | undefined | null;
 }
 
 interface IOErrorParam<T> {
@@ -100,7 +103,6 @@ interface IOKeyEvents {
     lvl: IOLevelLog,
     data: IOBaseReturnType<any[]>,
     msg: string,
-    toString: string,
     timeStamp: Date
   ];
   fatalLogging: [
@@ -108,8 +110,7 @@ interface IOKeyEvents {
     data: IOBaseReturnType<IOReturnError[]>,
     timeStamp: Date,
     prefix: string,
-    errorString: string,
-    ...errors: IOError[]
+    errors: IOError[]
   ];
   settingChange: [prevSetting: IOSetting, newSetting: IOSetting];
   childCreated: [
