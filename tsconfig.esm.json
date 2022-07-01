@@ -4,14 +4,11 @@
     "target": "es2019",
     "module": "esnext",
     "outDir": "./dist/esm",
-    // "rootDir": "./lib",
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": [
-    "./test/"
-  ]
+  "exclude": ["./test/"]
 }
