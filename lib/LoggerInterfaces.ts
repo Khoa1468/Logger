@@ -82,6 +82,7 @@ interface IOBaseReturnType<T extends any[] = []> extends IOErrorStack {
   setting?: IOSetting;
   toJson: () => string;
   pid: number;
+  fullPrefix: IOReturnGetTimeAndType;
 }
 
 interface IOErrorParam<T> {
@@ -103,7 +104,8 @@ interface IOKeyEvents {
     lvl: IOLevelLog,
     data: IOBaseReturnType<any[]>,
     msg: string,
-    timeStamp: Date
+    timeStamp: Date,
+    prefix: string
   ];
   fatalLogging: [
     lvl: IOLevelLog,
@@ -129,6 +131,7 @@ interface IOKeyEvents {
     timeStamp: Date
   ];
   loggerNameChange: [prevName: string, newName: string];
+  error: [stdout: string, error: Error];
 }
 
 export {

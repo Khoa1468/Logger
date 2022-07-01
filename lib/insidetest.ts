@@ -1,26 +1,45 @@
-import { Logger } from "./Logger.js";
+import { Logger } from "./";
 import { format } from "util";
 
-const logger = new Logger({
+function printOut(...data: any[]) {
+  process.stdout.write(format.apply(null, data));
+}
+
+const logger: Logger<{}, {}> = new Logger({
   format: "pretty",
   levelLog: Number.POSITIVE_INFINITY,
   useColor: true,
   instanceName: "mainLogger",
+  short: false,
 });
 
+// logger.on("logging", (lvl, data, msg, timeStamp, prefix) => {
+//   printOut(lvl, data, msg, timeStamp, prefix);
+// });
+
 // logger.on("fatalLogging", (lvl, data, timeStamp, prefix, errors) => {
-//   logger.info(errors);
+//   printOut(lvl, data, timeStamp, prefix, errors);
 // });
 
 console.time("time");
 
-logger.info("Hi");
+// const info = logger.info("Hi");
 
 console.timeEnd("time");
 
-// logger.fatal({ errors: [new Error("Hi")] });
+// logger.fatal({ errors: [new Error("Hello"), new TypeError("Hi")] });
 
-// const loggerChild = logger.child({ hi: "hello" });
-// const loggerChild2 = loggerChild.child({ hi2: "hello" });
+const bruh: any[] = [];
 
-// loggerChild2.info(loggerChild2.isChild);
+for (var i in logger) {
+  bruh.push(i);
+}
+
+logger.info(bruh);
+logger.info(bruh.length);
+
+// logger.info(Object.getOwnPropertyNames(logger));
+
+// Object.getPrototypeOf
+
+// const childLogger = logger.child({ hello: "world" }, { isChild: true });

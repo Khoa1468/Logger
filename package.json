@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "npm run build && node ./dist/insidetest.js",
-    "build": "rmdir /s /q .\\dist\\ && tsc -b tsconfig.build.json tsconfig.esm.json tsconfig.types.json"
+    "build": "node ./build.js"
   },
   "author": "Khoa1468 <khoalam1468@gmail.com>",
   "license": "MIT",

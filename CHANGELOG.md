@@ -1,5 +1,9 @@
 # Start From 1.6.7 version
 
+## 1.6.11
+
+- Small fix, clean code, increase performance
+
 ## 1.6.10
 
 - Increase performance
