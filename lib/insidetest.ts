@@ -1,45 +1,29 @@
-import { Logger } from "./";
+import { Logger } from "./Logger.js";
 import { format } from "util";
+import chalk from "chalk";
 
 function printOut(...data: any[]) {
   process.stdout.write(format.apply(null, data));
 }
 
 const logger: Logger<{}, {}> = new Logger({
-  format: "pretty",
+  format: "json",
   levelLog: Number.POSITIVE_INFINITY,
   useColor: true,
   instanceName: "mainLogger",
   short: false,
 });
 
-// logger.on("logging", (lvl, data, msg, timeStamp, prefix) => {
-//   printOut(lvl, data, msg, timeStamp, prefix);
-// });
-
-// logger.on("fatalLogging", (lvl, data, timeStamp, prefix, errors) => {
-//   printOut(lvl, data, timeStamp, prefix, errors);
-// });
-
 console.time("time");
 
-// const info = logger.info("Hi");
+const info = logger.info("Hi");
 
 console.timeEnd("time");
 
-// logger.fatal({ errors: [new Error("Hello"), new TypeError("Hi")] });
+chalk["grey"];
 
-const bruh: any[] = [];
+// logger.info(info);
 
-for (var i in logger) {
-  bruh.push(i);
-}
+// const fatal = logger.fatal({ errors: [new Error("Hi")] });
 
-logger.info(bruh);
-logger.info(bruh.length);
-
-// logger.info(Object.getOwnPropertyNames(logger));
-
-// Object.getPrototypeOf
-
-// const childLogger = logger.child({ hello: "world" }, { isChild: true });
+// logger.info(fatal.data[0].filePath);

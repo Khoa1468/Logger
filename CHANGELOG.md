@@ -4,6 +4,8 @@
 
 - Small fix, clean code, increase performance
 
+- Added colorized with `json` print type
+
 ## 1.6.10
 
 - Increase performance
