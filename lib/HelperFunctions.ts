@@ -38,7 +38,7 @@ namespace Helper {
     if (args["0"] === undefined) return "";
     return args["0"].replace(/file:\/\/\//, "").replace(/%20/g, " ");
   }
-  export function getTimeAndType(
+  export function getPrefix(
     ...args: ArgWithoutInstance["getTime"]
   ): IOReturnGetTimeAndType {
     const frame = parse(new Error("Genesis Error"))[3];

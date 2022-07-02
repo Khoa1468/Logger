@@ -243,7 +243,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
     }`;
     const prefixName = prefix ?? type.charAt(0).toUpperCase() + type.slice(1);
-    const timeAndType = Helper.getTimeAndType.apply(this, [
+    const fullPrefix = Helper.getPrefix.apply(this, [
       prefixName,
       color,
       loggedAt,
@@ -251,7 +251,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     const logObject: IOReturnType<T, P> = this._makeLogObject(
       type,
       message,
-      timeAndType,
+      fullPrefix,
       prefixName,
       levelRange,
       color
