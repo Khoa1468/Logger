@@ -20,13 +20,17 @@
   },
   "scripts": {
     "test": "npm run build && node ./dist/insidetest.js",
-    "build": "rmdir /s /q .\\dist\\ && tsc -b tsconfig.build.json tsconfig.esm.json tsconfig.types.json"
+    "build": "node ./build.js",
+    "esm": "node ./dist/esm/insidetest.js",
+    "build_esm": "node ./build_esm.js",
+    "test_esm": "npm run build_esm && npm run esm"
   },
   "author": "Khoa1468 <khoalam1468@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
-    "error-stack-parser": "^2.1.4"
+    "error-stack-parser": "^2.1.4",
+    "json-colorizer": "^2.2.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

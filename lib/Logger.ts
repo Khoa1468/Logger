@@ -8,12 +8,15 @@ import {
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
-const VERSION_STR = "1.6.10";
+const VERSION_STR = "1.6.11";
 /**
  * This Is My Logger
  */
 
-export class Logger<P extends {}, OP extends {} = {}> extends LoggerUtils<P> {
+export class Logger<
+  P extends {} = {},
+  OP extends {} = {}
+> extends LoggerUtils<P> {
   private _isChild: boolean = false;
   private _parentName: string = "";
   public parentOldProps: Readonly<OP> = {} as Readonly<OP>;
@@ -96,8 +99,8 @@ export class Logger<P extends {}, OP extends {} = {}> extends LoggerUtils<P> {
     let bindingLoggerProps = Object.assign(childLogger, loggerProps);
 
     bindingLoggerProps._isChild = true;
-    bindingLoggerProps.childProps = {
-      ...this.childProps,
+    bindingLoggerProps._childProps = {
+      ...this._childProps,
       ...(bindingOpt ?? ({} as T)),
     };
     bindingLoggerProps._parentName = this.loggerName;

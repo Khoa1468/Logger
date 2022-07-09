@@ -1,40 +1,29 @@
 import { Logger } from "./Logger.js";
 import { format } from "util";
+import chalk from "chalk";
 
-const logger = new Logger<{ hi: string } & { hi2: string }, { hi2: string }>({
-  format: "pretty",
+function printOut(...data: any[]) {
+  process.stdout.write(format.apply(null, data));
+}
+
+const logger: Logger<{}, {}> = new Logger({
+  format: "json",
   levelLog: Number.POSITIVE_INFINITY,
   useColor: true,
   instanceName: "mainLogger",
+  short: false,
 });
-
-logger.on("willLog", (type, message, prefix, level, timeStamp) => {
-  process.stdout.write(
-    format("%s %s %s %s %s", timeStamp, prefix, type, level, message)
-  );
-});
-
-logger.on(
-  "childCreated",
-  (
-    parentLogger,
-    childLogger,
-    childSetting,
-    childName,
-    childProps,
-    loggerProps
-  ) => {
-    console.log(childName);
-  }
-);
 
 console.time("time");
 
-const info = logger.info("Hello");
+const info = logger.info("Hi");
 
 console.timeEnd("time");
 
-// const loggerChild = logger.child({ hi: "hello" });
-// const loggerChild2 = loggerChild.child({ hi2: "hello" });
+chalk["grey"];
 
-// loggerChild2.info(loggerChild2.isChild);
+// logger.info(info);
+
+// const fatal = logger.fatal({ errors: [new Error("Hi")] });
+
+// logger.info(fatal.data[0].filePath);
