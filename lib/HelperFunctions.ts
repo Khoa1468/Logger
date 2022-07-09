@@ -1,4 +1,3 @@
-import { LoggerUtils } from "./LoggerUtils";
 import { ForegroundColor } from "chalk";
 import chalk from "chalk";
 import ErrorStackParser from "error-stack-parser";
@@ -13,10 +12,6 @@ import {
 
 const parse: (error: Error) => StackFrame[] =
   ErrorStackParser.parse.bind(ErrorStackParser);
-
-interface IDefaultArg {
-  default: [instance: LoggerUtils<any>];
-}
 
 interface IFunctionArg {
   getTime: [type: string, color: typeof ForegroundColor, loggedAt: string];
