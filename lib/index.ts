@@ -16,7 +16,15 @@ import {
   IOLevelLogList,
   IOReturnType,
   IOKeyEvents,
+  IOTransportProvider,
 } from "./LoggerInterfaces.js";
+import { Helper } from "./HelperFunctions.js";
+
+const toJson: (
+  data: any,
+  replacer?: ((this: any, key: string, value: any) => any) | undefined,
+  spacing?: string | number | undefined
+) => string = Helper.toJson;
 
 function getLogger<P extends {}>(
   opts?: IOLoggerInterface,
@@ -75,6 +83,8 @@ export {
   IOLevelLogList,
   IOReturnType,
   IOKeyEvents,
+  IOTransportProvider,
   getLogger,
   useExpressLogger,
+  toJson,
 };

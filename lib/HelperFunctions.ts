@@ -115,6 +115,25 @@ namespace Helper {
       },
     });
   }
+  export function getLoggedTime(): string {
+    return `${
+      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+    }`;
+  }
+  export function censor(censor: any) {
+    var i = 0;
+    return function (key: string, value: any) {
+      if (
+        i !== 0 &&
+        typeof censor === "object" &&
+        typeof value == "object" &&
+        censor == value
+      )
+        return "[Circular]";
+      ++i;
+      return value;
+    };
+  }
 }
 
 export { Helper };

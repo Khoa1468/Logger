@@ -15,6 +15,6 @@ describe("Logging test", () => {
   const logSample = initLogger.info("Hi");
 
   it("hi", () => {
-    expect(logSample.ToString).toEqual(logSample.ToString);
+    expect(logSample.fullPrefix.ToString).toEqual(logSample.fullPrefix.ToString);
   });
 });

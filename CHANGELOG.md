@@ -1,5 +1,61 @@
 # Start From 1.6.7 version
 
+## 1.6.12
+
+- Added transport to function
+
+  ```ts
+  import { Logger, IOReturnType } from "@khoa1468/logger";
+
+  const logger: Logger<{}, {}> = new Logger({
+    format: "pretty",
+    levelLog: Number.POSITIVE_INFINITY,
+    useColor: true,
+    instanceName: "mainLogger",
+    short: false,
+  });
+
+  // This is a transport function when Logger logging, this will be called with passed argument
+  function test(testArg: IOReturnType<any, any>) {
+    console.log(testArg);
+  }
+
+  // This line will create and push new transport provider
+  logger.attachTransport({
+    minLvl: "info",
+    functions: {
+      error: test,
+      fatal: test,
+      warn: test,
+      info: test,
+      prefix: test,
+    },
+  });
+
+  const info = logger.info("Hi");
+  ```
+
+- Added `IOTransportProvider` to create transport provider
+
+  ```ts
+  type IOLevelLogId = "warn" | "info" | "error" | "fatal" | "prefix";
+
+  type IOTransportFunction = {
+    [key in IOLevelLogId]: (logObject: IOReturnType<any, any>) => any;
+  };
+
+  interface IOTransportProvider {
+    functions: IOTransportFunction;
+    minLvl: IOLevelLogId;
+  }
+  ```
+
+- Added `attachTransport(transport: IOTransportProvider)` method to create and push new `IOTransportProvider`
+
+- Added `defaultLevelRange` in `IOBaseReturnType` to get default level range of `prefix` logging method
+
+- Added new `toJson()` to colorize the json string
+
 ## 1.6.11
 
 - Small fix, clean code, increase performance

@@ -10,6 +10,7 @@ import {
   IOReturnError,
   IOPrefixOption,
   IOReturnType,
+  IOTransportProvider,
 } from "./LoggerInterfaces.js";
 import { hostname } from "os";
 import { format } from "util";
@@ -27,6 +28,14 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
   protected _useColor: boolean;
   private _pid = process.pid;
   protected _levelLog: IOLevelLog = IOLevelLog.NONE;
+  private _logLevels: { [key in IOLevelLogId]: number } = {
+    fatal: 1,
+    error: 1,
+    warn: 2,
+    info: 3,
+    prefix: 3,
+  };
+  private _transportProviders: IOTransportProvider[] = [];
   /**
    * This Is My Logger
    */
@@ -113,29 +122,10 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       throw Error("newName error");
     }
   }
-  protected _getLoggedTime(): string {
-    return `${
-      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
-    }`;
-  }
-  protected _censor(censor: any) {
-    var i = 0;
-    return function (key: string, value: any) {
-      if (
-        i !== 0 &&
-        typeof censor === "object" &&
-        typeof value == "object" &&
-        censor == value
-      )
-        return "[Circular]";
-      ++i;
-      return value;
-    };
-  }
   protected _printFatalLog(
     logObject: IOReturnType<IOReturnError[], P>,
     errors: Error[] = []
-  ) {
+  ): void {
     let stringToPrint = "";
     if (!this._short) {
       if (!logObject.data) {
@@ -211,14 +201,14 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     } else {
     }
     stringToPrint += this._formatString(
-      Helper.toJson.apply(this, [logObject, this._censor(logObject), 2])
+      Helper.toJson.apply(this, [logObject, Helper.censor(logObject), 2])
     );
     this._write(stringToPrint);
   }
   protected _printHiddenLog<T extends any[]>(
     logObject: IOReturnType<T, P>,
     errors: Error[] = []
-  ) {
+  ): void {
     if (logObject.levelLog === "fatal") {
       this.emit(
         "fatalLogging",
@@ -256,6 +246,13 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       levelRange,
       color
     );
+    if (this._transportProviders.length >= 1) {
+      this._transportProviders.forEach((provider): void => {
+        if (logObject.defaultLevelRange >= this._logLevels[provider.minLvl]) {
+          provider.functions[type](logObject);
+        }
+      });
+    }
     try {
       this.emit(
         "logging",
@@ -278,7 +275,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     }
     return logObject;
   }
-  protected _writePrettyFatal(err: Error) {
+  protected _writePrettyFatal(err: Error): void {
     this._write(
       "",
       "Message:",
@@ -302,7 +299,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     return {
       levelLog: type,
       data: message,
-      loggedAt: this._getLoggedTime(),
+      loggedAt: Helper.getLoggedTime(),
       hostName: this._hostname,
       instanceName: this.loggerName,
       cagetory: this._cagetoryName,
@@ -315,6 +312,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       pid: this._pid,
       prefix,
       levelRange,
+      defaultLevelRange: type === "prefix" ? 3 : levelRange,
       color,
       fullPrefix,
     };
@@ -343,7 +341,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       message,
       "cyanBright",
       undefined,
-      4,
+      3,
     ]);
   }
   public fatal<T extends object>(
@@ -368,7 +366,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     opt = {
       prefix: opt.prefix ?? "Prefix",
       color: opt.color ?? "magentaBright",
-      levelLog: opt.levelLog ?? 4,
+      levelLog: opt.levelLog ?? 3,
     };
     return this._handleLog.apply(this, [
       "prefix",
@@ -377,5 +375,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       opt.prefix,
       opt.levelLog,
     ]);
+  }
+  public attachTransport(transport: IOTransportProvider): void {
+    this._transportProviders.push(transport);
   }
 }
