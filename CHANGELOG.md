@@ -2,7 +2,7 @@
 
 ## 1.6.12
 
-- Added transport to function
+- Added transport to stdout
   
   ```ts
   import { Logger, IOReturnType } from "@khoa1468/logger";

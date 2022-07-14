@@ -17,8 +17,10 @@ import {
   IOReturnType,
   IOKeyEvents,
   IOTransportProvider,
+  IOFileTransportProvider,
 } from "./LoggerInterfaces.js";
 import { Helper } from "./HelperFunctions.js";
+import { TransportFileProvider } from "./TransportFile.js";
 
 const toJson: (
   data: any,
@@ -84,6 +86,8 @@ export {
   IOReturnType,
   IOKeyEvents,
   IOTransportProvider,
+  IOFileTransportProvider,
+  TransportFileProvider,
   getLogger,
   useExpressLogger,
   toJson,

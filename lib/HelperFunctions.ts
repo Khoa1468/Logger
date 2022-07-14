@@ -8,7 +8,10 @@ import {
   IOLevelLog,
   IOReturnError,
   IOReturnGetTimeAndType,
+  IOReturnType,
 } from "./LoggerInterfaces";
+import { format } from "util";
+import ansiRegex from "ansi-regex";
 
 const parse: (error: Error) => StackFrame[] =
   ErrorStackParser.parse.bind(ErrorStackParser);
@@ -133,6 +136,31 @@ namespace Helper {
       ++i;
       return value;
     };
+  }
+  export function generateDataString(logObject: IOReturnType<any[], any>) {
+    let data = "";
+    if (logObject.levelLog === "fatal") {
+      const newLogObject = logObject as IOReturnType<IOReturnError[], any>;
+      let errorString = "";
+      newLogObject.data.forEach((val) => {
+        errorString += `${
+          val.defaultError.stack?.split("\n")[0].trim() ||
+          `${val.defaultError.name}: ${val.defaultError.message}`
+        } ${val.defaultError.stack?.split("\n")[1].trim()};`;
+      });
+
+      data += format.apply(null, [
+        newLogObject.fullPrefix.ToString,
+        `[${errorString}]`,
+      ]) as string;
+    } else {
+      data += format.apply(null, [
+        logObject.fullPrefix.ToString,
+        ...logObject.data,
+      ]) as string;
+    }
+
+    return data.replace(ansiRegex(), "");
   }
 }
 

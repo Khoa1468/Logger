@@ -10,3 +10,4 @@ dist/*
 storage
 .env
 .npmrc
+logs/*

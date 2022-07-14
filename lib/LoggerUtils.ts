@@ -11,12 +11,15 @@ import {
   IOPrefixOption,
   IOReturnType,
   IOTransportProvider,
+  TransportType,
 } from "./LoggerInterfaces.js";
 import { hostname } from "os";
 import { format } from "util";
 import type { ForegroundColor } from "chalk";
 import { LoggerEvent } from "./LoggerEvents.js";
 import { Helper } from "./HelperFunctions.js";
+import { TransportFileProvider } from "./TransportFile.js";
+import ansiRegex from "ansi-regex";
 
 export class LoggerUtils<P extends {}> extends LoggerEvent {
   protected _name: string = "";
@@ -36,6 +39,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     prefix: 3,
   };
   private _transportProviders: IOTransportProvider[] = [];
+  private _fileTransports: TransportFileProvider[] = [];
+  private _transportType: TransportType;
   /**
    * This Is My Logger
    */
@@ -47,6 +52,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       short = false,
       levelLog = IOLevelLog.NONE,
       useColor = true,
+      transportType = "none",
     }: IOLoggerInterface,
     childOpt: P = {} as P
   ) {
@@ -58,7 +64,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     this._levelLog = levelLog;
     this._childProps = childOpt;
     this._useColor = useColor;
-    this.setMaxListeners(0);
+    this._transportType = transportType;
+    this.setMaxListeners(20);
   }
   private _formatString(...data: any[]): string {
     return format.apply(null, [...data]);
@@ -76,6 +83,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     levelLog = this._levelLog,
     short = this._short,
     useColor = this._useColor,
+    transportType = this._transportType,
   }: IOLoggerInterface): void {
     this.emit("settingChange", this.listSetting(), {
       ...this.listSetting(),
@@ -86,12 +94,14 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       hostName: this._hostname,
       short,
       useColor,
+      transportType,
     });
     this._name = instanceName;
     this._cagetoryName = cagetoryName;
     this._format = format;
     this._short = short;
     this._useColor = useColor;
+    this._transportType = transportType;
     if (this._levelLog !== levelLog) {
       this.emit("levelChange", levelLog, this._levelLog);
       this._levelLog = levelLog;
@@ -220,6 +230,29 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       );
     }
   }
+  protected runTransport<T extends any[]>(logObject: IOReturnType<T, P>): void {
+    if (this._transportType === "stdout") {
+      if (this._transportProviders.length >= 1) {
+        this._transportProviders.forEach((provider): void => {
+          if (logObject.defaultLevelRange >= this._logLevels[provider.minLvl]) {
+            provider.functions[logObject.levelLog](logObject);
+          }
+        });
+      }
+    } else if (this._transportType === "file") {
+      if (this._fileTransports.length >= 1) {
+        this._fileTransports.forEach((file) => {
+          if (
+            logObject.defaultLevelRange >=
+            this._logLevels[file.transportProvider.minLvl]
+          ) {
+            file.write(logObject);
+          }
+        });
+      }
+    } else {
+    }
+  }
   protected _handleLog<T extends any[]>(
     type: IOLevelLogId,
     message: IOStd<T>,
@@ -246,13 +279,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       levelRange,
       color
     );
-    if (this._transportProviders.length >= 1) {
-      this._transportProviders.forEach((provider): void => {
-        if (logObject.defaultLevelRange >= this._logLevels[provider.minLvl]) {
-          provider.functions[type](logObject);
-        }
-      });
-    }
+    this.runTransport(logObject);
     try {
       this.emit(
         "logging",
@@ -378,5 +405,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
   }
   public attachTransport(transport: IOTransportProvider): void {
     this._transportProviders.push(transport);
+  }
+  public attachFileTransport(...transport: TransportFileProvider[]): void {
+    this._fileTransports.push(...transport);
   }
 }

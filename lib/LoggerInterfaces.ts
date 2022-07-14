@@ -19,6 +19,7 @@ interface IOLoggerInterface {
   short?: boolean;
   levelLog?: IOLevelLog;
   useColor?: boolean;
+  transportType?: TransportType;
 }
 
 interface IOSetting extends IOLoggerInterface {
@@ -144,6 +145,17 @@ interface IOTransportProvider {
   minLvl: IOLevelLogId;
 }
 
+interface IOFileTransportProvider {
+  filePath: string;
+  minLvl: IOLevelLogId;
+  newLine?: boolean;
+  initData?: string;
+  initAndRewriteWhenStart?: boolean;
+  verbose?: boolean;
+}
+
+type TransportType = "file" | "stdout" | "none";
+
 export {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -164,4 +176,6 @@ export {
   IOChildLoggerProperty,
   IOKeyEvents,
   IOTransportProvider,
+  IOFileTransportProvider,
+  TransportType,
 };
