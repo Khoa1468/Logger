@@ -7,7 +7,7 @@ if (fs.existsSync(path.join(__dirname, "dist")))
 else fs.mkdirSync(path.join(__dirname, "dist"));
 
 exec(
-  "tsc -b tsconfig.build.json tsconfig.esm.json tsconfig.types.json",
+  "tsc -b tsconfig.build.json tsconfig.types.json",
   (err, stdout, stderr) => {
     if (err) {
       console.log(`error: ${err.message}`);

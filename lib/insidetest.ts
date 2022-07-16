@@ -54,30 +54,28 @@ const filePath = path.join(
   }-${date.getUTCFullYear()}.log`
 );
 
-logger.attachFileTransport(
-  new TransportFileProvider({
-    minLvl: "error",
-    filePath: filePath,
-    newLine: false,
-    initData,
-    initAndRewriteWhenStart: false,
-    verbose: false,
-  })
-  // new TransportFileProvider({
-  //   minLvl: "info",
-  //   filePath: "./logs/error.log",
-  //   newLine: true,
-  //   verbose: true,
-  // })
-);
+// logger.attachFileTransport(
+// new TransportFileProvider({
+//   filePath: filePath,
+//   transportLevels: ["info", "error"],
+//   newLine: true,
+//   initData,
+//   initAndRewriteWhenStart: true,
+//   verbose: true,
+// });
+// );
 
 console.time("time");
-for (let i = 0; i < 10000; i++) {
-  // const info = logger.info("Hello, World!");
-  const info = logger.info(i);
-}
+
+const info = logger.info("Hello, World!");
 
 console.timeEnd("time");
+
+logger.error("Error!");
+
+logger.warn("Warn!");
+
+logger.fatal({ errors: [new Error("Fatal!")] });
 
 // logger.info("Welcome to osu!");
 

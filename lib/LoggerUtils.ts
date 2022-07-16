@@ -243,13 +243,13 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       if (this._fileTransports.length >= 1) {
         this._fileTransports.forEach((file) => {
           if (
-            logObject.defaultLevelRange >=
-            this._logLevels[file.transportProvider.minLvl]
+            file.transportProvider.transportLevels.includes(logObject.levelLog)
           ) {
             file.write(logObject);
           }
         });
       }
+      return;
     } else {
     }
   }

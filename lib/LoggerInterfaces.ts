@@ -147,7 +147,7 @@ interface IOTransportProvider {
 
 interface IOFileTransportProvider {
   filePath: string;
-  minLvl: IOLevelLogId;
+  transportLevels: IOLevelLogId[];
   newLine?: boolean;
   initData?: string;
   initAndRewriteWhenStart?: boolean;

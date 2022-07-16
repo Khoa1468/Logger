@@ -1,9 +1,8 @@
 {
   "name": "@khoa1468/logger",
-  "version": "1.6.11",
+  "version": "1.6.12",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
-  "module": "./dist/esm/index.js",
   "engines": {
     "node": ">=10.0"
   },

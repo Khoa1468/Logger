@@ -8,7 +8,7 @@ import {
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
-const VERSION_STR = "1.6.12-pre1";
+const VERSION_STR = "1.6.12";
 /**
  * This Is My Logger
  */

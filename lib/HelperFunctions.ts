@@ -12,6 +12,7 @@ import {
 } from "./LoggerInterfaces";
 import { format } from "util";
 import ansiRegex from "ansi-regex";
+import fse from "fs-extra";
 
 const parse: (error: Error) => StackFrame[] =
   ErrorStackParser.parse.bind(ErrorStackParser);
@@ -161,6 +162,28 @@ namespace Helper {
     }
 
     return data.replace(ansiRegex(), "");
+  }
+  export function consoleVerbose(logObject: IOReturnType<any[], any>) {
+    process.stdout.write(
+      format.apply(null, [
+        "Verbose log:\n",
+        "Your path:",
+        this.transportProvider.filePath,
+        "\n",
+        "Real path:",
+        fse.realpathSync(this.transportProvider.filePath),
+        "\n",
+        "Path exists:",
+        fse.existsSync(this.transportProvider.filePath),
+        "\n",
+        "Logging level:",
+        logObject.levelLog,
+        "\n",
+        "Logger name:",
+        logObject.instanceName,
+        "\n",
+      ])
+    );
   }
 }
 

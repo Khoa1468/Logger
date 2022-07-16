@@ -1,6 +1,5 @@
 import fse from "fs-extra";
 import { IOFileTransportProvider, IOReturnType } from "./LoggerInterfaces.js";
-import { format } from "util";
 import { Helper } from "./HelperFunctions.js";
 
 export class TransportFileProvider {
@@ -10,20 +9,7 @@ export class TransportFileProvider {
     if (fse.existsSync(this.transportProvider.filePath)) {
       let data = Helper.generateDataString(logObject);
       if (this.transportProvider.verbose) {
-        process.stdout.write(
-          format.apply(null, [
-            "Verbose log:\n",
-            "Your path:",
-            this.transportProvider.filePath,
-            "\n",
-            "Real path:",
-            fse.realpathSync(this.transportProvider.filePath),
-            "\n",
-            "Path Exists:",
-            fse.existsSync(this.transportProvider.filePath),
-            "\n",
-          ])
-        );
+        Helper.consoleVerbose.call(this, logObject);
       }
       data += `${this.transportProvider.newLine ? "\n" : ";"}`;
       if (this.init) {

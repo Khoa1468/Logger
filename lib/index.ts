@@ -42,6 +42,8 @@ function getLogger<P extends {}>(
           short: false,
           levelLog: IOLevelLog.NONE,
           useColor: true,
+          instanceName,
+          transportType: "none",
         },
     onInit
   );

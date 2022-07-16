@@ -2,6 +2,8 @@
 
 ## 1.6.12
 
+- Performance is good, now
+
 - Added transport to stdout
   
   ```ts
@@ -52,9 +54,93 @@
 
 - Added `attachTransport(transport: IOTransportProvider)` method to create and push new `IOTransportProvider`
 
+- Added transport to file
+  
+  - Typescript
+  
+  ```ts
+  import { Logger, TransportFileProvider } from "@khoa1468/logger";
+  import path from "path";
+  
+  const logger = new Logger({
+    format: "pretty",
+    levelLog: Number.POSITIVE_INFINITY,
+    useColor: true,
+    instanceName: "mainLogger",
+    short: false,
+    transportType: "file", /*specify transport type "none" or "file" or "stdout"*/
+  });
+  
+  logger.attachFileTransport(new TransportFileProvider({
+      filePath: path.join(__dirname, "info.log"),
+      transportLevels: ["info", "error"],
+      newLine: true,
+      initData: "",
+      initAndRewriteWhenStart: true,
+      verbose: true,
+  }));
+  
+  logger.info("Hello");
+  ```
+  
+  - Javascript
+  
+  ```js
+  const { Logger, TransportFileProvider } = require("@khoa1468/logger");
+  const path = require("path");
+  
+  const logger = new Logger({
+    format: "pretty",
+    levelLog: Number.POSITIVE_INFINITY,
+    useColor: true,
+    instanceName: "mainLogger",
+    short: false,
+    transportType: "file", /*specify transport type "none" or "file" or "stdout"*/
+  });
+  
+  logger.attachFileTransport(new TransportFileProvider({
+      filePath: path.join(__dirname, "info.log"),
+      transportLevels: ["info", "error"],
+      newLine: true,
+      initData: "",
+      initAndRewriteWhenStart: true,
+      verbose: true,
+  }));
+  
+  logger.info("Hello");
+  ```
+
 - Added `defaultLevelRange` in `IOBaseReturnType` to get default level range of `prefix` logging method
 
 - Added new `toJson()` to colorize the json string
+
+- Added new class `TransportFileProvider`
+  
+  - Declaration of `TransportFileProvider`
+  
+  ```ts
+  export declare class TransportFileProvider {
+      transportProvider: IOFileTransportProvider;
+      private init;
+      constructor(transportProvider: IOFileTransportProvider);
+      write(logObject: IOReturnType<any[], any>): void;
+  }
+  ```
+
+- Added new interface `IOFileTransportProvider`
+  
+  - Declaration of `IOFileTransportProvider`
+  
+  ```ts
+  interface IOFileTransportProvider {
+      filePath: string;
+      transportLevels: IOLevelLogId[];
+      newLine?: boolean;
+      initData?: string;
+      initAndRewriteWhenStart?: boolean;
+      verbose?: boolean;
+  }
+  ```
 
 ## 1.6.11
 
