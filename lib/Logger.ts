@@ -8,7 +8,7 @@ import {
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
-const VERSION_STR = "1.6.11";
+const VERSION_STR = "1.6.12";
 /**
  * This Is My Logger
  */
@@ -37,6 +37,7 @@ export class Logger<
       short = false,
       levelLog = IOLevelLog.NONE,
       useColor = true,
+      transportType = "none",
     }: IOLoggerInterface,
     onInit: IOOnloadInterface<P> = (Logger) => {}
   ) {
@@ -48,6 +49,7 @@ export class Logger<
         short,
         levelLog,
         useColor,
+        transportType,
       },
       {} as P
     );
@@ -61,6 +63,7 @@ export class Logger<
       short = false,
       levelLog = IOLevelLog.NONE,
       useColor = true,
+      transportType = "none",
     }: IOLoggerInterface,
     onInit: IOOnloadInterface<P> = (Logger) => {}
   ) {
@@ -72,6 +75,7 @@ export class Logger<
         short,
         levelLog,
         useColor,
+        transportType,
       },
       onInit
     );

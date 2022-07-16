@@ -5,7 +5,7 @@ const enum IOLevelLog {
   NONE = 0,
   ERROR = 1,
   WARN = 2,
-  NORMAL = 4,
+  NORMAL = 3,
 }
 
 type IOLevelLogList = IOLevelLog[];
@@ -19,6 +19,7 @@ interface IOLoggerInterface {
   short?: boolean;
   levelLog?: IOLevelLog;
   useColor?: boolean;
+  transportType?: TransportType;
 }
 
 interface IOSetting extends IOLoggerInterface {
@@ -74,6 +75,7 @@ interface IOBaseReturnType<T extends any[] = []> extends IOErrorStack {
   prefix: string;
   color: typeof ForegroundColor;
   levelRange: IOLevelLog;
+  defaultLevelRange: IOLevelLog;
   data: IOStd<T>;
   loggedAt: string;
   hostName: string;
@@ -134,6 +136,26 @@ interface IOKeyEvents {
   error: [stdout: string, error: Error];
 }
 
+type IOTransportFunction = {
+  [key in IOLevelLogId]: (logObject: IOReturnType<any, any>) => any;
+};
+
+interface IOTransportProvider {
+  functions: IOTransportFunction;
+  minLvl: IOLevelLogId;
+}
+
+interface IOFileTransportProvider {
+  filePath: string;
+  transportLevels: IOLevelLogId[];
+  newLine?: boolean;
+  initData?: string;
+  initAndRewriteWhenStart?: boolean;
+  verbose?: boolean;
+}
+
+type TransportType = "file" | "stdout" | "none";
+
 export {
   IOLoggerInterface,
   IOReturnGetTimeAndType,
@@ -153,4 +175,7 @@ export {
   ChildLogger,
   IOChildLoggerProperty,
   IOKeyEvents,
+  IOTransportProvider,
+  IOFileTransportProvider,
+  TransportType,
 };

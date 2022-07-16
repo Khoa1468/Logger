@@ -12,7 +12,7 @@ if (existsSync(join(__dirname, "dist")))
 else mkdirSync(join(__dirname, "dist"));
 
 exec(
-  "tsc -b tsconfig.build.json tsconfig.esm.json tsconfig.types.json",
+  "tsc -b tsconfig.esm.json tsconfig.types.json",
   (err, stdout, stderr) => {
     if (err) {
       console.log(`error: ${err.message}`);

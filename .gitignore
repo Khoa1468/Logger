@@ -10,3 +10,5 @@ dist/*
 storage
 .env
 .npmrc
+logs/*
+test.*

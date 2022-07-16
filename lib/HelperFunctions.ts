@@ -8,7 +8,11 @@ import {
   IOLevelLog,
   IOReturnError,
   IOReturnGetTimeAndType,
+  IOReturnType,
 } from "./LoggerInterfaces";
+import { format } from "util";
+import ansiRegex from "ansi-regex";
+import fse from "fs-extra";
 
 const parse: (error: Error) => StackFrame[] =
   ErrorStackParser.parse.bind(ErrorStackParser);
@@ -114,6 +118,72 @@ namespace Helper {
         NULL_LITERAL: "grey",
       },
     });
+  }
+  export function getLoggedTime(): string {
+    return `${
+      new Date().toLocaleTimeString() + " " + new Date().toLocaleDateString()
+    }`;
+  }
+  export function censor(censor: any) {
+    var i = 0;
+    return function (key: string, value: any) {
+      if (
+        i !== 0 &&
+        typeof censor === "object" &&
+        typeof value == "object" &&
+        censor == value
+      )
+        return "[Circular]";
+      ++i;
+      return value;
+    };
+  }
+  export function generateDataString(logObject: IOReturnType<any[], any>) {
+    let data = "";
+    if (logObject.levelLog === "fatal") {
+      const newLogObject = logObject as IOReturnType<IOReturnError[], any>;
+      let errorString = "";
+      newLogObject.data.forEach((val) => {
+        errorString += `${
+          val.defaultError.stack?.split("\n")[0].trim() ||
+          `${val.defaultError.name}: ${val.defaultError.message}`
+        } ${val.defaultError.stack?.split("\n")[1].trim()};`;
+      });
+
+      data += format.apply(null, [
+        newLogObject.fullPrefix.ToString,
+        `[${errorString}]`,
+      ]) as string;
+    } else {
+      data += format.apply(null, [
+        logObject.fullPrefix.ToString,
+        ...logObject.data,
+      ]) as string;
+    }
+
+    return data.replace(ansiRegex(), "");
+  }
+  export function consoleVerbose(logObject: IOReturnType<any[], any>) {
+    process.stdout.write(
+      format.apply(null, [
+        "Verbose log:\n",
+        "Your path:",
+        this.transportProvider.filePath,
+        "\n",
+        "Real path:",
+        fse.realpathSync(this.transportProvider.filePath),
+        "\n",
+        "Path exists:",
+        fse.existsSync(this.transportProvider.filePath),
+        "\n",
+        "Logging level:",
+        logObject.levelLog,
+        "\n",
+        "Logger name:",
+        logObject.instanceName,
+        "\n",
+      ])
+    );
   }
 }
 

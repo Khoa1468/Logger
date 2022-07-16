@@ -1,5 +1,147 @@
 # Start From 1.6.7 version
 
+## 1.6.12
+
+- Performance is good, now
+
+- Added transport to stdout
+  
+  ```ts
+  import { Logger, IOReturnType } from "@khoa1468/logger";
+  
+  const logger: Logger<{}, {}> = new Logger({
+    format: "pretty",
+    levelLog: Number.POSITIVE_INFINITY,
+    useColor: true,
+    instanceName: "mainLogger",
+    short: false,
+  });
+  
+  // This is a transport function when Logger logging, this will be called with passed argument
+  function test(testArg: IOReturnType<any, any>) {
+    console.log(testArg);
+  }
+  
+  // This line will create and push new transport provider
+  logger.attachTransport({
+    minLvl: "info",
+    functions: {
+      error: test,
+      fatal: test,
+      warn: test,
+      info: test,
+      prefix: test,
+    },
+  });
+  
+  const info = logger.info("Hi");
+  ```
+
+- Added `IOTransportProvider` to create transport provider
+  
+  ```ts
+  type IOLevelLogId = "warn" | "info" | "error" | "fatal" | "prefix";
+  
+  type IOTransportFunction = {
+    [key in IOLevelLogId]: (logObject: IOReturnType<any, any>) => any;
+  };
+  
+  interface IOTransportProvider {
+    functions: IOTransportFunction;
+    minLvl: IOLevelLogId;
+  }
+  ```
+
+- Added `attachTransport(transport: IOTransportProvider)` method to create and push new `IOTransportProvider`
+
+- Added transport to file
+  
+  - Typescript
+  
+  ```ts
+  import { Logger, TransportFileProvider } from "@khoa1468/logger";
+  import path from "path";
+  
+  const logger = new Logger({
+    format: "pretty",
+    levelLog: Number.POSITIVE_INFINITY,
+    useColor: true,
+    instanceName: "mainLogger",
+    short: false,
+    transportType: "file", /*specify transport type "none" or "file" or "stdout"*/
+  });
+  
+  logger.attachFileTransport(new TransportFileProvider({
+      filePath: path.join(__dirname, "info.log"),
+      transportLevels: ["info", "error"],
+      newLine: true,
+      initData: "",
+      initAndRewriteWhenStart: true,
+      verbose: true,
+  }));
+  
+  logger.info("Hello");
+  ```
+  
+  - Javascript
+  
+  ```js
+  const { Logger, TransportFileProvider } = require("@khoa1468/logger");
+  const path = require("path");
+  
+  const logger = new Logger({
+    format: "pretty",
+    levelLog: Number.POSITIVE_INFINITY,
+    useColor: true,
+    instanceName: "mainLogger",
+    short: false,
+    transportType: "file", /*specify transport type "none" or "file" or "stdout"*/
+  });
+  
+  logger.attachFileTransport(new TransportFileProvider({
+      filePath: path.join(__dirname, "info.log"),
+      transportLevels: ["info", "error"],
+      newLine: true,
+      initData: "",
+      initAndRewriteWhenStart: true,
+      verbose: true,
+  }));
+  
+  logger.info("Hello");
+  ```
+
+- Added `defaultLevelRange` in `IOBaseReturnType` to get default level range of `prefix` logging method
+
+- Added new `toJson()` to colorize the json string
+
+- Added new class `TransportFileProvider`
+  
+  - Declaration of `TransportFileProvider`
+  
+  ```ts
+  export declare class TransportFileProvider {
+      transportProvider: IOFileTransportProvider;
+      private init;
+      constructor(transportProvider: IOFileTransportProvider);
+      write(logObject: IOReturnType<any[], any>): void;
+  }
+  ```
+
+- Added new interface `IOFileTransportProvider`
+  
+  - Declaration of `IOFileTransportProvider`
+  
+  ```ts
+  interface IOFileTransportProvider {
+      filePath: string;
+      transportLevels: IOLevelLogId[];
+      newLine?: boolean;
+      initData?: string;
+      initAndRewriteWhenStart?: boolean;
+      verbose?: boolean;
+  }
+  ```
+
 ## 1.6.11
 
 - Small fix, clean code, increase performance
@@ -13,9 +155,9 @@
 - Remove `IOLevelLog.ALL`
 
 - Added `events.EventEmitter` with 7 events:
-
+  
   - API interface `IOKeyEvents` to get 7 events:
-
+    
     - `levelChange`
     - `logging`
     - `fatalLogging`
@@ -25,7 +167,7 @@
     - `loggerNameChange`
 
 - Bring back `onInit()`
-
+  
   ```ts
   const logger = new Logger(
     {
@@ -42,25 +184,25 @@
 - Changed `stacktrace.ts` to `error-stack-parser` package
 
 - `loggerProps`, `childProps` and `getBindingOpt()` now is read-only
-
+  
   ```ts
   const logger = new Logger({
     format: "pretty",
     levelLog: Number.POSITIVE_INFINITY,
     useColor: true,
   });
-
+  
   const childLogger = logger.child({ a: "b" }, { isChild: true });
-
+  
   childLogger.getBindingOpt().a; /* Nothing happend */
   childLogger.getBindingOpt().a = "c"; /* This line will throw Error */
-
+  
   childLogger.loggerProps.isChild; /* Nothing happend */
   childLogger.loggerProps.isChild = false; /* This line will throw Error */
   ```
 
 - Added `isChild`, `parentName`, `parentOldProps` and new `child()` method
-
+  
   ```ts
   export class Logger<P extends {}, OP extends {} = {}> extends LoggerUtils<P> {
     private _isChild: boolean = false;
@@ -73,7 +215,7 @@
       return this._parentName;
     }
     /* <Some logic code . . .> */
-
+  
     public child<T extends {}, LP extends {} = {}>(
       bindingOpt?: T,
       loggerOpt?: LP,
@@ -83,13 +225,13 @@
         ...this.listSetting(),
         ...childSetting,
       });
-
+  
       const loggerProps = Object.freeze({
         loggerProps: Object.freeze(loggerOpt),
       } as IOChildLoggerProperty<LP>);
-
+  
       let bindingLoggerProps = Object.assign(childLogger, loggerProps);
-
+  
       bindingLoggerProps.isChild = true;
       bindingLoggerProps.childProps = {
         ...this.childProps,
@@ -97,7 +239,7 @@
       };
       bindingLoggerProps.parentName = this.loggerName;
       bindingLoggerProps.parentOldProps = this.getBindingOpt();
-
+  
       this.emit(
         "childCreated",
         this,
@@ -113,18 +255,18 @@
   ```
 
 - Added `getBindingOpt()` to get `childProps`
-
+  
   ```ts
   const logger = new Logger({
     format: "pretty",
     levelLog: Number.POSITIVE_INFINITY,
     useColor: true,
   });
-
+  
   const childLogger = logger.child({ a: "b" }, { isChild: true });
-
+  
   console.log("Binding:", childLogger.getBindingOpt().a);
-
+  
   /*----------------Output----------------*/
   /*
   Binding: b
@@ -132,7 +274,7 @@
   ```
 
 - Edited `IOErrorStack`
-
+  
   ```ts
   interface IOErrorStack {
     filePath: string;
@@ -146,16 +288,16 @@
   ```
 
 - Added `useExpressLogger()` for `express`
-
+  
   ```ts
   import express from "express";
   import Logger from "@khoa1468/logger";
   import { useExpressLogger } from "@khoa1468/logger";
-
+  
   const app = express();
-
+  
   const logger = new Logger();
-
+  
   app.use(
     useExpressLogger(
       logger /* Your logger here */,
@@ -165,13 +307,13 @@
   ```
 
 - `levelLog` is now a `number` not an `Array`
-
+  
   ```ts
   protected levelLog: IOLevelLog = IOLevelLog.NONE;
   ```
 
 - Added custom level log for `prefix()` logging method
-
+  
   ```ts
   logger.prefix({
     prefix: "Prefix" /* <Your Prefix> */,
@@ -199,31 +341,31 @@
 - Removed onInit() method
 
 - Adding NEW IOReturnType
-
+  
   ```ts
   type IOReturnType<T extends any[], P = {}> = IOBaseReturnType<T> & P;
   ```
 
 - Adding PID log output and log object
-
+  
   ```ts
   import { Logger, IOLevelLog } from "@khoa1468/logger";
-
+  
   const logger = new Logger({
     format: "pretty",
     levelLog: [IOLevelLog.ALL],
   });
-
+  
   logger.info("Hi");
   ```
-
+  
   ```bash
   [Type: Info, Time: <Time and Date>, File: <File and Directory run a code>, PID: <Process ID>] [Khoa] Hi
   ```
-
+  
   ```ts
   /*----------------LOG DATA----------------*/
-
+  
   /*
     {
       pid: <Process ID>
@@ -233,33 +375,33 @@
   ```
 
 - Adding child() method
-
+  
   ```ts
   // child() method will create children logger object will extends all properties in IOReturnType interface and parent logger then merge with your properties binding in args
-
+  
   import { Logger, IOLevelLog } from "@khoa1468/logger";
-
+  
   const logger = new Logger({
     format: "pretty",
     levelLog: [IOLevelLog.ALL],
   });
-
+  
   const childLogger = logger.child({ a: "b" }, { c: "d" });
   //                               ↑               ↑
   //                    <Binding argument> <Logger properties argument>
   const info = childLogger.info("Hi");
-
+  
   /*----------------LOG DATA----------------*/
-
+  
   /*
     {
       a: "b" <YOUR BINDING DATA>
       pid: <Process ID>
       <Some Log Object Property>
   */
-
+  
   /*----------------LOGGER PROPERTY WHEN PRINT OUT CONSOLE----------------*/
-
+  
   /*
     Logger {
       name: <Logger Name>,
