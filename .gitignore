@@ -11,4 +11,5 @@ storage
 .env
 .npmrc
 logs/*
-test.*
+test.mjs
+test.js

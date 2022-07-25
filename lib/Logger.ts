@@ -8,7 +8,7 @@ import {
 } from "./LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
-const VERSION_STR = "1.6.12";
+const VERSION_STR = "1.6.13";
 /**
  * This Is My Logger
  */
@@ -38,6 +38,8 @@ export class Logger<
       levelLog = IOLevelLog.NONE,
       useColor = true,
       transportType = "none",
+      stdout,
+      useOneColor,
     }: IOLoggerInterface,
     onInit: IOOnloadInterface<P> = (Logger) => {}
   ) {
@@ -50,6 +52,8 @@ export class Logger<
         levelLog,
         useColor,
         transportType,
+        stdout,
+        useOneColor,
       },
       {} as P
     );
@@ -64,6 +68,8 @@ export class Logger<
       levelLog = IOLevelLog.NONE,
       useColor = true,
       transportType = "none",
+      stdout,
+      useOneColor,
     }: IOLoggerInterface,
     onInit: IOOnloadInterface<P> = (Logger) => {}
   ) {
@@ -76,6 +82,37 @@ export class Logger<
         levelLog,
         useColor,
         transportType,
+        stdout,
+        useOneColor,
+      },
+      onInit
+    );
+  }
+  public static get<P extends {} = {}>(
+    {
+      instanceName = hostname(),
+      cagetoryName = instanceName,
+      format = "hidden",
+      short = false,
+      levelLog = IOLevelLog.NONE,
+      useColor = true,
+      transportType = "none",
+      stdout,
+      useOneColor,
+    }: IOLoggerInterface,
+    onInit: IOOnloadInterface<P> = (Logger) => {}
+  ) {
+    return new Logger(
+      {
+        instanceName,
+        cagetoryName,
+        format,
+        short,
+        levelLog,
+        useColor,
+        transportType,
+        stdout,
+        useOneColor,
       },
       onInit
     );

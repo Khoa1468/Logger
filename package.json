@@ -1,6 +1,6 @@
 {
   "name": "@khoa1468/logger",
-  "version": "1.6.12",
+  "version": "1.6.13",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "engines": {
@@ -18,11 +18,9 @@
     "unpackedSize": 65805
   },
   "scripts": {
-    "test": "npm run build && node ./dist/insidetest.js",
+    "test": "tsc ./test.ts -esModuleInterop && node ./test.js",
     "build": "node ./build.js",
-    "esm": "node ./dist/esm/insidetest.js",
-    "build_esm": "node ./build_esm.js",
-    "test_esm": "npm run build_esm && npm run esm"
+    "buildAndTest": "npm run build && npm run test"
   },
   "author": "Khoa1468 <khoalam1468@gmail.com>",
   "license": "MIT",

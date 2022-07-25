@@ -19,7 +19,6 @@ import type { ForegroundColor } from "chalk";
 import { LoggerEvent } from "./LoggerEvents.js";
 import { Helper } from "./HelperFunctions.js";
 import { TransportFileProvider } from "./TransportFile.js";
-import ansiRegex from "ansi-regex";
 
 export class LoggerUtils<P extends {}> extends LoggerEvent {
   protected _name: string = "";
@@ -41,6 +40,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
   private _transportProviders: IOTransportProvider[] = [];
   private _fileTransports: TransportFileProvider[] = [];
   private _transportType: TransportType;
+  private _useOneColor?: typeof ForegroundColor;
   /**
    * This Is My Logger
    */
@@ -53,6 +53,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       levelLog = IOLevelLog.NONE,
       useColor = true,
       transportType = "none",
+      stdout,
+      useOneColor,
     }: IOLoggerInterface,
     childOpt: P = {} as P
   ) {
@@ -65,7 +67,9 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     this._childProps = childOpt;
     this._useColor = useColor;
     this._transportType = transportType;
+    this._useOneColor = useOneColor;
     this.setMaxListeners(20);
+    this._write = stdout ? stdout : this._write;
   }
   private _formatString(...data: any[]): string {
     return format.apply(null, [...data]);
@@ -84,7 +88,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     short = this._short,
     useColor = this._useColor,
     transportType = this._transportType,
-  }: IOLoggerInterface): void {
+  }: IOLoggerInterface): this {
     this.emit("settingChange", this.listSetting(), {
       ...this.listSetting(),
       instanceName,
@@ -106,6 +110,8 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       this.emit("levelChange", levelLog, this._levelLog);
       this._levelLog = levelLog;
     }
+
+    return this;
   }
   public listSetting(): IOSetting {
     return {
@@ -169,19 +175,16 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     logObject: IOReturnType<T, P>,
     errors: Error[] = []
   ): void {
-    let stringToPrint = "";
+    let prefix = "";
     if (!this._short) {
       if (!logObject.data) {
       } else {
-        stringToPrint += this._formatString(
-          `${logObject.fullPrefix.ToString} `
-        );
+        prefix += this._formatString(`${logObject.fullPrefix.ToString} `);
       }
     } else {
     }
-    stringToPrint += this._formatString(...logObject.data);
     if (logObject.levelLog !== "fatal") {
-      this._write(stringToPrint);
+      this._write(prefix, ...logObject.data);
     } else {
       this._printFatalLog(logObject, errors);
     }
@@ -268,7 +271,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
     const prefixName = prefix ?? type.charAt(0).toUpperCase() + type.slice(1);
     const fullPrefix = Helper.getPrefix.apply(this, [
       prefixName,
-      color,
+      this._useOneColor || color,
       loggedAt,
     ]);
     const logObject: IOReturnType<T, P> = this._makeLogObject(
@@ -277,7 +280,7 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       fullPrefix,
       prefixName,
       levelRange,
-      color
+      this._useOneColor || color
     );
     this.runTransport(logObject);
     try {
@@ -403,10 +406,14 @@ export class LoggerUtils<P extends {}> extends LoggerEvent {
       opt.levelLog,
     ]);
   }
-  public attachTransport(transport: IOTransportProvider): void {
+  public attachTransport(transport: IOTransportProvider): this {
     this._transportProviders.push(transport);
+
+    return this;
   }
-  public attachFileTransport(...transport: TransportFileProvider[]): void {
+  public attachFileTransport(...transport: TransportFileProvider[]): this {
     this._fileTransports.push(...transport);
+
+    return this;
   }
 }

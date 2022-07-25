@@ -20,6 +20,8 @@ interface IOLoggerInterface {
   levelLog?: IOLevelLog;
   useColor?: boolean;
   transportType?: TransportType;
+  stdout?: (...data: any[]) => void;
+  useOneColor?: typeof ForegroundColor;
 }
 
 interface IOSetting extends IOLoggerInterface {
