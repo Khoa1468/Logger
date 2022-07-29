@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["./test/", "test.mjs", "test.js", "test.ts", "test.d.ts"]
+  "exclude": ["./test/", "test.mjs", "test.js", "test.ts", "test.d.ts", "./types.d.ts"]
 }

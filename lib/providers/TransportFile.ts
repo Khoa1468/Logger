@@ -1,6 +1,9 @@
 import fse from "fs-extra";
-import { IOFileTransportProvider, IOReturnType } from "./LoggerInterfaces.js";
-import { Helper } from "./HelperFunctions.js";
+import {
+  IOFileTransportProvider,
+  IOReturnType,
+} from "../interfaces/LoggerInterfaces.js";
+import { Helper } from "../helper/HelperFunctions.js";
 
 export class TransportFileProvider {
   private init = true;

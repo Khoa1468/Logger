@@ -1,4 +1,4 @@
-import { Logger as LoggerClass } from "./Logger.js";
+import { Logger as LoggerClass } from "../core/Logger.js";
 import { ForegroundColor } from "chalk";
 
 const enum IOLevelLog {

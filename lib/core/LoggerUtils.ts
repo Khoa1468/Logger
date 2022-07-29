@@ -12,13 +12,13 @@ import {
   IOReturnType,
   IOTransportProvider,
   TransportType,
-} from "./LoggerInterfaces.js";
+} from "../interfaces/LoggerInterfaces";
 import { hostname } from "os";
-import { format } from "util";
+import { format, inspect } from "util";
 import type { ForegroundColor } from "chalk";
 import { LoggerEvent } from "./LoggerEvents.js";
-import { Helper } from "./HelperFunctions.js";
-import { TransportFileProvider } from "./TransportFile.js";
+import { Helper } from "../helper/HelperFunctions";
+import { TransportFileProvider } from "../providers/TransportFile";
 
 export class LoggerUtils<P extends {}> extends LoggerEvent {
   protected _name: string = "";

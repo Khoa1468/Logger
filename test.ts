@@ -53,10 +53,8 @@ logger.warn("Warn!");
 
 logger.fatal({ errors: [new Error("Fatal!")] });
 
-// logger.info("Welcome to osu!");
+logger.info("Welcome to osu!");
 
-// logger.fatal({
-//   errors: [new Error("Hello"), new TypeError("This is TypeError")],
-// });
-
-eval("logger.info('Hello, World!')");
+logger.fatal({
+  errors: [new Error("Hello"), new TypeError("This is TypeError")],
+});

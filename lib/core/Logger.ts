@@ -5,10 +5,10 @@ import {
   IOLevelLog,
   ChildLogger,
   IOChildLoggerProperty,
-} from "./LoggerInterfaces.js";
+} from "../interfaces/LoggerInterfaces.js";
 import { LoggerUtils } from "./LoggerUtils.js";
 
-const VERSION_STR = "1.6.13";
+const VERSION_STR = "1.7.0";
 /**
  * This Is My Logger
  */

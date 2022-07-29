@@ -1,5 +1,15 @@
 # Start From 1.6.7 version
 
+## 1.7
+
+- Summary of the old version from 1.6.7 to 1.6.12
+
+- Edit some folders and files structure
+
+- Added some small Logger config
+
+- ***⚠️ This version it may be a final update. After this version will no longer be updated regularly every week. We will only update and fix bugs when there are errors during using this library***
+
 ## 1.6.12
 
 - Performance is good, now

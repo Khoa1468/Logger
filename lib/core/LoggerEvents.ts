@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { IOKeyEvents } from "./LoggerInterfaces";
+import { IOKeyEvents } from "../interfaces/LoggerInterfaces";
 
 export class LoggerEvent extends EventEmitter {
   public on<K extends keyof IOKeyEvents>(

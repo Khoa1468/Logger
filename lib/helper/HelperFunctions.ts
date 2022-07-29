@@ -9,7 +9,7 @@ import {
   IOReturnError,
   IOReturnGetTimeAndType,
   IOReturnType,
-} from "./LoggerInterfaces";
+} from "../interfaces/LoggerInterfaces";
 import { format } from "util";
 import ansiRegex from "ansi-regex";
 import fse from "fs-extra";

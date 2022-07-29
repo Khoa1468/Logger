@@ -1,4 +1,4 @@
-import { Logger } from "./Logger.js";
+import { Logger } from "./core/Logger.js";
 import { hostname } from "os";
 import {
   IOLoggerInterface,
@@ -18,9 +18,9 @@ import {
   IOKeyEvents,
   IOTransportProvider,
   IOFileTransportProvider,
-} from "./LoggerInterfaces.js";
-import { Helper } from "./HelperFunctions.js";
-import { TransportFileProvider } from "./TransportFile.js";
+} from "./interfaces/LoggerInterfaces.js";
+import { Helper } from "./helper/HelperFunctions.js";
+import { TransportFileProvider } from "./providers/TransportFile.js";
 
 const toJson: (
   data: any,
