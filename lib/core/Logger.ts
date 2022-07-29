@@ -123,9 +123,9 @@ export class Logger<
   public get VERSION(): string {
     return VERSION_STR;
   }
-  public child<T extends {}, LP extends {} = {}>(
-    bindingOpt?: T,
-    loggerOpt?: LP,
+  public child<T extends {} = {}, LP extends {} = {}>(
+    bindingOpt: T = {} as T,
+    loggerOpt: LP = {} as LP,
     childSetting: IOLoggerInterface = this.listSetting()
   ): ChildLogger<P, T, LP> {
     const childLogger: Logger<P & T, P> = new Logger<P & T, P>({

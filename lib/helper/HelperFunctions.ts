@@ -14,7 +14,7 @@ import { format } from "util";
 import ansiRegex from "ansi-regex";
 import fse from "fs-extra";
 
-const parse: (error: Error) => StackFrame[] =
+const parse: (error: Error) => ErrorStackParser.StackFrame[] =
   ErrorStackParser.parse.bind(ErrorStackParser);
 
 interface IFunctionArg {
